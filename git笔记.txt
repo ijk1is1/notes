@@ -1,0 +1,892 @@
+Git 
+	历史
+		Linus Torvalds
+
+	和传统SVN的对比
+		集中式版本控制系统。
+			中央服务器，有版本控制的数据库。
+				离线，其他电脑无法与其交互
+				崩溃，
+
+			存储的修改的差异。
+
+		分布式版本控制系统
+			每个电脑都有版本的数据库。
+			很多操作本地进行，操作快。
+			不担心中央服务器离线，
+
+			也可有中央服务器，用于协作。
+
+			每个版本都是当前内容。
+
+		差异：
+
+
+
+2.安装与简单配置。
+	安装
+
+		安装的是哪个版本
+		git --version
+
+		vim .bash_profile 改下 export环境。确保使用 最新环境。
+	自动完成
+	简单配置
+
+		最基本的配置。
+			提交的作者是谁。
+			git config --global user.name
+			git config --global user.email
+
+		当前仓库的local
+		当前用户 global 针对当前用户
+		最低是 system 
+
+		查看文档 
+			git config --help
+			git help config  打开个 html
+			man git-config  极客老师自己写的
+
+		增删改查
+			之前的 git config --glabal user.name
+			git config --global --add user.name eoe
+
+			查看：
+				git config user.name
+				最后一次写的 eoe
+
+				git config --get user.naem
+
+
+				？user.name 有几个值。
+
+				git config --list --global
+					user.email=ershiqibeijiu_jk@163.com
+					user.name=weixiao
+					user.name=eoe
+
+			删除：
+				git config --global --unset user.name
+				提示： user.name 有多个值				
+				git config --global --unset user.name eoe
+				查看：
+				git config --list --global
+				当只有一个值：
+
+					git config --global --unset user.name  即可
+
+			改：
+				直接覆盖
+				git config --global user.name XXX
+
+alias 起别名
+		给git 子命令起别名
+			git config --global alias.co checkout
+			git config --global alias.br
+			branch
+			git config --global alias.st status
+			git config --global alias.st status
+
+
+			git c 双击table键
+
+		命令后带参数
+			git log
+			git log --oneline
+		给参数起别名
+			git config --global alias.lol "log --oneline"
+
+
+git的基本工作流程
+
+	使用40个 16进制字符的 SHA-1 HASH 来唯一标识对象。
+
+	4 中对象
+		blob 文本文件 二进制 链接文件
+		tree  包含其他的tree对象和 blob对象。
+		commit 历史提交
+		tag 指向一个固定的历史提交。
+
+		commit指向这样的一个树形结构，代表提交时工作区的某一个状态。
+
+		对这些对象的内容分别进行 SHA-1 HASH后,得到唯一标识。
+
+	git 只关心文件的内容。
+		文件有同样内容，就指向同一个 blob对象
+		像文件名之类的其他信息存储在 tree对象里。
+
+	有了这些git对象之后，我们需要一个git仓库,来对对象 进行存储 和操作。
+
+	方法
+		git init 
+		git clone
+
+	仓库
+		bare repository裸仓库
+			不带工作区, 用在服务器上，方便用户协作。
+
+		git init git_non_bare_repo
+			发现有一个 .git的目录
+			进入里边有文件。，这是git工作 的环境？
+
+		git init --bare git_bare_repo
+			ls，发现同样的一些文件，但不在 .git目录里了。
+			因为它不带工作区。
+			这个 repo 里只有 git工作所需要的一些文件。
+
+	对已经有的一个工作环境，怎么将其纳入git 的管理。
+		mkdir git_init_repo
+		cd git_init_repo
+		git init
+			Initialized empty Git repository in D:/training/git/git_init_repo/.git/
+
+
+	git clone 获得一个裸仓库，需要一个远程地址。
+		用本地一个仓库演示。
+		git clone git_bare_repo/ git_clone_repo
+		因为在同一个目录下，所以给它个新名字
+		$ git clone git_bare_repo/ git_clone_repo
+		Cloning into 'git_clone_repo'...
+		warning: You appear to have cloned an empty repository.
+		done.
+
+		若是个远程地址，使用默认的repo名就行了。
+
+
+流程开始
+	git 仓库有三个区域。
+		工作区：
+			编辑代码的地方，维护一个树形结构
+
+		历史仓库：
+			commit指向的一个树形结构，
+
+		暂存区：
+			相当于工作区，历史提交之间的一个缓存。
+			代表的是 需要提交的一个工作的状态。
+			维护一个虚拟的树形结构。
+
+
+	git add
+	git commit
+
+	查看区别
+		git status
+	暂存区的删除
+		git rm
+
+	
+	git rm a
+		工作区，暂存区中的 a 引用删除
+		git status
+			On branch master
+			Changes to be committed:
+			  (use "git reset HEAD <file>..." to unstage)
+
+			        deleted:    a
+		$ git reset HEAD a
+			Unstaged changes after reset:
+			D       a
+			ls ---> b
+			git checkout a
+			ls ---> a b
+
+		怎样只删除暂存区文件，不删除工作区文件？
+			git rm --cached a
+
+
+
+	重命名，移动文件，再移动到暂存区
+		git mv
+		没有重命名，移动的说法，只是一系列命令的组合。
+
+		mv a c
+			a 被删除，c没被跟踪。
+			git add a c
+			git status
+				$ git status
+				On branch master
+				Changes to be committed:
+				  (use "git reset HEAD <file>..." to unstage)
+
+				        renamed:    a -> c
+
+		git mv做的事情：
+			工作区中将所需要的文件重命名或移动
+			暂存区中原有的文件删除了，新的文件添加进暂存。
+
+
+	gitignore
+		工作区不希望添加到 暂存区和历史提交的文件。不被添加进去。
+
+		git add -A 
+			将工作区所有文件添加到暂存
+
+		工作区的顶层目录下，或自己需要的目录下
+
+		创建 .gitignore 文件
+
+			*.pyc
+			!test.pyc
+				告诉git 不要被忽略
+
+				本身有 !命名的文件 ，纳入 ignore管理，要进行转义。
+
+			foo/
+			**/res
+				**/ 0个或多个目录。
+
+
+		忽略的文件不被跟踪。
+		根据需要编写 .gitignore文件。
+		可将 .gitignore 添加到仓库中，用于整个仓库的共享。
+
+
+
+Git暂存区
+	git大部分本地操作都和 暂存区进行交互。
+
+	工作区              Git工作区(.git/)
+
+
+
+						git对象库(.git/objects)
+
+
+	1.工作区有一个树形结构。
+		没add时，暂存区未创建，git对象库为空。
+
+	2.git add
+		.git/ 目录下多了个 index文件
+			该文件就是暂存区。
+			每个索引有40位  的 SHA-1 Hash。以及对应的文件名。
+
+			除此之外。包含文件模式，文件权限，stage number 标识合并状态，时间戳
+
+			每个索引和对象库中对象对应。
+
+			还维护了顶级tree 对象的内容，提前计算好的 tree对象的内容。提交时，根据计算好的内容，生成tree对象。
+	3.git commit
+		历史提交
+			首先有一个 和对象库对应的对象，构成的一个树形结构。
+
+		commit操作生成了一个 commit对象 4f089a。
+
+		commit对象 指向 顶层的tree对象。
+
+		分支名以及 HEAD标签指向了该commit对象。
+			表示当前处于mater  分支，且master 分支最后一个提交是 4f089a。这么一个 commit。
+
+	4.修改工作区的文件
+		git add。
+			对象库中新创建了对象。
+			暂存区中该对象的索引 替换成新的对象。
+
+		此时，暂存区重新计算 顶层目录 tree对象的内容。
+
+		当提交时，使用计算的内容，创建出一个 tree对象。
+			生成一个 commit对象，指向顶层目录，且维护了父提交。
+
+		最后：HEAD，master 引用指向了这个新的提交。
+
+		表明：
+			现在在master分支上，最后一个提交是 e45f9c。
+
+
+	5.删除
+		git rm file2.txt
+			相当于将工作区的文件，及暂存区的索引都删掉。
+		git rm --cached file2.txt
+			直接将暂存区的索引去掉。
+
+	6.git mv
+		file2.txt file3.txt
+			工作区的文件被重命名，
+			暂存区的原来的索引被删除，又重新添加了索引。
+
+				文件内容没变，根据内容计算出来的 SHA-1 不变，索引还指向原来对象。
+
+	当暂存区索引 更新时，暂存区里都重新计算所需要生成的 tree对象的内容。
+	提交时，可直接生成这些 tree对象。
+	这提升了效率。
+
+	index文件也有其他作用，
+		暂存区的作用，它维护了一个虚拟的树形结构，代表了下一次将要被 提交内容的整体。
+
+
+Git 本地分支与合并
+	git branch
+	git tag
+	git checkout 切换
+	git stash
+		切换前，保存本地修改
+	git merge 
+		合并分支。
+
+
+	当有其他工作不想在master分支上做，增加新的特性，问题的修改或测试时，需要个新分支。
+
+	git branch test
+	git checkout test
+
+		切换分支时，使用分支上最新的提交来还原暂存区和工作区。
+		--> 不同分支之间独立进行工作，无缝进行切换。
+
+		分支名，最新提交 commit 的一个引用
+			每提交一次就 分支名 就指向一个新的提交。
+
+		如何让一个引用指向固定的提交？
+
+			如有的版本是做版本 release发行的。
+			当出现问题，希望立即切换回 relase 的那个提交，而不是查看历史记录，然后修改。
+
+	tag
+		轻量级，只是本地的引用
+		anotated? 
+			带注解的
+			实际上是 git tag对象，存储在git 仓库里，当需要时，推送到服务器上用于共享。
+
+
+		git log --oneline --decorate --graph --all
+			查看日志，一行显示，装饰成 graph。 所有。历史示意图。
+
+		git tag "v0" 4ec4916
+			不带 hash 的话，默认使用当前指向的commit，HEAD -> master分支上的 commit。
+			7位的hash
+			5-7 位足够表示 一个 git对象了。
+		git tag -a "INITIAL_COMMIT" 4ec4916
+			带注解的，tag  大写来标注这些tag。
+
+			提示输入 tag的一些信息。
+
+		查看当前有哪些 tag
+			git tag
+			查看下历史示意图。
+				commit的 hash 右边多了两个 引用(tag:v0, tag:INITIAL_COMMIT)。
+
+			来查看它们的内容。
+				git show v0
+				$ git show v0
+					commit 4ec49161572bb4e59a526f1c3e8b4e6a6cfcfe87 (tag:v0, tag: INITIAL_COMMIT)
+					Author: weixiao <ershiqibeijiu_jk@163.com>
+					Date:   Wed Oct 17 07:56:19 2018 +0800
+
+					    Initial commit on master
+
+					diff --git a/master.txt b/master.txt
+					new file mode 100644
+					index 0000000..2ceca89
+					--- /dev/null
+					+++ b/master.txt
+					@@ -0,0 +1 @@
+					+Initial commit on master.这是创建些历史目录。
+
+				$ git show INITIAL_COMMIT
+					tag INITIAL_COMMIT
+					Tagger: weixiao <ershiqibeijiu_jk@163.com>
+					Date:   Wed Oct 17 08:50:53 2018 +0800
+
+						TAG for INITIAL_COMMIT
+
+						commit 4ec49161572bb4e59a526f1c3e8b4e6a6cfcfe87 (tag:v0, tag: INITIAL_COMMIT)
+						Author: weixiao <ershiqibeijiu_jk@163.com>
+						Date:   Wed Oct 17 07:56:19 2018 +0800
+
+						    Initial commit on master
+
+						diff --git a/master.txt b/master.txt
+						new file mode 100644
+						index 0000000..2ceca89
+						--- /dev/null
+						+++ b/master.txt
+						@@ -0,0 +1 @@
+						+Initial commit on master.这是创建些历史目录。
+					实际上是tag对象，
+						指向 commit。
+
+				切换回 tag(当前是 master分支)
+					提示:
+					You are in 'detached HEAD' state. 
+					HEAD 引用直接指向了一个 commit，而不是分支名。
+
+					这意味着，在该提交后继续工作，
+						切换回其他分支时，这部分历史可能就丢弃了。
+
+						避免：
+
+							git checkout -b new_branch_name
+
+							用当前的commit 创建个分支名，且切换到 新分支上。
+
+							git branch
+							git checkout的组合。
+						历史示意
+							$ git lol
+							* 501cb00 (test) Initial commit on test
+							* 51809bc (master) Second commit on master
+							* 4ec4916 (HEAD -> fix_v0, tag: v0, tag: INITIAL_COMMIT) Initial commit on master
+
+			修改的工作区和暂存区(当前在fix_v0分支 上，HEAD -> fix_v0)
+				改个文件，add 到暂存。
+
+				切换回master 分支：
+				报错：
+					error: Your local changes to the following files would be overwritten by checkout:
+					        master.txt
+					Please commit your changes or stash them before you switch branches.
+					Aborting
+
+				本地的一些修改没被提交，checkout时，会把你本地的一些修改覆盖掉。提示 提交修改 | 将修改 stash 起来。
+
+					当前暂存区 stash起来:
+						git stash save -a "stash的信息: stash1"
+						Saved working directory and index state On fix_v0: stash de xinxi stash1
+					
+					再git status提示: 工作区，暂存区跟 修改前的 历史记录一致了。
+
+			再次切换回刚刚创建 stash 的这个 分支:
+
+				git stash list
+				stash@{0}: On fix_v0: stash de xinxi stash1
+
+				git stash pop --index stash@{0}
+					希望将暂存区也还原，加 index参数。				}
+					On branch fix_v0
+						Changes to be committed:
+						  (use "git reset HEAD <file>..." to unstage)
+
+						        modified:   master.txt
+
+						Dropped stash@{0} (1104f1c3e6e81ebd4a60ce07ccbde09881b86baf)
+
+						文件已经准备提交。
+
+					查看本地文件，stash 被成功还原到 工作区和暂存区中。
+
+					git stash list ---> 空的
+
+			既还原，同时历史不被清理?
+				git stash save -a "stash1"
+
+				git stash apply stash@{0}。
+				git stash apply --index stash@{0}。 暂存区也应用。
+
+			git stash
+				git stash drop stash@{0}
+					清除掉。
+				不带参
+					默认清理stash 栈里最上方一个
+
+				git stash clear一次性清理。
+
+合并
+	某个时间点，将分支上的工作合并到某处。
+	切换回 master分支：
+		git stash save
+		git checkout master
+
+		新建并切换到新分支。
+
+		修改个文件，并提交。
+			查看历史示意图。
+			test_merge 指向的 commit。
+				它实际上 是 mster 所 指向的 commit 所 衍生出来的。
+
+		切回到 master 分支上。
+			test_merge上的一些操作，merge到 master上。
+			$ git merge test_merge
+				Updating 51809bc..0a6cc4e
+				Fast-forward
+				 master.txt | 1 +
+				 1 file changed, 1 insertion(+)
+
+			Fast-forward说明
+				merge的操作所 merge 的内容，都是 当前指向的commit 所衍生出来的 一些 commit 。
+
+			这样的merge，不需要产生新的提交。
+				将工作区和，暂存区恢复到 test_merge 上的一个状态。
+				将mater 指向的 commit 指向 test_merge 指向的那个 commit 就可以了。
+
+
+		查看历史示意图。
+			此时， master 和 test 之间是分叉 的。
+			合并 不同分支.
+			master 分支上 合并test 分支
+				git merge test。
+
+					Auto-merging master.txt
+					CONFLICT (content): Merge conflict in master.txt
+					Automatic merge failed; fix conflicts and then commit the result.
+
+			不希望进行此次合并
+				git merge --abort
+
+				git merge test
+					当前状态(master|MERGE)
+
+				修改冲突文件。
+
+					git add 冲突文件
+					git commit
+						提示信息：这是个 merge的 commit
+						不修改 merge 信息的话，直接退出。
+
+					形成了一个 commit,这个 commit和之前的不同点：
+						先添加了 一个 commit 承载 merge 的信息。
+
+
+	总结：
+		分支，就是 一个commit的引用。
+
+		在分支上工作，会产生各自的历史。
+
+		分支切换
+			HEAD 引用的移动 以及 暂存区和工作区的还原。
+
+		tag
+			指向commit 的一个固定引用。
+			轻量级，
+			带标记的。
+				tag 对象。
+
+		git branch 产生分支时，没切换，
+			HEAD 仍然指向之前分支。 (master)
+				master上工作，会产生对应历史。
+
+			切换分支
+				git checkout test。 HEAD 引用指向 了test。
+
+				工作区和暂存区，还原到 test 当前指向的 commit 的一种状态。
+				(test) 
+					继续工作。
+						产生对应 commit 自己的一个历史。
+
+
+		合并
+			Fast-forward merge
+			当 commit 在"一条链" 上时，
+				指向最新的 test 指向的 commit 。
+				工作区和暂存区 进行还原。
+
+			non-fast-forward
+				三方合并。
+				master test 指向的commit 只是有一个共同的父节点。(commit)
+
+			此时合并， (master) git merge test。
+				创建新的 commit 承载之前的两个 commit。
+
+
+
+git 查看、对比历史记录。
+
+	git show
+		接受 git 的对象作为一个参数。
+		git show 一个hash
+			git show master
+			git show HEAD
+
+		示例：
+			Merge: 0a6cc4e 501cb00
+				--> 当前merge commit的 第一父提交，第二父提交。
+			Author: weixiao <ershiqibeijiu_jk@163.com>
+			Date:   Wed Oct 17 10:01:09 2018 +0800
+
+			    Merge branch 'test'
+
+			git show master^   === git show master~
+				master 当前指向的 commit 的第一父提交。
+
+			git show master^2
+
+			带个参数 --oneline
+				提交者，提交的 差异信息。
+
+				git show --stat
+					这个提交所作出的一些改变的统计信息。
+				参数组合起来。
+
+
+		git show --format=%T master^2
+			d757e41e99f42d64462625b83ad3ddae614ef3e1
+
+			diff --git a/master.txt b/master.txt
+			index c6565d3..72c986b 100644
+				--- a/master.txt
+				+++ b/master.txt
+				@@ -1,2 +1,3 @@
+				 Initial commit on master.这是创建些历史目录。
+				 Secont commit on master.
+				+Initial commit on test. test 分支上的初次提交。
+			
+			diff --git a/test.txt b/test.txt
+				new file mode 100644
+				index 0000000..e69de29
+
+			实际上是这个commit 指向的 tree对象。
+				显示了这个tree 对象里有两个文件。
+
+
+
+	git log
+		space f b向上翻页
+		上下键 单行。
+		q退出
+
+
+		git log -p
+			输出每个 commit之间的差异信息。
+			--stat
+				每个commit之间 差异的统计信息。
+
+			--oneline
+			自由的组合。
+
+		git log --oneline --decorate --graph --all
+
+			decorate输出commit 引用的信息
+			图像化的信息
+			all  --所有分支的信息。
+
+		常用的组合写别名。
+
+
+	git diff比较差异
+		工作区和暂存区的。默认
+
+			暂存区已经准备提交。
+		暂存区和历史。
+			--cached
+
+		指定当前工作区和其他历史 提交的差异， 特定文件的差异
+			git diff HEAD~2 -- master.txt
+
+		暂存区和其他历史之间差异。
+
+			git diff --cached HEAD~2。
+
+		两个 commit 的差异。
+			git diff HEAD HEAD~2
+				当前 commit 和 之前一个 commit 的差异。
+
+			特定文件 -- master.txt
+
+			单个单词的差异
+
+				git diff --color-words
+
+				git diff --word-diff
+					标识修改。
+
+
+
+撤销修改
+	git checkout
+		当前暂存区，还原工作区
+
+		git checkout -- master.txt
+			撤销工作区 master.txt 的修改。
+				暂存区内容覆盖工作区内容。
+
+
+		某一个历史提交中还原工作区：
+				git checkout INITIAL_COMMIT -- master.txt
+				将这个commit 下 文件的内容，找出来。
+
+				git checkout HEAD -- master.txt
+					还原到最新(工作和暂存)
+
+	git reset
+		当前历史区，还原暂存区
+
+		git reset HEAD -- master.txt
+			还原文件的内容。
+			(HEAD ->) 当前在 HEAD 指向的历史内容上进行工作的。 省略HEAD。
+
+			git diff --cached
+				暂存区和 工作区一致了。
+
+		其他历史提交还原到暂存
+			git reset INITIAL_COMMIT -- master.txt
+
+			git diff, git diff --cached , git status 查看当前各个区 的状态。
+
+
+---------已跟踪的内容被还原。
+	git clean
+		新创建的 文件，中间文件。
+	
+		移除不需要的，未跟踪的文件。
+		默认不清理 .ignore 的文件。
+		git clean -n
+			将要移除什么内容。
+		git clean -f
+			强制清除
+
+			.gitignore 文件。
+			工作中，所有会被忽略的。
+
+		希望清理掉 不在 .gitignore 中的文件。
+
+			git clean -n -X
+
+			git clean -x -f
+				将默认不清理的文件也清理了。
+	git revert
+		某个历史提交不需要，产生新的提交，覆盖它。
+		如：
+			不需要之前的 .gitignore 文件
+
+			git revert HEAD
+
+			产生了一个 revert 的提交。
+				不需要修改信息就退出。
+
+				Revert "add ignore" 的提交。
+
+				删除了ignore文件。
+
+			ls -l。
+
+
+总结。
+	工作区， 缓存区， 历史示意图。
+
+	git checkout test
+		test (branch) 指向的 commit对象
+			用其中的 内容， 还原暂存， 还原工作区。
+
+		HEAD 指向 test ，表示当前分支 成了test 分支。
+
+	git checkout test -- file1.txt
+		checkout 某一个历史提交(引用)
+			后面再带个 文件。
+
+			用该 commit 里的文件内容还原 缓存，工作区。
+
+		不带某一个 commit参数。
+			工作区文件有改动，
+			git checkout -- file1.txt。
+				用暂存区还原它。
+
+		最终还原的都是 工作区中的内容。
+
+
+	git reset test -- file1.txt
+		分支名，tag,hash，HEAD 这类的引用，代表 commit 即可。
+
+		从历史提交中，文件内容还原到 暂存中。
+
+
+	git revert 6c39b2...
+		对 6c39b2引入的改变 取反 应用到新的提交。
+
+
+	git clean 
+		工作区中未跟踪的文件，根据需求删除。
+
+
+
+重写历史记录
+
+	git commit --amend
+		产生新的 历史提交 替换掉 当前所指向的 历史提交 。
+
+		git checkout HEAD~ -- .gitignore
+
+			把上次提交 的 .gitignore 还原到工作，暂存。
+
+		git commit --amend
+			也弹出信息了。
+			之前的 revert 操作，把 .gitignore文件删掉了。
+
+			checkout 还原了回来。
+			所以此处信息并没有提示说，下次提交会删掉 .gitignore。
+
+			而仅仅是 刚刚添加的 test.c
+
+			修改提交信息。
+				原来的 revert 的信息都 删掉。
+
+	git rebase
+		创建线性历史，而不进行合并操作。
+		历史修改能力，
+		维护线性历史
+
+
+		git checkout -b test_rebase HEAD~
+		在这之前的一个 提交。
+
+		git rebase master
+			本意：将master分支上的 合并过来。 让历史提交不分叉。
+
+				提示：
+					合并发现了冲突。因为两次提交修改了同一行的内容。
+					要么解决，要么放弃
+
+			git rebase --abort；
+
+			修改文件，解决冲突，完成rebase 操作。
+				git rebase master
+				vim master.txt
+
+				git rebase --continue 操作继续
+					$ git rebase --continue
+						master.txt: needs merge
+						You must edit all merge conflicts and then
+						mark them as resolved using git add
+				修改好的文件加到暂存。
+				操作继续
+				git rebase --continue
+
+					就将master 分支上的一些修改合并到 test_rebase 分支上了。
+
+
+			查看示意图：
+				test_rebase 分支看上去 就想是 从 master指向的 历史提交上 衍生出来的。
+
+				它的历史就是线性的。
+
+	现在想回到之前的一个状态，但是历史记录里找不到之前的历史：
+
+		git reflog 维护了 HEAD引用的一个历史。				
+
+		git reset --hard HEAD@{6}
+
+		git lol
+			发现历史， 跟在 rebase 之前一样了。
+
+			实际上，把分支名 和 HEAD 引用直接指定到   HEAD@{6} 这么一个commit 上去。
+
+		--hard 
+			参数会使，工作区，暂存区都被 这个历史提交的内容 还原。
+		--mixed
+			还原暂存区，HEAD，分支名的引用指向了这个 commit。 默认参数。
+
+			git diff --cache。
+			暂存区和 历史记录没区别。
+			git status
+				工作区和 暂存区的区别。
+		--soft
+			HEAD，分支名的引用指向了这个 commit
+
+			git diff 没区别
+			git diff --cached 有区别。
+
+再查看 引用 目录 git reflog。 git reflog -10， 再还原。
+	$ git reset --hard HEAD@{1}
+	HEAD is now at 3c05db1 在 test_rebase 分支上的一次提交
+
+
+不重写已经用于共享的历史，
+	对某些内容修改，
+	用 git revert
+		或增加新的提交 覆盖历史内容。
+
+
+
+ git remote set-url origin https://github.com/weixiaoershiqibeijiu/hello-world
+
+
+ssh-keygen -t rsa -C "ershiqibeijiu_jk@163.com"
+
+http://www.cnblogs.com/softidea/p/5827361.html

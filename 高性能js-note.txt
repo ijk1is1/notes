@@ -1,0 +1,1960 @@
+Algorithms and Flow Control
+
+性能损失与代码组织方式和具体问题解决方法直接相关。
+
+Loops 循环。
+	for
+	while
+	do-while
+	for in
+
+Loop Performance
+	for-in 循环 7倍。
+	迭代遍历一个有限的，已知的属性列表。
+		var props = ["prop1","prop2"],
+			i = 0;
+		while(i < props.length){ 
+			process(obj[props[i]]);
+		}
+	其他loop性能相当,此时选择应基于需求：
+		Work done per iteration
+		Number of iterations
+基于循环的遍历
+	减少迭代的工作量
+		限制在循环体内进行耗时操作的数量，加快循环。
+		最小次数访问属性，倒序遍历。
+	减少迭代的次数
+		duff's device 循环。
+			迭代次数1000以下，性能提升不明显; 循环迭代次数更多，性能提升大。
+		限制循环迭代次数，
+		循环体展开。
+基于函数的遍历
+	forEach
+	数组对象的  arr.forEach(function(value, index, arr){
+		precess(value);
+	});
+	每个元素额外与一函数调用关联，增加了开销。
+	每个数组项要关联额外的函数调用，是造成速度慢的原因。
+
+条件
+	if-else
+		条件判断顺序，按发生概率大小判断。
+		优化：
+			x 在 0-10 之间会 有执行
+			value 的 值平均分布在 这个区间。
+			if(x )
+			使用二分搜索法将值域分成一系列区间，然后逐步缩小范围。
+	switch
+		测试条件是离散值。
+		代码占据的空间，和重要性不成比例。
+		性能主要区别是: 性能负担增加不同。
+
+		1 switch表达式更适合于每个键需要一个独特动作，或者一系列动作的场合。
+
+	查表法: Lookup Tables
+		当需要测试的离散值数量很大。
+		使用查表法，必须完全消除所有条件判断，将条件判断的操作，转换为对对象成员、数组元素的访问。
+		常用于1 key 和 1 value 形成逻辑映射的领域。
+
+	递归 call stack limits
+		一个错误定义，或缺少出口条件可导致长时间运行。
+		exceeding;
+		js应请所支持的递归数量 与 js调用栈大小直接相关。
+		而IE的调用栈与可用系统内存有关。
+
+
+		IE不会显示js错误，但会弹出提示堆栈溢出信息的对话框。
+	递归模式 Recursion Patterns
+		当陷入调用栈尺寸限制，首先定位在代码中的递归实例上。
+		直接递归模式
+			factorial()函数，一个函数调用自身。
+			function recurse() { recurse()}; recurse();
+		精巧模式 subtler
+			两函数互相调用。
+		多数调用栈错误与前两者有关。
+			常见的栈溢出原因是一个不正确的终止条件。
+			
+			定位模式错误的第一步：
+				验证终止条件。
+			算法包含多层递归---> 改用迭代，制表memoization(tabulation)(用数组栈记录每次递归结果。)
+			之后直接从数组栈中以查表法以 查表法获得结果。
+		---
+		iteration
+			迭代算法通常包括几个不同的循环，分别对应算法过程的不同方面， 也会导致自己的性能问题。
+
+			but, 使用优化的循环替代长时间运行的递归函数可提高性能。 循环比反复调用一个函数开销要低。
+
+			案例：
+				合并排序代码。一个具有n个项的数组总共调用 mergeSort() 达 2*n -1次。
+
+		程序陷入栈溢出错误不一定修改整个算法： 
+			只是意味着递归不是最好的实现。合并排序算法还可用递归实现。
+
+			迭代版本的合并排序可能比递归版本的慢些，但不会影响调用栈。
+
+
+		制表 memoization
+			减少工作量就是最好的性能优化技术。
+				代码做的事越少，它的运行速度越快。
+			避免重复工作也很有意义。
+
+			制表，通过缓存先前计算结果为后续计算重复使用。
+		var count = 0;
+		function memfactorial(n){
+			count ++;
+			if(!memfactorial.cache){
+				memfactorial.cache = {
+					"0" : 1,
+					"1" : 1
+				};
+			}
+
+			if(!memfactorial.cache.hasOwnProperty(n)) {
+				memfactorial.cache[n] = n * memfactorial(n -1);
+			}
+			console.log(count);
+			return memfactorial.cache[n];
+		}
+
+		function memorize(fundmental, cache){
+			cache = cache || {};
+			var shell = function(arg){
+				if(!cache.hasOwnProperty(arg)){
+					cache[arg] =  fundmental(arg);
+				}
+				return cache[arg];
+			};
+			return shell;
+		}
+
+		通用制表函数与人工更新算法 相比优化较少，因为memorize() 函数缓存特定参数 的函数调用结果。函数中人工实现制表。
+
+总结：
+	略。
+
+
+chap2  Data Access 数据访问
+	数据存储位置关系到访问速度。
+
+	js数据存储位置
+
+		Literal values 直接量
+			String， number, boolean, object, array, function , regexp, undefined, null
+
+		Variables 变量
+			var 创建，用于存储数据值
+
+		array items 数据项
+			有数字索引，存储一个js数组对象
+
+		Object members 对象成员
+			有字符串索引,存储一个js对象。
+
+		每一种数据存储位置都具有特定的读写操作负担。多数情况下，对一个直接量和一个局部变量访问，性能差异微不足道。
+		其他两个代价要高。
+
+	firefox3 ，优化后，数组项访问速度要快。
+
+	优化代码：
+		管理作用域
+			js 作用域关系着功能，性能。
+			作用域链和标识符解析。
+				函数对象，仅能被js引擎使用的内部属性[[Scope]]-----ECMA-262标准 edition3定义。
+					包含函数被创建的作用域中对象的集合。-- 此集合称为函数的作用域链，决定哪些数据可由函数访问。
+					作用域链中每个对象被称为一个可变对象。这些对象代表此函数的环境中可访问的数据。
+
+					add()函数创建后，其作用域链中填入一个单独可变对象
+						add  defined:  [[Scope]][0]--->GO(this, window, document,add)
+			
+				一个执行期上下文有它自己的作用域链，用于标识符解析。
+				执行期上下文被创建时，其作用域链被初始化，连同运行函数的[[Scope]]属性中所包含的对象。
+
+				值按照在函数中出现的顺序被复制到 运行期上下文 的作用域链中。---->之后，一个Active object 为运行期上下文创建完毕。
+
+				作为函数执行期间的一个可变对象，
+					它包含访问所有局部变量，命名参数，参数集合，和this 的接口。
+
+				之后，该对象被推入作用域前端。
+
+				作用域链被销毁时，AO对象一同销毁。					
+			函数运行过程中，每遇到变量，标识符识别过程要决定从哪里获得或者存储数据。 此过程搜索 执行期上下文的作用域链。搜索过程影响了性能。
+
+
+
+		标识符识别性能
+			在执行期上下文的作用域链中，标识符所处位置越深，其读写速度越慢。所以函数中局部变量访问速度总是最快的，全局变量通常是最慢的。
+
+			变量在执行期上下文 作用域链中的深度。
+
+			采用优化的js引擎的浏览器,如 Safari4，访问域外标识符时没有这种性能损失。
+
+			优化，
+				减少全局变量的访问次数，将全局变量的引用存入局部变量中。
+
+		Scope Chain Augmentation
+			在运行时(人为地)临时改变运行期上下文作用域链
+			with
+				with(document){
+					var div = getElementsByTagName('div')[0];
+				}
+				看似有效率，而实际上却产生了性能问题。
+
+
+				一个新的可变对象将被创建，被插入到作用域链的前端。
+					with variable object。
+					包含指定对象的所有属性。
+
+					访问指定对象属性快，访问局部变量的速度变慢。
+
+			try-catch表达式的 catch 子句
+
+				try块发生错误，程序流程自动转入catch块，
+				且将异常对象推入作用域链前端的一个可变对象中。
+
+				try{
+					methodThatMightCauseAnError();
+				}catch(ex){
+					alert(ex.message); // scope chain is augmented here.
+				}
+				catch clause执行完毕，作用域链返回之前状态。
+
+				使用:
+					确保了解可能发生的错误。
+					不应作为js错误的解决办法。
+					若已知一错误会经常发生，说明应当修正代码的问题。
+					精简代码来最小化catch子句 对性能的影响。
+
+					try{
+						methodThatMightCauseAnError();
+					}catch(ex){
+						handleError(ex);  // delegate 委托/授权 to handler method
+					}
+					handleError() 函数
+						以适当方法自由地处理错误，接收由错误产生的异常对象。
+					只有一条语句，没有局部变量访问，作用域链临时改变就不会影响代码性能。
+
+			动态作用域
+				with，try-catch表达式的catch子句，以及包含()的函数，都被认为的动态作用域。
+				只因代码运行而存在，因此无法通过静态分析---查看代码结构,来确定---是否存在动态域。
+
+				优化的js引擎，如Safari的 Nitro引擎，企图通过分析代码来确定哪些变量应在任意时刻被访问。但涉及 动态作用域时，该优化方法不起作用。
+				此时引擎需要切回慢速的 ，基于哈希表的标识符识别方法，更类似于传统的作用域链搜索。
+
+		Closures,Scope,and Memory
+			闭包允许函数访问局部范围之外的数据。
+
+			function assignEvents() {
+				var id = "0001";
+				document.getElementById("save-btn.onclick = function{
+					saveDocument(id);
+				};
+			}	
+			该事件处理句柄是个闭包，assignEvents()执行时创建， 可访问其内部的id变量。
+			用该方法封闭对id变量的访问，须创建一个特定的作用域链。
+
+			assignEvents()执行期上下文 的作用域链，闭包。
+
+
+			闭包创建：
+				闭包创建时，[[Scope]]属性与执行期context 作用域链(激活对象，全局对象)一起被初始化。
+
+				闭包的[[Scope]]属性包含 与 执行期上下文作用域链 相同的对象引用。产生了副作用。
+					通常，一个fun() 的激活对象与 运行期上下文 一同销毁。
+					涉及闭包时，激活对象无法销毁，因为引用仍然存在于闭包的 [[Scope]]属性中。
+
+					这意味着脚本中，闭包 与非闭包 函数比，需要更多的内存开销。
+
+					IE中，更受关注。可能导致内存泄露。
+
+			闭包执行：
+				闭包执行时，运行期上下文将被创建，其作用域链与[[Scope]]中引用的 两个相同的作用域链同时被初始化， 之后一个新的 激活对象为闭包自身被创建。
+
+			注意：
+				闭包中使用的两个标识符， id 和 saveDocument，存在于作用域链第一个对象之后的 位置上。
+				这是闭包最主要的性能关注点: 经常访问一些范围之外的标识符，每次访问都导致一些性能损失。
+
+			使用闭包：
+				内存和运行速度都值得被关注。
+				域外变量的处理: 常用的域外变量存入局部变量中，减轻对运行速度的影响。
+
+
+		对象成员 object members
+			包括
+				属性和方法。
+			对象的一个命名成员可以包含任何数据类型。
+				当命名成员使用了函数，被称作方法。
+				非函数类型的 数据则被称为 属性。
+
+			访问速度
+				比直接量，局部变量慢
+				？
+
+				******js中对象的性质
+					原型
+						是其他对象的基础，定义并实现了一个新对象所必须具有的成员。
+						而传统面向对象编程中，类，定义了创建新对象的过程。
+
+					一个对象通过内部属性 __proto__ 绑定到它的原型。内置类型的实例，自动拥有一个Object 作为其原型。
+
+					对象可有两种类型的成员
+						实例成员 hasOwnProperty()(存在于自身)
+						原型成员(从对象原型继承)。
+
+				处理对象成员的过程相似于 变量处理
+
+				hasOwnProperty(xx)(对象是否有 xx 实例成员), in(对象是否有某个名称的属性)。
+
+
+				****原型链
+					对象在原型链中所处的深度与访问时间成正比？
+
+					搜索实例成员的过程 比访问直接量或者 局部变量负担更重， 所以增加遍历原型链的 开销正好放大了这种效果。
+
+
+				****Nested Members 嵌套成员
+					window.location.href
+						每遇到"."，js引擎就要在对象成员上执行一次解析过程。
+
+					成员嵌套越深，访问速度越慢。
+					若属性不是对象的实例属性，成员解析还要在每个点上 搜索原型链。
+
+				****缓存对象成员的值。
+					小心地，必要情况下使用对象成员。
+
+					若在函数中需多次读取同一个对象属性，最好存入一个局部变量，避免多余的属性查找 带来性能开销。
+
+					js的命名空间，是经常访问嵌套属性的来源之一。
+
+					减少对象成员的搜索次数。
+					一个函数中，绝不应该对一个对象成员进行超过一次搜索， 除非值有可能改变。
+
+
+chap3 DOM scripting
+	****DOM in the Browser World 浏览器世界中的DOM
+		DOM是独立于语言的，使用XML 和HTML文档操作的 应用程序接口。
+		浏览器中，主要与HTML文档打交道，网页应用中检索XML文档。
+		DOM APIs主要用于访问这些文档中的数据。
+
+		DOM与 语言无关的API，在浏览器中的接口却是以js实现。
+
+		浏览器通常要求DOM 实现和 js实现保持相互独立。
+
+			IE中，
+				被称为JScript的js实现位于库文件 jscript.dll中， DOM实现位于另一个库 mshtml.dll(内部代号Trident)。
+			这种分离技术允许其他技术和语言，如，VBScript。
+				受益于Trident所提供的DOM 功能和渲染功能。
+
+			Safari:
+				使用Webkit的 webcore处理 DOM和渲染， 有一个分离的 JavaScriptCore引擎。(新版绰号 SquirrelFish)。
+
+			Google Chrome：
+				Webkit 的 webcore库渲染页面，
+				实现了自己的js引擎 V8.
+			Firefox：
+				js实现采用 
+					monkey系列。
+				和 Gecko渲染引擎分离。 
+
+
+	****InHerently slow
+		两个独立的部分以功能接口连接就会带来性能损耗。
+		DOM 岛   收费桥(开销)   ECMAScript 岛
+
+		操作DOM次数越多，开销越大。
+
+
+	****DOM 访问和Modification
+		修改元素的开销更多，因为经常导致浏览器重新计算页面的 几何变化。 重新计算尺寸。
+
+		访问或修改元素最坏情况：
+			使用循环执行此操作。特别是在HTML 集合中使用循环。
+
+		function innerHTML(){
+			for(var count = 0; count < 15000; count ++){
+				document.getElementById('gaibian').innerHTML += 'a';
+			}
+		}
+		新版本。略
+
+		****经验
+			测试性能结果表明，访问DOM越多，代码执行速度就越慢。
+			轻轻地触摸DOM，并尽量保持在ECMAScript 岛内。
+
+
+	****innerHTML 与 DOM方法比较
+		更新页面内容，使用虽不标准但是被良好支持的innerHTML属性，还是纯DOM方法？
+		性能上差别不大，所有浏览器中innerHTML更快些，除了 。。。
+
+		若在一个性能苛刻的操作中更新大块 HTML页面， innerHTML大多数浏览器中执行更快。
+
+		****根据代码可读性，可维护性，团队习惯，代码风格来决定用哪个。
+
+
+		****节点克隆
+			使用DOM方法更新页面内容另一个途径，克隆已有的元素。
+			cloneNode(true) --clone All
+
+	****HTML Collection HTML集合
+		……是用于存放DOM节点 引用的类数组对象。
+
+
+		HTML集合----"存在性"
+			是 一个 虚拟存在，意味着当底层文档更新时，它们将自动更新。 
+
+		低效率
+			HTML集合 实际上是查询文档，当更新信息时，每次都重复执行这种查询操作。
+			如，读取集合元素的数目。
+
+		昂贵的集合
+			循环终止条件，在每次迭代中都会增加，它反映出底层文档的当前状态。
+
+			访问集合的length，比 arr.length更慢，因为每次都重新运行查询过程。
+
+			例子：
+				集合copy到数组。
+
+			每次迭代访问集合的length属性时，它导致集合器更新。在所有浏览器上都会产生明显的性能损失。
+
+			将集合的length属性 ，缓存。
+			评估特定条件下使用如此一个数组副本是否有益，copy到数组中。
+
+			function toArray(colloction){
+				var arr = [];
+				var len = collection.length;
+				for(var i = len; i --; ){
+					arr[i] = collection[len-i];
+				}
+			}
+
+		访问集合元素时用局部变量缓存
+			对于任何类型的DOM 访问，若访问次数超过一次，那么应该缓存到局部变量。
+
+			function collectionNodesLocal(){
+				var div = document.getElementsByTagName('div')[0],
+					len = div.length,
+					elem = null,
+					name ='';
+				for(var i = 0 ; i < len; i ++){
+					elem = div[i];
+					name = elem.nodeName;
+				}
+				return name;
+			}
+
+		****Walking the DOM
+			DOM API提供了多种途径访问 整个文档结构的特定部分。
+
+			抓取 DOM
+				nextSibling 性能更好。
+
+
+			元素节点
+				不自己进行过滤。
+
+				childElementCount
+				IE6，7，8只支持了 children。
+
+			选择器 API
+				var elems = document.querySelectorAll('#menu a');
+
+					返回一个NodeList--由符合条件的节点构成 的类数组对象。返回的节点不呈现文档的存在性结构。
+				var elements = document.getElementById('menu').getElementsByTagName('a');
+					此时elements 将是一个 HTML 集合。
+					若要和 querySelectorAll()返回同样类型的值，需要 copy到一个数组中。
+
+				联合查询
+					var  elems = document.querySelectorAll('div.warning,div.notice');
+					一次性获得两类节点。
+
+					若使用js DOM进行迭代操作会很慢。
+
+				querySelector()
+					返回符合条件的第一个节点。
+
+				都是DOM节点的属性。
+
+		****Repaints and Reflows
+			重绘和重排版。
+				批量修改风格，
+				离线操作DOM树，
+				缓存并减少对布局信息的访问。
+
+
+			文档解析
+				DOM tree 表示页面结构
+				render tree 表示DOM 节点如何显示。
+
+			渲染树，
+				为每个需要显示的DOM树 节点存放至少一个节点。
+
+				节点称为框，盒，将页面元素看作是一个具有填充，边距，边框 和位置的盒。
+
+				当DOM 改变影响到元素的几何属性--，浏览器需要重新计算元素的几何属性。
+				浏览器使渲染树上 受影响的部分失效，然后重构render tree。
+
+			重排版，
+				文档的布局改变，几何改变时。
+
+				内容改变引起重排？
+
+				计算量和每次重排有关。
+				优化：
+					浏览器通过队列化修改 和批量运行的方法，减少重排版次数，优化重排版过程。
+
+					但经常不由自主地 强迫队列刷新且 要求计划改变的部分立刻应用。
+
+						如：
+						获取布局信息的操作。
+						浏览器have to 运行渲染队列中待改变的项目并重新排版以返回正确的值。
+				
+					延迟访问布局信息
+						改变风格时，最好不 获取布局信息。任何一个访问都将刷新渲染队列。
+
+					最小化重绘和重排版
+
+						将多个DOM　和风格改变　合并到一个批次中一次性执行。
+						改变风格
+							elem.style.cssText = 'border-left: 1px; border-right: 2px;
+							padding: 5px;';
+
+							elem.style.cssText += 'border-left: 1px; border-right: 2px;
+							padding: 5px;';
+
+							;修改CSS 的类名称，而不是 修改行内style。
+								适用于风格不依赖 运行逻辑，不需要计算的情况。
+								更易于维护，有助于脚本免除显示代码。
+
+						批量修改DOM
+							需要对DOM 元素进行多次修改时，
+							1.从文档流中拿出元素
+							2.对其应用多重改变
+							3.将元素带回文档
+
+							此过程引发两次重排版。
+
+							将DOM 从文档中摘除：
+								隐藏元素，修改它，最后显示；
+								
+								使用DocumentFragment,在已存DOM外创建子树，之后copy到文档中；
+								
+								原始元素copy到一个脱离文档的节点中，修改副本，覆盖原始元素。
+
+						****例子
+							给<ul>添加<li>
+							display:none; 临时从文档上移除<ul>元素，之后再恢复它。
+
+							文档之外
+							DocumentFragment，轻量级的document对象。
+							用于更新、移动节点。
+							document.getElementByIe('mylist').appendChild(fragment);
+								引发一次重排，支触发存在DOM 一次。
+
+							创建副本。
+
+						使用文档片段，最少数量的DOM 操作和重排。
+
+
+					缓存布局信息
+						尽量减少对布局信息的查询，查询时，将其赋值给局部变量。
+
+						例子：
+							动画循环中，使用 局部变量而不再查询偏移量。
+
+					将元素提出动画流
+						显示、隐藏部分页面构成，展开/折叠动画是一种常见的交互模式。
+						通常包括了区域扩大的几何动画，将页面其他部分推向下方。
+
+						重排版有时只影响渲染树的一小部分，也可影响很大一部分。
+
+						避免对大部分页面重排
+							1.使用绝对坐标定位页面动画的元素，使其位于页面布局流之外。
+							2.启动元素动画，扩大时，临时覆盖部分页面。 这是个重绘过程，但只影响页面的一小部分。
+							3.动画结束，重新定位，从而只一次下一文档其他元素的位置。
+
+						IE和 :hover
+							IE7+ 
+							对很长的列表，避免使用:hover 带来的效果。	
+
+
+					事件托管
+						最小化事件句柄数量。
+						每个元素有一个或多个事件句柄与之挂接，可能会影响性能。
+
+						处理DOM　事件
+
+							Capturing -- At target -- Bubbling
+
+						例子：
+							document.getElementById('menu').onclick = function(e){
+
+								e = e || window.event;
+								var target = e.target || e.srcElement,
+									pageid,
+									hrefparts;
+
+								// 函数返回如果 不是点击的链接
+								if(target.nodeName !== 'A') {
+									return;
+								}
+
+								// 从link中 取到 page ID
+
+								hrefparts = target.href.split('/');
+								pageid = hrefparts[hrefparts.length - 1];
+								pageid = pageid.replace('.html','');
+
+								// 更新部分页面
+								ajaxRequest('xhr.php?page=' + id, updatePageContents);
+
+								// 取消 事件的默认操作，阻止冒泡。 
+
+								if(typeof e.preventDefault === 'function'){
+									e.preventDefault();
+									e.stopPropagation();
+								}else {
+									e.returnValue = false;
+									e.cancelBubble = true;
+								}
+							}
+
+						监听事件，查看是否从感兴趣的元素中发出。
+
+
+
+chap6  响应接口
+	确保网页应用程序的响应速度也是一个重要的性能关注点。
+
+	浏览器UI线程
+		js和UI 更新共享的进程，称为 浏览器UI "线程"。
+
+		围绕一个队列系统工作，任务被保存到队列最后弄过，直到进程空闲。
+
+		空闲：
+			队列的下一个任务将被检索和运行。
+			任务：
+				不是 js，就是执行UI更新。。
+		该进程， 每次输入均导致 一个或多个任务被加入。
+
+		例子：
+			按钮点击，页面显示文字。
+
+			UI 线程
+				UI updata -- js. handleClick()---UI updata
+			UI Queue
+
+				task1,被检查并运行 以更新按钮外观。
+				task2, 被检查和运行。
+
+		若用户在任务运行时与页面交互，不仅没有及时的UI更新，且不会有新的UI更新任务被创建和加入队列。
+		事实上，大多浏览器在js运行时，停止UI线程队列中的任务。 js任务务必尽快结束，以免对用户体验造成不良影响。
+
+	浏览器限制
+		Browser limit
+		在js运行时间上采取了限制。必要
+			确保恶意代码不能通过无尽的密集操作锁定用户浏览器或计算机。			
+
+			调用栈尺寸限制：
+			长时间脚本限制：
+				有事件被称作 长运行脚本定时器，是空脚本定时器。
+				基本思想是浏览器记录一个脚本的运行时间。
+
+			测量脚本的运行时间：
+				统计 自脚本开始运行以来执行过多少语句。此方法意味着脚本在不同的机器上可能会运行不同的时间长度，可用内存和 CPU速度可以影响一条独立语句 运行所花费的事件。
+				统计脚本运行的总时间。 特定时间内可运行的脚本数量也因用户机器性能差异而不同， 但脚本总是停在固定的时间上。
+
+			每个浏览器对长时间运行脚本检查方法：
+				IE4，设置默认限制 5百万条语句，限制存放在 windows注册表中。
+				Firefox 默认限制10s。限制存放在浏览器的配置设置中。 about:config。
+
+				Safari 默认了5s。设置不能改，但可以关闭此定时。Develop菜单可设置。
+
+				Chrome，通用崩溃检测系统来处理此类实例。
+				Opera，没长 运行脚本限制。Opera的结构问题。
+
+
+
+			浏览器的长时间脚本限制被触发时：
+				有一个对话框显示给用户。
+
+				脚本只是用太长时间来完成任务。
+				还表明用户浏览器 在 js代码继续运行状态下无法响应输入。
+
+				开发者无法检测，改变长运行脚本对话框。
+
+	多久算太久
+		浏览器允许脚本继续运行直至某个固定的时间，
+		js代码持续运行的总时间 应当远小于浏览器实施的限制，以创建良好体验。
+
+		Brendan Eich 
+			js运行了整整几秒钟可能是做错了什么。
+
+		一个单一的js操作应当使用的总时间 max 100ms。
+
+		由于UI 在js运行时无法更新，若运行时间 > 100ms， 用户不能感受对接口的控制。
+
+
+		有的浏览器在运行时，不将UI更新放入队列，
+			结果是无响应的UI，表现为 hang挂起 或 freeze冻结
+
+		现象：
+			当一个脚本运行时点击一个按钮，将看不到它被按下的 UI 更新，即使其 onclick处理函数被执行。
+		原因：
+
+			脚本执行时，UI不随用户交互而更新，此时js任务 作为用户交互的结果  被创建放入队列， 然后当原始js 任务完成时队列中的 任务被执行。 
+			用户交互导致的 UI 更新被自动跳过，因为优先考虑的是页面上的动态部分。
+
+		尽管浏览器 尝试 在这些情况下做些 符合逻辑的事， 但所有这些行为导致 了间断的用户体验。
+		因此， 最好通过限制 js任务在 100ms或 更少事件内完成，避免此类情况出现。
+
+
+	Yielding with Timers 用定时器让出时间片
+		尽管尽了最大努力，但还是有些js任务因为复杂性原因不能用 <100 或更少 时间内完成。
+		这种情况下， 理想方法是 让出对 UI线程的控制，使UI 更新可以进行。
+
+
+
+		定时器基础。
+			调用setTimeout() setInterval() 告诉js引擎，等待一定时间后，将任务添加到UI 队列中。
+
+			第二参数指出：
+				何时将新的js 任务 添加到UI 队列中。
+
+			第二参数的，时间从调用定时器时计算。此时刻为n， 则运行 定时器代码的 js任务 在 n+time 的时刻 加入 UI 队列。
+
+			****任何情况下， 创建一个定时器造成 UI线程暂定，如同 它从一个任务切换到 下一个任务。
+			so,定时器代码复位所有相关的浏览器限制。
+			调用栈也在定时器代码中复位为零。
+
+			此特性使得定时器称为长时间运行js代码，理想的跨浏览器解决方案。
+
+		定时器精度	
+			浏览器试图尽可能准确，但通常会发生几 ms 滑移。
+			最小定时器延时
+				windows系统上定时器分辨率 15ms，也就是，一个值为 15ms的定时器延时，将根据最后一次系统时间刷新而 转换为 0或 15.
+				建议值： 25ms
+			此最小定时器延时，也有助于避免其他 浏览器和 其他 os上的定时器分辨率问题。
+
+		数组处理中使用定时器
+			循环优化后，还是不能缩减足够的运行时间。
+			将循环工作分解到定时器序列中。
+
+			是否取代循环
+				处理过程必须是同步处理？
+				数据按顺序处理？
+
+			一种基本异步代码模式
+				var todo = items.concat();
+				setTimeout(function(){
+
+					process(todo.shift());
+
+					// 
+					if(todo.length > 0) {
+						setTimeout(auguments.callee,25);
+					}else {
+						callback(items);
+					}
+				},25);
+
+
+				function processArray(items, process, callback){
+					var todo = items.concat();
+					setTimeout(function(){
+
+						process(todo.shift());
+
+						// 
+						if(todo.length > 0) {
+							setTimeout(auguments.callee,25);
+						}else {
+							callback(items);
+						}
+					},25);
+				}
+
+
+
+		分解任务
+			一个函数运行时间太长，那么查看它是否可分解成一系列能够短时间完成的 较小的函数。
+
+			某些函数可基于函数调用进行拆分。
+
+			如
+				function saveDocument(id){
+
+					// save the document
+					openDocument(id);
+					writeText(id);
+					closeDocument(id);
+
+					// update the UI to indicate 暗示 success
+					updateUI(id);
+				}
+
+				可将每个函数 都放入一个 数组，
+					function saveDocument(id){
+						var tasks = [openDocument, writeText, closeDocument,updateUI];
+						setTimeout(function(){
+
+							// 执行下一个任务
+							var task = tasks.shift();
+							task(id);
+
+							// 查看是否有更多任务
+							if(tasks.length > 0){
+								setTimeout(arguments.callee, 25);
+							}
+						},25);
+					}
+					该版本将每个方法放入任务数组。 使用数组处理模式。
+
+库-------------------封装重用
+						function multistep(steps,args,callback){
+							var tasks = steps.concat();  // 克隆数组对象
+
+							setTimeout(function(){
+
+								// 执行下一个任务
+
+								var task = task.shift();
+								task.apply(null, args||[]);
+
+								if(tasks.length >0){
+									setTimeout(arguments.callee,25);
+								}else {
+									callback();
+								}
+							},25);
+						}
+
+				任务可以异步处理而不影响用户体验或导致依赖代码出错。
+
+			****限时运行代码
+					批处理。
+
+					js 可连续运行时间最大 100ms，建议50ms。 只是为了确保代码永远不会影响用户体验。
+
+					原生的Date对象 跟踪代码的运行时间。					
+						新创建的Date对象以当前系统时间初始化。
+
+
+
+					function timedProcessArray(items, process, callback){
+						var todo = items.concat();
+						setTimeout(function(){
+							var start =+ new Date();
+
+								do{
+									process(todo.shift());
+								}while(todo.length>0 && (+new Date() - start < 50));
+
+
+								if(todo.length>0){
+									setTimeout(arguments.callee, 25);
+								}else {
+									callback(items);
+								}
+							},25);
+					}
+
+				定时任务的作用,避免将任务分解成过于碎小的片段。
+
+			****定时器与性能
+
+				使用定时器序列，没过度使用定时器带来的性能问题。
+
+				在网页应用中 限制 高频率重复定时器的数量。多个重复的定时器被同时创建会产生性能问题。
+
+				创建单独的重复定时器，每次执行多个操作。
+
+
+	Web workers 网页工人线程？		
+			js诞生以来，没办法在浏览器 UI线程之外运行代码。
+
+			概览
+				web workers API 改变了该状况：
+					它引入一个接口，使代码运行而不占用 浏览器 UI线程的事件。
+
+				对网页应用来说是个潜在的巨大性能提升，新的工人线程在自己的线程中运行js。
+				这意味着，工人线程中的代码运行 不仅不会影响浏览器UI，且不会影响其他工人线程中运行的代码。
+
+
+			工人线程运行环境
+
+				web workers 不绑定UI线程。所以不能访问更多浏览器资源。
+				js和 UI 更新共享同一进程 部分原因： 他们互访频繁。
+
+				每个工人线程都有自己的全局运行环境，只有js特性的一个子集可用。
+
+				组成：
+					navigator object.包含 appName, appVersion, userAgent, platform
+					
+					a location object。 和window中 一样，所有属性都只读。
+
+					self对象指向全局工人线程对象。
+
+					importScripts()
+						使线程可加载外部js文件
+					
+					所有ECMAScript对象。
+					
+					XMLHttpRequest构造器
+					
+					定时器方法。
+					close()可立即停止工人线程。
+
+			web workers有不同的全局运行环境
+				不能在js代码中创建。
+
+				创建：
+					var worker = new Worker("code.js");
+					执行后，将为 指定文件创建一个新线程和 一个新的 worker 环境。文件异步下载，下载并运行完才 启动 worker线程。
+
+				交互Woker communication
+					工人线程和网页代码通过事件接口进行交互。
+
+						worker.onmessage = function(event){
+							alert(event.data);
+						};
+						worker.postMessage("Nicholas");
+
+					返回消息给页面
+						woker中：
+							self.onmessage = function(event){
+								self.postMessage("Hello, " + event.data + "!");
+							}
+
+					传递的数据类型
+						原始值，Object，Array的实例
+						有效数据被序列化，传入或传出 the worker，然后反序列化。
+
+						看上去对象直接传了过去，实例其实是同一个数据完全独立的表述。
+
+					加载外部文件
+						importScripts()，接收一个或多个 URL参数。
+						工人线程以阻塞方式调用该方法。
+
+
+				实际用途 Practical Uses
+						适合于纯数据的，或与浏览器UI没关系的长运行脚本。
+
+						例子：
+							很大的JSON 字符串需要解析
+
+						在网页的应用
+							var worker = new Worker("jsonparser.js");
+
+							worker.onmessage = function(event){
+								var jsonData = event.data;
+
+								evaluateData(jsonData);
+							};
+
+							// 传递字符串 JOSN去解析。
+							worker.postMessage(jsonText);
+
+						worker 线程代码
+							self.onmessage = function(event){
+								var jsonText = event.data;
+
+								var jsonData = JSON.parse(jsonText);
+
+								self.postMessage(jsonData);
+							}
+
+
+					其他受益于工人线程的任务
+						编/ 解码一个大字符串
+						复杂数学运算(包括图像/视频处理)
+						大数组排序。
+
+				任何超过100ms的 处理，都应当考虑 a worker solution 是否比基于定时器的方案更合适。
+
+
+chap7 Asynchronous Javascript and XML
+	通过选择正确的传输技术和最有效的数据格式， 可显著改善用户与网站之间的互动。
+
+****数据传输。
+		与服务器通讯，不重载当前页面
+
+		请求数据。
+			XHR
+			动态脚本标签插入 JSONP
+			iframes
+			Comet
+			Multipart XHR
+
+
+		XMLHttpRequest
+
+			例子：
+				var url = "/data.php";
+				var params = [
+					'id=12138',
+					'limit=20'
+				];
+
+				var req = new XMLHttpRequest();
+
+				req.onreadystatechange = function(){
+					if(req.readyState === 4){
+						var responseHeaders = req.getAllResponseHeaders();
+						var data = req.responseText;
+
+						// 处理data
+					}
+				};
+
+				req.open('GET',url + "?" + params.join('&'),true);
+				req.setRequestHeader('X-Requested-With','XMLHttpRequest'); 
+				req.send(null);
+
+
+			req.onreadystatechange = function(){
+				if(req.readyState ===3 ){
+					// Some, data has been received
+					// 此时正在与服务器交互，响应报文还在传输中。这就是所谓的"流"。
+					var dataSoFar = req.responseText;
+
+					...
+				}
+			}
+
+			POST , GET
+				GET 请求不改变服务器状态只是，取回数据， 幂等动作。
+
+				被缓存起来。
+
+				POST,
+					URL和参数的长度超过了2048字符？IE限制了URL的长度。
+
+		动态脚本插入
+			不能通过请求发送信息头。
+			参数只通过GET方法传递，不能用POST。
+			不能设置请求的超时或重试。
+
+			所有数据返回后才可访问。
+
+			访问响应报文的限制。
+
+
+			var script = document.createElement('script');
+			script.src = 'url';
+			document.getElementsByTagName('head')[0].appendChild(script);
+
+			function jsonCallback(jsonString){
+				var data = ('(' + jsonString + ')');
+
+				// process the data...
+			}
+
+			响应结果是运行 js。
+
+			小心使用该技术 从不能直接控制的服务器上请求数据。
+			js 没有 权限或访问控制的概念。
+
+
+		多部分XHR 
+			一个HTTP 请求从服务器端获取多个资源。
+
+			var req = new XMLHttpRequest();
+			req.open('GET','rollup_images.php', true);
+			req.onreadystatechange = function(){
+				if(req.readyState === 4) {
+					splitImages(req.responseText);
+				}
+			};
+			req.send(null);
+
+
+			服务器端读取图片，并将其转换为字符串
+			**php
+				$images = array('kitten.jpg', 'sunset.jpg', 'baby.jpg');
+
+				foreach($images as $image){
+					$image_fh = fopen($image,'r');
+					$image_data = fread($image_fh, filesize($image));
+					fclose($image_fh);
+
+					$payloads[] = base64_encode($image_data);
+				}
+
+				$newline = char(1);
+				echo implode($newline, $payloads);
+
+
+			function splitImages(imageString){
+				var imageData = imageString.split("\u0001");
+				var imageElem;
+				for(var i = 0, len = imageData.length; i < len; i++){
+					imageElem = document.createElement('img');
+					imageElem.src = 'data:image/jpeg;base64,' + imageData[i];
+					document.getElementById('container').appendChild(imageElem);
+				}
+
+			}
+
+
+			function handleImageData(data, mimeType){
+				var img = document.createElement('img');
+				img.src = 'data:' + mimeType + ';base64' + data;
+				return img;
+			}
+
+			function handleCSS(data) {
+				var style = document.createElement('style');
+				style.type = 'text/css';
+				var node = document.createTextNode(data);
+				style.appendChild(node);
+				document.getElementsByTagName('head')[0].appendChild(style);
+			}
+
+			function handleJavaScript(data) {
+				(data);
+			}
+
+			响应：
+				var req = new XMLHttpRequest();
+				var getLatestPacketInterval, lastLength = 0;
+
+				req.open('GET', 'rollup_images.php', true);
+				req.onreadystatechange = readyStateHandler;
+				req.send(null);
+
+				function readyStateHandler(){
+					if(req.readyState === 3 && getLatestPacketInterval === null){
+
+						// start polling
+						getLatestPacketInterval = window.setInterval(function(){
+							getLatestPacket();
+						},25);
+					}
+
+					if(readyState === 4){
+
+						//stop polling
+						clearInterval(getLatestPacketInterval);
+
+						// Get the last packet
+
+						getLatestPacket()；
+					}
+				}
+
+				function getLatestPacket() {
+					var length = req.responseText.length;
+					var packet = req.responseText.subString(lastLength, length);
+					processPacket(packet);
+
+					lastLength = length;
+				}
+
+				readyState 3 第一次发出时，启动了一个定时器，每隔15ms，检查一次响应报文中的新数据。
+				数据片段被收集起来直到发现一个分隔符， 之后一切作为一个完成的资源处理。
+
+				缺点：
+					mxhr 获得的资源不能被浏览器缓存，因为 整批资源是作为一个 长字符串传输的，之后由 js代码分隔。
+
+					没办法用程序 将文件放入浏览器缓存中，所以该方法获取的资源无法存放在那里。
+
+
+					2.老版本 IE 不支持 readyState 3 或 data: URL。
+
+				但某些情况下MXHR仍然提高了整体页面性能
+					网页包含 许多其他地方不会用到的资源(不需要缓存)，尤其图片；
+				
+					网站为 每个页面使用了 独一无二 的打包的 js或css文件 以减少HTTP请求，
+					因为他们对 每个页面来说 独一，
+					所以不需要从缓存中 读取，除非重新载入特定页面。
+
+				HTTP 请求是 ajax中 最极端的瓶颈之一, 减少需求数量 对整个页面性能有很大影响。尤其当将100 个图片 请求转化为 一个 mxhr 请求时。
+
+
+
+****发送数据
+	用户的非私有信息以备 日后分析；
+	捕获所有脚本错误，将有关细节发送给服务器进行 记录和提示。
+
+	XMLHttpRequest
+
+		当向服务器发送 数据量超过浏览器的最大URL 长度时
+			xhr 的 post方式
+
+		var url = "/data.php";
+		var params = [
+			'id=12138',
+			'limit = 20'
+		];
+
+		var req = new XMLHttpRequest();
+		req.onerror = funciton() {
+			//Error
+		};
+
+		req.onreadystatechange = function(){
+			if(readyState === 4) {
+				// success
+			}
+		};
+
+		req.open('POST', url, true);
+		req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		req.setRequestHeader('Content-Length', parms.length);
+		req.send(params.join('&'));
+
+		例子中， 失败的情况下， 不做任何动作，当我们 用 XHR 捕获 用户统计信息时， 这么做没什么问题。
+
+		重要数据 希望重试操作。
+
+		function xhrPost(url, params, callback) {
+			var req = new XMLHttpRequest();
+			req.onerror = function() {
+				setTimeout(function(){
+					xhrPost(url, params, callback);
+				},1000);
+			};
+
+			req.onreadystatechange = function() {
+				if(req.readyState === 4){	
+					if(callback && typeof callback === 'function') {
+						callback();
+					}
+				}
+			};
+
+			req.open('POST', url);
+			req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			req.setRequestHeader('Content-Length',params.length);
+			req.send(params.join('&'));
+		}
+
+		用XHR 将数据发 回服务器时， 它比使用 GET要快。
+		是因为，对于少量数据， 一个GET 请求，要占用一个单独的包。
+
+		POST，至少发送两个数据包， 信息头， 另一个用于POST体。 
+
+		POST ，不关心额外数据包的数量，且 IE 的URL长度限制， 不能使用过长的GET 请求。
+
+	Beacons 灯标
+		和动态脚本标签插入非常类似。 
+		js用于创建一个 新的image对象， src设为服务器上的 一个脚本文件的URL。 
+		该URL 包含 我们打算透过 GET 格式传回的键值对数据。
+
+		注：没创建 img元素，或将其插入 到DOM 中。
+
+		var url = '/status_tracker.php';
+		var params = [
+			'step=2',
+			'time=一个时间戳'
+		];
+
+		(new Image()).src = url + "?" + params.join('&');
+
+		服务器取得数据并保存，不返回信息。
+
+		简单的image beacons 意味着使用受限。
+			不能发送POST数据，所以被URL 长度限制在相当小  的字符数量 上。
+			有限的方法接收返回数据，
+				监听Image对象 的load事件，获知服务器端是否成功接收了数据。
+				检查服务器返回图片的宽度，高度。 如 宽度1 -成功，2- 重试。
+
+		服务端：
+			若不需要为此响应返回数据， 应当返回一个 204 No Content 响应代码(无消息正文)。 阻止客户端继续等待。
+
+		var url = '/status_tracker.php';
+		var params = [
+			'step=2',
+			'time=一个时间戳'
+		];
+
+		var beacon = new Image();
+		beacon.src = url + "?" + params.join('&');
+		beacon.onload = function() {
+			if(this.width ===1 ){
+				// success;
+			}
+
+			else if(this.width === 2){
+				// 失败： 创建另一个 beacon ， 重试
+			}
+		};
+
+		beacon.onerror = function() {
+			// Error, wait a bit , then create another beacon and try again。
+		};
+
+		灯塔是向服务器 会送数据最快和最有效的方法。
+			服务器不需要 发回任何响应正文，所以不必担心客户端下载数据。
+			缺点：  接收到的响应类型是受限 的。
+			需要返回大量数据，使用XHR。
+
+
+数据格式
+	考虑数据传输技术时，需要考虑： 功能集， 兼容性， 性能， 方向。
+
+	数据格式， 比较的尺度是  速度。
+
+	例子：
+		创建了一个窗口小部件用于搜索用户信息。
+
+		在服务器端格式化一个用户列表，将其返回给浏览器，将列表解析成 js数据格式， 搜索特定字符串。
+
+		比较：
+			列表的文件大小，
+			解析速度，
+			服务器上构造他们的难易程度。
+
+
+
+		XML
+			XML编码的用户列表：略。
+				<?xml version = "1.0" encoding="UTF-8" ?>
+				<users total="4"></users>
+
+			与其他格式比， 
+				XML冗长，每个离散的数据片段需要大量结构，有效数据的比例非常低。
+				XML语法有轻微模糊。
+					当数据结构编码为 XML 后，将对象参数放在 哪儿? 
+					标签命名?
+				语法解析：
+					需要先知道 XML 响应报文的布局。
+
+					解析XML 占用了 相当精力， 除了要提前了解 详细结构，还需要 解开结构且将其 写入 js对象中。
+					不是易事，不能自动完成。
+
+					读值前，需要检查每个标签以保证其存在。 这依赖于XML的结构。
+
+					另一个有效的方式。
+						将值存为 标签的属性。
+
+						此时解析XML 响应报文。
+
+						function parseXML(responseXML) {
+							var users = [];
+							var userNodes = responseXML.getElementsByTagName('users');
+
+							for(var i = 0, len = userNodes.length; i < len; i ++) {
+								users[i]  ={
+									id: userNodes[i].getAttribute('id'),
+									username: userNodes[i].getAttribute('username'),
+									realname: userNodes[i].getAttribute('realname'),
+									email: userNodes[i].getAttribute('email')
+								};
+							}
+							return users;
+						}
+
+
+		XPath
+			响应报文大小和解析时间：
+				XML格式，使用属性存储。文件尺寸，解析时间，因为在XML结构上访问 DOM不用太多次数。
+
+			Xpath可改善解析时间，代价是编写并维护三个代码分支，以支持不同的浏览器实现。
+
+		JSON
+			Douglas Crockford
+			一个轻量级并易于解析的数据格式。
+				数组，对象的字面量写法编写。
+
+			这意味着，若其被包装 在一个回调函数中， JSON数据可成为 能够运行的 js代码。
+
+			js中解析JSON：使用()
+
+			function parseJSON(responseText) {
+				return ('(' + responseText + ')');
+			}
+			提炼成简单版本， 
+				属性名简写：可读性变差。
+				去掉属性名，使用数组。
+
+				将相同的数据以更少的结构和更小的 尺寸传送。
+					尺寸有标准格式的一半？
+
+			解析：
+				function parseJSON(responseText) {
+					var users = [];
+					var usersArray = ('(' + responseText + ')');
+
+					for(var i = 0, len = usersArray.length; i < len; i++) {
+						users[i] = {
+							id: usersArray[i][0],
+							username: usersArray[i][1],
+							realname: usersArray[i][2],
+							email: usersArray[i][3]
+						};
+					}
+					return users;
+				}
+
+			3种格式的JSON 的性能。XHR传输。
+				数组形式的JSON，尺寸最小， 下载最快， 平均解析时间最短。
+
+
+		JSON-P
+
+			事实上JSON 可被本地执行有几个 重要的性能影响。
+
+			使用xhr时， 
+				JSON数据作为 一个字符串返回， ()转换为本地对象。
+			使用动态 脚本插入时，
+				JSON数据被视为另一个js文件并作为本地码执行。
+
+				所以需要，数据被包装在 回调函数中， 这就是 "JSON 填充"JSONP 
+				。
+
+			格式：
+				parseJSON([
+					{"id":1,"username": "alice","realname":" Alice Smith", "email":"123@qq.com"},
+					{"id":1,"username": "alice","realname":" Alice Smith", "email":"123@qq.com"},
+					{"id":1,"username": "alice","realname":" Alice Smith", "email":"123@qq.com"},
+					{"id":1,"username": "alice","realname":" Alice Smith", "email":"123@qq.com"},
+				]);
+
+			文件尺寸
+				JSONP 因为回调函数的原因略微增加了文件尺寸。但与其 解析性能的改进 相比微不足道。
+				数据作为本地js处理， 解析速度像本地一样快。
+
+			3中JSON数据的比较。
+				文件大小和 下载时间 与 XHR 测试基本相同。
+				解析 时间几乎快了10 倍。
+
+				标准JSON-P 的解析时间为0， 因为已经是本地格式，
+				简化版，数组版，只是需要转换成标准JSON-P的格式。
+
+重要的点：	使用数组的JSON-P， 比使用XHR的JSON快。 这种差异随着列表尺寸的增大而增大。
+
+		避免使用JSON-P：
+			JSONP必须是可执行的js，使用动态脚本注入，可在任何网站被任何人调用。
+			另一个角度： JSON 运行前不是有效的js，使用xhr 时只被当做字符串获取。
+			不将任何敏感的数据编码 为JSON-P。
+
+		应该用JSON吗？
+			与XML相比，JSON的优势
+				在线传输相对较小，解析快。
+				总结构报文中，结构占用空间更小，数据的空间更多。 特别是数据包含数组 而不是对象时。
+				JSON与大多数服务器端语言的 编解码库 之间有很好的互操作性。
+
+				在客户端的解析工作微不足道。
+
+			JSON是高性能Ajax 的基石。特别是使用动态 脚本标签插入时。
+
+
+		HTML
+			通常所请求的数据以HTML 返回并显示在页面上。js能够比较快地将一个大数据结构转化为简单的HTML，服务器更快。
+			一种技术考虑是在 服务器端构建整个HTML，js只是下载。
+
+			技术问题：
+				HTML是一详细的数据格式，比实际数据占用更多空间。
+
+				当客户端CPU比  带宽 更受限时 才使用此技术。
+
+				极端情况：
+					一种格式 包含最少数量的结构，需要在客户端解析数据。
+					下载时块，但 需要更多的CPU 事件转化成HTML 以显示。
+
+					在服务器创建HTML， 传输数据量大，下载时间长。
+
+			使用HTML编码用户列表的性能数据：
+				与其他的差别：
+					解析指  将HTML 插入DOM 的操作。
+
+
+		自定义格式
+			最理想的格式，只包含必要的结构，使你能分解出每个字段。
+			自定义一种格式，用分隔符将其连结。
+
+			分隔符基本上创建了一个数据数组。
+			用不同的分隔符，创建多维数组。
+
+			格式简洁，分隔符分隔，与其他格式比， 数据/结构比例明显提高。
+
+			优势：
+				下载迅速，易于解析。
+
+
+			function parseCustomFormat(responseText) {
+				var users = [];
+				var usersEncoded = responseText.split(';');
+				var userArray;
+
+				for(var i =0, len = usersEncoded.length; i < len; i ++) {
+					users[i] = {
+						id: userArray[0],
+						username: userArray[1],
+						realname: userArray[2],
+						email: userArray[3]
+					};
+				}
+				return users;
+			}
+
+
+			分隔符，
+			split(), 参数可以是 字符串，正则表达式
+
+			性能数据：
+				xhr方式
+				动态脚本标签注入。
+
+			最快的传输格式。
+
+	数据格式总结：
+		总的，越轻量级的格式越好，最好是 JSON 和 字符分隔的自定义格式。若数据集很大或解析时间成问题，使用其中之一。
+
+		JSON-P数据，动态脚本标签插入法获取，将数据视为可运行的 js而不是字符串。
+		能跨域使用，但不应涉及敏感数据。
+
+
+		字符串的自定义格式，使用XHR 或动态脚本标签插入技术提取， 使用 split()解析。
+
+
+ajax性能向导
+	缓存数据
+		服务器端，设置HTTP头，确保返回报文被缓存在浏览器。
+		客户端，于本地缓存已获取的数据，不多次请求同一个数据。
+
+
+	1.设置HTTP头
+		依赖浏览器处理缓存。
+		若希望被缓存，必须在发起请求时使用GET方法。
+
+		响应报文中：
+			Expires,告诉浏览器应当缓存响应报文多长时间。
+			对图片和静态数据集， 可设置长时间。
+
+		Expires头 是确保浏览器缓存ajax 响应报文最简单的方法。
+
+	2.本地存储数据
+
+		var localCache = {};
+
+		function xhrRequest(url, callback) {
+
+			if(localCache[url]){
+				callback.success(localCache[url]);
+
+				return;
+			}
+
+			var req = new XMLHttpRequest();
+			req.onerror = function() {
+				callback.error();
+			};
+
+			req.onreadystatechange = function() {
+				if(readyState === 4){
+					if(req.responseText === '' || req.status == '404'){
+						callback.error)();
+						return;
+					}
+
+					// 存储响应
+					localCache[url] = req.responseText;
+					callback.success(req.responseText);
+
+
+				}
+			}
+
+			req.open('GET', url);
+			req.send(null);
+		}
+
+		手工缓存可用程序废止缓存内容并获取新的数据，
+		一个操作将之前的 一个或多个响应报文作废。此时从缓存中删除报文也简单。
+		可很好的工作在 移动设备上，本地缓存避免不必要的请求。
+
+
+	了解ajax库的限制。
+		库屏蔽浏览器之间的差异，给一个一致的接口。
+
+			有时，不能使用XHR 的完整功能。
+
+		mxhr的 流功能，
+			实时处理响应报文片段。
+			readyState 3
+			有的库不允许 监听readystatechange 事件。 
+
+
+		直接使用 xhr对象，减少了函数开销，提高性能。
+		使用库，屏蔽浏览器的问题。
+
+
+总结。
+	高性能js包括， 从项目的具体需求， 选择正确的数据格式，和与之相配的 传输技术。
+
+	当从页面域请求数据，xhr提供 最完善的控制和灵活性。将所有传入数据 视为字符串，有可能降低解析速度。
+	
+	动态脚本标签插入，允许跨域请求和 本地运行 js和 JSON。
+	
+		接口不太安全，且不能读取信息头或 响应报文代码。
+	
+
+	mxhr,一次 请求不同资源，data:URL ,  不能缓存响应报文。
+
+	发送数据时， 图像灯标最 简单，有效。
+
+	准则：
+		减少请求数量， 打包js和 css文件，或使用 mxhr。
+		缩短页面加载事件，页面其他内容加载后， 用Ajax 获取少量重要文件。
+		确保代码错误不直接显示给用户，并在服务器端 处理错误。
+
+		学会何时用库，何时编写自己的底层 AJax 代码。
+
+
+
+chap6 编程实践
+
+	避免二次评估 evaluation
+
+		js和许多脚本语言一样，允许在程序中获取包含代码的字符串然后运行它。
+
+		eval()  Function()构造器， setTimeout()  setInterval()
+
+		二次评估是一项昂贵的操作。
+
+		例子：
+			访问数组项。
+			每次调用时，都要创建一个新的解释、编译实例。
+
+	使用对象/ 数组直接量。
+
+	不要重复工作
+		不要做不必要的工作，代码应当重构。
+		不重复做已经完成的工作。
+
+		浏览器检测？
+
+		延迟加载：
+			信息被使用前不做任何工作。
+
+			function addHandler(target, eventType, handler) {
+				if(target.addEventListener){
+					addHandler= function(target, eventType, handler) {
+						target.addEventListener(eventType, handler, false);
+					};
+				}else {
+					addHandler = function(target, eventType, handler) {
+						target.attachEvent("on" + eventType, handler);
+					};
+				}
+
+				addHandler(target, eventType, handler);
+			}
+
+			适用于函数不会在页面上立即被使用的场景。
+
+		Conditional Advance Loadiing 
+		条件预加载
+
+			脚本加载时提前进行检查，不等待函数调用。
+
+			var addHandler = document.body.addEventListener ? function(target, eventType, handler) {
+				target.addEventListener(eventType, handler, false);
+			} :
+			function(target, eventType, handler) {
+				target.attachEvent("on" + eventType, handler);
+			};
+
+			适用于函数马上会使用， 在整个页面生命周期中经常使用。
+
+		使用速度快的部分。
+
+
+		Bitwise Operators 位操作运算符
+			js中数字，按64位格式 存储。
+			位运算中，被转换为有符号 32位 格式。
+
+			在数字底层操作。
+			进制的转换：
+				var num = parseInt('123', 8);
+					转换为10进制
+				var num1 = num.toString(8);
+					隐藏数字高位的0。
+
+			Bitwise AND
+			Bitwise OR
+			Bitwise XOR 位异或
+			Bitwise Not 位非
+
+			1.通常采用 a % b方式，进行替换交替操作。
+
+				二进制表示时，偶数最低位为 0， 奇数为 1.
+
+				if (i & 1) { //为奇数
+					className = "odd";
+				}。
+				性能快了很多。
+
+
+			2.位掩码。
+				同时判断多个布尔选项，快速地 将数字转换为 布尔 标志数组。
+
+				值为 2的幂。
+				var OPTION_A = 1;
+				var OPTION_B = 2;
+				var OPTION_C = 4;
+				var OPTION_D = 8;
+
+				位或操作 创建数字包含多个选项。
+
+				var options = OPTION_A | OPTION_C | OPTION_D;
+
+				& 位与操作 检查一个给定选项是否可用。
+
+				if(options & OPTION_A) {
+
+				}
+				if(options & OPTION_B){
+
+				}
+				操作在底层，许多选项保存在一起且经常检查，掩码操作有助于加快整体性能。
+
+		原生方法
+
+			无论怎么优化js代码，都不比js引擎提供的原生代码快。
+
+			数学运算
+				使用内置Math对象，已有版本。
+
+			DOM操作：
+				选择器API
+				CSS查询
+				querySelector();
+				querySelectorAll();
+
+
+chap5 字符串和正则表达式
+	
+
+	字符串连接
+
+		arr.join()
+		string.concat()
+			新创建的字符串。
+
+		字符串拼接 
+			+ +=
+
+			str += "one" + "two";
+			内存中创建临时字符串；赋值； 拼接；结果赋值str。
+
+			str += "one"; str += "two";
+			该离散表达式，直接将内容附加到 str上。
+
+			实际上，
+				str = str + "one" + "two";
+
+				改变连接顺序，将失去这种优化。
+				基本字符串 位于最左端。
+
+			不适用IE？
+				当真正使用连接后的字符串时，才真正拷贝。
+
+		和编译期合并
+			赋值表达式中，所有字符串连接都属于编译期常量。
+			Firefox 自动在编译过程中 合并它们。
+
+			减少了中间字符串。
+			但通常从 运行期数据创建字符串而不是从编译期常量。
+
+	数组联结 arr.join
+
+		var str = "I 'm a  boy";
+		new str = "",
+		appends = 5000;
+		while(appends--){
+			newStr +=str;
+		};
+
+		重复5000次该字符串。
+		IE 内置的连接算法，要求浏览器在循环中反复为更大的字符串拷贝 和分配内存。
+		结果是以平方关系递增的 运行时间 和内存消耗。
+
+		使用数组联结后
+
+			strs = [];
+			while(appends--){
+				strs[strs.length] = str;
+			}
+			newStr = strs.join("");
+
+
+		Sring.prototype.concat
+			原生字符串连接函数接受任意数量的参数。或是数组。
+			str = String.prototype.concat.call(str,array)
+
+			性能不如 + +=。
+
+
+正则表达式优化。
+	
+	影响正则表达式的效率的因素
+
+	工作原理
+
+		1.编译
+			浏览器检查模版是否有错，转换为 a native routine。哦用于执行匹配。
+			赋给变量。
+
+		2.设置起始位置。
+			字符串的起始位。
+			或由 regexp对象 lastIndex属性指定。
+
+			第四步返回时，因为尝试匹配失败，位置将在最后一次尝试起始位置， 推后一个字符的位置上。
+
+			浏览器厂商优化正则表达式引擎
+				这一阶段，通过早期预测跳过 不必要工作。
+				^
+				匹配第三个字母是x 的string。先找到x，再将起始位置 前推两个字符。
+
+		3.匹配每个正则表达式 token子元
+
+		4.匹配成功失败
+			字符串的每个字符以及 最后一个字符后面的位置，都尝试匹配。
+			匹配都不成功，才宣告失败。
+
+	理解回溯
+
+		回溯计算代价昂贵。
+		是整体性能的唯一因素。
+
+		当正则表达式扫描目标字符串时，它从左到右逐个 扫描正则表达式的组成部分， 每个位置上测试 能不能找到个 匹配。
+
+		对每个量词和 分支。 都必须决定 如何继续。
+
+		做出决定时，
+			若有必要，会记住另一个选项，以备将来返回后使用。
+
+			所选方案匹配成功， 正则表达式将继续扫描 ~模版，若其余部分也匹配成功，匹配结束。
+			| 所选方案未发现匹配，或者后来的匹配失败。
+
+			正则表达式将回溯 到 最后一个决策点， 在剩余选项 中选一个。 继续匹配。
+
+			若量词和 分支选项的所有 可能的排列组合都尝试失败， 放弃这一 过程。 然后移动到此过程 开始位置的下一个 字符长。
+
+		****分支和回溯 Alternation and backtracking
+			var str = "hello there,happy hippo";
+			var reg = /h(ello|appy) hippo/;
+			reg.test(str);
+
+			正则表达式认为从字符串的第一个字符开始匹配 是不能成功的。
+
+
+		****重复与回溯
+			var str = "<p>Para 1</p>" +
+					"<img src='smiley.jpg'>"  +
+					"<p>Para 2</p>" + 
+					"<div>Div</div>";
+
+			var reg = /<p>.*<\/p>/i;
+			reg.test(str);
+
+			. 匹配除了换行外的任意字符。
+			目标字符串中没有换行符， 它将吞噬剩下的全部 字符串。 但是正则表达式模版中  还有内容需要匹配，reg尝试匹配<。
+
+
+			将正则表达式中的 * 贪婪量词改为非贪婪量词  *?, 以匹配单个段落。
+
+			懒惰量词的回溯以相反方式进行，首先尝试全部跳过--> 就是当作 匹配 0次，然后 继续匹配<\/p>。随后的 "<" 在这一点匹配失败，  正则表达式回溯，并尝试下一个最小的字符数: 1个。
+			之后反复该过程， 直到 </p>完全匹配。
+
+			当目标字符串 只有一个段落时， 正则表达式的  贪婪、懒惰版本 结果等价。 但尝试匹配的过程不同。
+
+
+		****Runaway Backtracking回溯 失控
+
+		解决：具体化
+			尽可能指出分隔符之间的字符匹配形式。
+
+			[^''\rn]*  取代 过于宽泛的 .*?
+
+			就可去除回溯时可能发生的几种情况，如尝试用点号匹配引号， 或者扩展搜索超出预期范围。
+
+			为每个匹配字符多次前瞻 缺乏效率。
+
+
+			用前瞻和后向引用列举原子组。
+				(?>...)
+				若正则表达式后续部分匹配失败。原子组中的量词没有记录回溯点。[\s\S]*? 序列就不能扩展到已匹配的范围之外。
+
+
+				js不支持 原子组，也不提供其他方法消除不必要的回溯。
+
+				组中包装一个 前瞻模版，前瞻之外，，给它添加个后向引用。
+
+				(?=(pattern to make atomic))\1
+
+				原子组：
+					只需注意，后向引用数字，当正则表达式包含多个捕获组时。
+
+				正则表达式每次找到一个 中间标签就退出一个 前瞻。它在前瞻过程中 丢弃所有回溯 位置。下一个后向引用 简单地 重新匹配 前瞻过程 中发现的字符，将他们作为实际匹配的 一部分。？
+
+
+		嵌套量词和回溯失控
+
+			嵌套量词，应该小心使用， 以确保没有掩盖回溯失控问题。
+
+
+			更糟糕
+				/(A+A+)+B/
+				"AAAAAAAAAAAAAAA"
+
+				/((?=(A+A+))\2)+B/
+
+
+		提高效率的更多方法
+			关注如何让匹配更快失败
+				如，通过增加所需的回溯次数去尝试所有分支的排列组合。 这是失败的修改。
+
+			reg以简单的必需 的字元开始
+				起始字元应当尽可能快速地测试并排除明显不匹配的位置。	
+
+			编写量词模版，表达式互相排斥。
+
+				当想表达 "[''\r\n]*" 时，不使用 ".*?"
+
+			减少分支的数量，缩小他们的范围。
+				red|raw    r(?:ed|aw)
+				用字符类，或选项组
+
+				字符类比分支更快，用位向量(或其他快速实现) 而不是回溯。
+				最常用的放在前。
+
+
+			使用非捕获组
+
+				捕获组花费时间和内存 用于记录后向引用， 并保持它们是最新的。
+
+				(?:...)  替代 (...)
+				引用完全匹配的方法：
+					reg.exec()返回数组的第一个元素。
+
+			捕获感兴趣的文字，减少后处理
+				若需要引用 匹配的一部分，应使用一切手段，捕获片段。
+
+			暴露所需的字元
+
+			量词使用适当。
+
+			将正则表达式赋给变量。
+
+			将复杂的正则表达式 拆分为简单的片段。
+
+
+	何时不用正则
+		字符串的方法
+
+
+
+	字符串修剪
+
+		去除字符串的头部空格，尾部空格
+
+		用两个子表达式
+
+		if(!String.prototype.trim){
+			String.prototype.trim = function() {
+				return this.replace(/^\s+/,"").replace(/\s+$/,"");
+			}
+		}

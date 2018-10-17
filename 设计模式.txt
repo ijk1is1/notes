@@ -1,0 +1,3774 @@
+
+函数
+	基础使用
+	模式：
+		对API( 为函数提供更好的界面), 
+		代码初始化( 以更少的 全局变量),  
+		程序性能( 降低运行开销)
+
+背景：
+
+		函数的两个特点：
+			是第一类对象
+			提供作用域。
+
+		1.	函数是对象，表现:
+				增删改查操作来看。
+				函数本身的能力，灵活性，表现力。
+
+			构造函数
+				接收字符串的 参数，执行体。
+
+		2.	词法作用域。 js不支持 {}定义局部作用域。
+
+			{}不提供局部作用域，
+				这意味着在条件语句或 循环中，使用var定义，不代表该变量对于 他们来说  是局部变量。
+
+			在设计使  变量作用域受控制的情况下， 函数不可少。
+
+	消除术语的歧义。
+
+		使用准确，约定的名称与代码。
+
+		函数表达式：
+			命名：
+			匿名：
+				该函数对象name属性成了空串。
+
+			name属性，可在递归时候使用。| 或者用在调试时
+				或 arguments.callee  ? 
+
+		语法看起来类似。
+			若不将函数表达式的结果分配给变量。
+
+			或查看 函数 上下文 语境。
+
+
+	声明 versus 表达式: 名称和变量声明提升
+
+		函数声明 只出现在 程序代码中，也就是，其他函数体内部或 全局空间中。
+		他们的定义不能 分配给变量或属性， 也不能以参数形式出现在函数调用中。
+
+
+	函数的命名属性：
+		name
+
+			调试器需要展示函数中的错误时，可检测name属性是否存在， 并将其 作为一个提示符。
+
+			用于自身内部递归调用同一个函数。
+
+
+		表达式突出了函数与所有其他对象一样都是对象 这一事实，且不需要特殊语言结构。
+
+		注：
+			命名函数表达式。 变量名 尽量 一致。 不同浏览器的实现可能不同。
+
+
+	函数的提升：
+		使用函数声明时，函数定义也被提升。
+
+		作用域链查找时，不会遍历太深。
+
+
+回调模式：
+	
+	函数A作为参数传递给另一个函数B,
+		A 在某一 时刻可能 会被调用或 执行。
+		A ， 回调函数。
+
+		传递时不带 括号， 只是传递函数 的引用。
+
+	示例：
+		hide(findNodes());
+
+		问题：hide仍然要遍历 数组节点。
+
+			解决： 在findNodes()中选择隐藏节点，实现隐藏逻辑，这可能高效。
+
+			但是检索， 修改逻辑耦合 coupling。
+
+
+
+		解决：
+			采用回调函数。
+			节点隐藏逻辑以  回调函数方式 传递给 findNodes() 并委托其执行。
+
+
+		var findNodes = function(callback){
+
+			var i = 10000,
+				nodes = [],
+				found;
+
+			if(typof callback !== "function"){
+				callback = false;
+			}
+
+			while(i) {
+				i -= 1;
+
+				// 找的逻辑
+
+				// 运行回调
+				if(callback){
+					callback(found);
+				}
+
+				nodes.push(found);
+			}
+			return nodes;
+		};
+
+		var hide = function(node){
+			node.style.display = "none";
+		};
+
+		findNodes(hide);
+
+		或者传递一个匿名回调函数
+			findNodes(function(node){
+				node.style.display = "none";
+			});
+
+
+	回调与作用域：
+		this的指向问题。
+		传递回调函数 所属的对象。
+
+		function usercallback(callback,callback_obj){
+			if(callback){
+				callback.call(callback_obj, 参数);
+			}
+		}
+
+		传递一个对象和一个方法的另一种选择：
+
+			usercallback("obj.fn", obj);
+
+			usercallback(callback,callback_obj){
+				if(typeof callback === "string"){
+					callback = callback_obj[callback];
+				}
+			}
+
+
+	异步事件监听器：
+
+		浏览器，客户端编程都是 事件驱动的。
+
+
+	超时：
+		定时器。
+
+		setTimeout(fun, 500);
+		setTimeout("fun()", 500); 类似eval()重新运算的常见 反模式。
+
+	在创建的库中使用回调模式：
+		用户专注于， 回调函数的开发，专注于核心功能并提供挂钩形式 的回调函数。
+
+
+返回函数
+	闭包。
+
+自定义函数：
+	函数体内，以一个新的实现 覆盖、重新定义自身。
+
+	var say = function(){
+		console.log("hello");
+		say = function() {
+			console.log("hello twice");
+		}
+	}
+
+
+	当函数 有 初始化准备工作  要做时， 且仅需要执行一次。，可使用该模式。
+
+	更新自身的实现；
+	lazy function definition。
+
+	有后向惰性？ ，重新定义的函数只 执行少量工作。
+
+
+	缺点：
+		已经添加到原始函数的任何属性将失效。
+		函数使用了不同名称，分配给不同变量，或者以对象的方法来使用， 则重定义部分永远不发生。
+		原来的属性一直 保留。
+
+
+
+即时函数
+	定义函数后 立即执行该函数。
+
+	(function() {}())
+	(function(){}());
+	函数表达式 + () ,
+
+
+	将所有代码包装到其局部作用域中， 不会将任何变量泄露到 全局作用域中。
+
+
+
+	即时函数的参数：
+
+		一般情况下，全局对象是 以参数方式传递给 即时函数的。 
+		不使用 window， 指定全局作用域限定的情况下，可在函数 内部 访问该对象。
+		(function(global){
+			console.log(head);
+		}(this));
+
+
+	返回值：
+		var result = (function () {return 2 + 2;}());
+
+		var result = function() {return 2 + 2;}();
+		或  var result = (function() {return 2 + 2}) ();
+		result 指向了由即时函数 返回的值。
+
+
+		var getRet = (function(){
+			var r= 2 * 2;
+			return function(){
+				return r;
+			};
+		}());
+		即时函数，在Chrome中 [[Scope]]显示 为 Script。
+
+
+		用在对象的属性中。
+
+	优点和用法
+
+		其他名称， 自调用，自执行函数。
+
+		全局变量污染问题，
+
+		书签工具中；
+
+		将个别功能包装在自包含模块中
+			网页是静态的，在没有js情况下良好运行。
+
+			逐步增强的精神下，
+				以 将实现某些功能的代码包装在 即时函数中，  增强页面的功能。
+
+			// module1.js模块
+			(function(){
+				// 模块 1 所有代码
+			}());
+
+			将这些功能用在合适时候，且用构建脚本 将对应文件合并。
+
+
+
+即使对象初始化
+	
+	保护全局作用域不受污染的另一种方法。
+
+	({...}).init();
+	({...}.init());
+
+	优点：
+		可以在 执行一次性的 初始化任务时， 保护全局命名空间。
+
+		这个模式看起来涉及 更多语法特征， 当初始化任务更负载时， 会使整个 初始化 过程显 的更具有结构化。
+			即时函数中，可能只是分散在各处的函数而已。
+
+
+	缺点：
+		js缩小器工具，不会像 包装在函数中的代码 那样有效缩减这种模式。缩减 名称长度时不 保证 安全性。
+		但在编写代码时，处于高级 模式状态的google闭包编译器，唯一一个将即时对象的属性重命名为 更短名称的缩小器 工具。
+
+	注：
+		适用一次性的任务， init() 完毕后，没有对该对象的访问。
+		要保存对该对象的引用， 在init()尾部，+ "return this;"
+
+
+
+初始化分支
+	Init-time branching 也叫加载时分支。
+	一种优化模式。
+
+	适用场景：
+		浏览器功能嗅探。
+		查明 DOM元素的计算 样式 或 附加的 事件处理程序。
+
+
+	var utils = {
+		addListener: function(elem, type, fun) {
+			...
+		},
+		removeListener: function(){
+
+		}
+	}
+
+	效率低下，每次调用 util.addlistener(),或其他时。都重复相同的检查。
+
+	当使用初始化分支时，可在脚本初始化加载 时，一次性 进行嗅探。在页面 生命期内重定义函数运行方式。
+
+
+	// 接口
+	var utils = {
+		addListener: null,
+		removeListener: null
+	};
+	// 实现
+	if(typeof window.addEventListener === 'function') {
+		utils.addEventListener = function (elem, type, fn) {
+			elem.addEventListener(type, fn, false);
+		}
+		...
+	}
+
+	浏览嗅探的使用：
+		不过度假设浏览器特征。，使用该模式时也是如此。
+
+	浏览器特征有可能 是独立更新的。最好的策略是分开嗅探浏览器特征， 然后使用加载时分支仅执行 一次嗅探。
+
+
+
+函数属性--模式
+	
+	fun.length;
+
+	自定义属性：
+		缓存函数结果，返回值。 也叫备忘memoization。
+
+		用函数的参数 param作为键，返回值作为值。
+
+	当函数参数，多且复杂。
+		参数进行序列化，
+			序列化为一个JSON 字符串。
+			将该字符串 作为缓存对象的键。
+
+	引用函数，
+		用arguments.callee引用，es5严格模式不支持。
+		或使用 硬编码函数名称。
+
+
+配置对象模式
+	提供更整洁API 的方法。
+
+	随着软件开发和 维护的推进，软件需求也发生着变化。
+
+
+	函数需要多个参数。
+		可选参数放在后边。
+
+	fun(conf); conf参数对象。
+
+	conf = {};
+	fun(conf);
+
+	优点：
+		更易于阅读和维护，易于添加和删除参数
+		易于被使用
+	不利：
+		需要记住参数名称，
+		属性名称无法被压缩。
+
+	DOM 元素和样式的，属性，规则使用。
+
+
+
+Curry
+	
+	函数应用：
+		在一些纯粹的函数式编程语言中，函数不描述为被调用 called, invoked， 而是被描述为应用。
+
+		js同样可以。
+			Function.prototype.apply();
+
+			绑定到函数内部this的一个对象；
+			传入的参数将 变成可哦用于该函数内部的类似数组的 arguments对象。
+
+		当第一个参数 为 null，
+			执行时， this指向 全局对象。
+
+		当函数是一个对象的方法时，
+			obj.apply(obj1,[param]);
+
+
+		call()方法。
+			建立在apply()之上？
+
+
+	部分应用
+		调用函数，实际上，是将一个参数集合 应用到一个函数中。
+
+		var add = function(x,y){
+			return x + y;
+		};
+
+		add.apply(null, [5,4]);
+
+		var newadd = add.partialApply(null,[5]);
+		newadd.apply(null,[4]);
+
+		部分引用：
+			返回一个新函数。
+
+			add(5)(4); 可称为语法糖。
+
+
+
+	使函数理解并处理部分应用的过程称为 Curry过程。
+
+	Curry化
+		Haskell Curry。
+		这是一个转换过程，即执行函数转换的过程。
+		另一个名  
+			schonfinkelisation。
+			Moses Schonfinkel。
+
+
+		例子：
+			add函数修改成一个用于处理部分应用的Curry化函数。
+
+			function add(x,y) {
+				var oldx = x, oldy = y;
+				if(typeof(oldy) === "undefined"){
+					return function (newy){
+						return	oldx + newy;
+					}
+				}
+				return x + y;
+			}
+
+		这不还是闭包吗，闭包一个变量。
+
+		精简版本
+			function add(x,y) {
+				if(typeof(y) === "undefined"){
+					return function(y){
+						return x + y;
+					}
+				}
+				return x + y;
+			};
+
+
+		通用的实现版本：
+			function kelihuazhuanhuan(fn){
+
+				var slice = Array.prototype.slice,
+					stored_args = slice.call(arguments, 1);
+
+					console.log(arguments);
+				return function() {
+					var new_args = slice.call(arguments),
+
+						args = 
+						stored_args.concat(new_args);
+							console.log(new_args, args);
+					return fn.apply(null,args);
+				}
+			}
+
+			var add = function(x,y){
+				return x + y;
+			};
+			var newadd = kelihuazhuanhuan(add, 5);
+			newadd(4);
+
+			kelihuazhuanhuan(add, 6)(7);
+
+			function add(a,b,c,d,e){
+				return a + b + c +d +e;
+			}
+
+			var add13 = kelihuazhuanhuan(add, 5,8);
+
+
+	何时使用。
+		调用同一个函数，传递的参数很多都一样。
+
+		该函数应该 curry化。
+
+		向新函数 传递参数，填充原始函数期望的完整参数列表。
+
+
+
+总结：
+	1.API模式
+		回调模式
+			构建库
+		配置对象
+		返回函数
+		curry化
+	2.初始化模式
+		即时函数
+			书签，避免污染，模块化，逐渐增强。
+		即时对象初始化
+		初始化分支 
+			接口，实现。浏览器嗅探，DOM元素操作
+	3.性能模式
+		备忘模式，函数属性
+		自定义模式， 函数表达式
+
+
+chap5   对象创建模式
+	js语言，没有其他语言中常用的特殊语法特征，如命名空间，模块，包，私有属性，以及静态成员等语法。
+
+
+	目标：
+		模式实现，或以 不同于那些语法特征的方式来思考问题。
+
+		命名空间，依赖声明， 模块模式，沙箱模式。
+
+		其他讨论的主题包括私有，特权成员，对象常量，链和一个启发类的方式以定义构造函数。
+
+
+命名空间
+	
+	减少程序中所需要的全局变量的函数，且同时还有助于避免命名冲突，或过长的名字前缀。
+
+	为应用程序或库创建一个全局对象。
+
+		将所有函数和变量作为其属性。
+
+	命名冲突：
+		通常大写方式？命名
+		避免和代码中的命名，同一页面的代码和 第三方代码，如 (窗口 widget)。 的冲突。
+
+
+	缺点：
+		需要输入更多字符，每个变量和函数前都要加前缀，总体上增加了需要下载的代码量。
+
+		仅有一个全局实例，意味着，其他部分代码可修改该实例。
+		更长的属性变量解析时间。
+
+		---之后的沙箱模式
+
+
+	通用命名空间函数
+
+		先检查属性或 命名空间是否已经存在。
+		var MYAPP = MYAPP || {};
+
+		这样的检查，将导致大量的重复代码。
+			如要定义，MYAPP.modules.module2, 要构造三次检查。
+
+		需要一个处理命名空间 中细节的 可重用函数。namespace()
+
+
+		使用：
+			MYAPP.namespace('MYAPP.modules.moudule2');
+			相当于 var MYAPP = {
+				modules : {
+					module2: {}
+				}
+			}
+
+
+		如何实现：
+			var MYAPP =MYAPP || {};
+
+			MYAPP.namespace = function(ns_string){
+
+				var parts = ns_sring.split('.'),
+					parent = MYAPP,
+					i;
+
+				// 剥离最前的冗余全局变量
+				if(parts[0] === "MYAPP") {
+					parts = parts.slice(1);
+				}
+
+				for(i = 0; i < parts.length; i ++){
+					// 
+					if(typeof parent[parts[i]] === "undefined"){
+						parent[parts[i]] = {};
+					}
+
+					parent = parent[parts[i]];
+
+				}
+				return parent;
+			};
+
+
+			使用：
+
+				var module2 = MYAPP.namespace('MYAPP.modules.module2');
+
+
+				module2 === MYAPP.modules.module2; // true；
+
+				// 忽略最前面的 'MYAPP'
+				MYAPP.namespace('modules.modules1');
+
+
+				// 长命名空间
+				MYAPP.namespace('once.upon.a.time.there.was.this.long.nested.property');
+
+
+
+
+声明依赖关系模式
+	
+	如YUI库，充当命名空间的YAHOO 全局变量，模块是该全局变量的属性。
+
+	在函数，或模块顶部 声明代码所依赖的模块。
+		声明：	
+			var event = YAHOO.util.Event;
+
+
+	优点：
+		1. 显式的依赖声明，提示用户，需要的特定文件已经包含在了该页面中。
+		2. 函数顶部的前期声明可以使 客户端等，更容易发现并解析依赖。
+
+		3.使用局部变量， 解析速度，比全局变量要快。
+		4.类似  YUICompressor 和 Google 闭包编译器的 高级 小工具可 重命名局部变量。
+			缩小了代码， 下载速度更快。
+			但是不会对全局变量进行 压缩。 保证安全性。
+
+
+	缩小后的代码添加依赖声明模式的效果。
+
+		function test2(){
+			var modules = MYAPP.modules;
+			console.log(modules.m1);
+			console.log(modules.m2);
+			console.log(modules.m3);
+		}
+
+		缩减的test2 主体
+		var a = MYAPP.modules; console.log(a.m1);console.log(a.m2);console.log(a.m3);
+
+
+私有属性和方法
+
+	js所有对象的成员都是公有的。
+
+	私有成员：
+		closure闭包来实现。
+		闭包范围内部的任何变量，不会暴露给构造函数之外的 代码。
+
+		但私有变量可用在公共方法中， 
+			定义在构造函数中，作为返回对象的一部分，暴露给外部方法。
+
+
+	私有化变量，
+		使用函数 可形成局部作用域的特点。
+
+
+	特权方法：
+		指可已访问 私有成员的公共方法。
+
+
+	私有性失效
+		eval(), Mozilla Rhino 中的 __parent__
+		当从特权方法中 返回一个对象或数组时， 外部代码仍然可以访问该私有变量， 因为它通过引用传递。
+
+		解决：
+			保持细心， 不要传递需要保持私有性的对象和数组的引用。
+
+			返回一个新对象，
+				而该对象仅仅包含客户关注的原对象中的数据。
+
+	****最低授权原则， Principle of Least Authority POLA
+		
+			将关注的数据返回，
+
+			当需要传所有数据时，
+				使用通用性的对象克隆函数，创建关注对象的副本。 浅复制，深复制。
+
+
+
+
+	对象字面量以及私有性
+
+		之前是，使用构造函数获得私有性
+
+		可使用一个额外的匿名 立即执行函数创建闭包来 实现私有性。
+
+		var myobj = {};
+		(function(){
+			var name = "my, oh my"
+
+			// 实现公共部分
+			myobj = {
+				// 特权方法
+				getName: function() {
+					return name;
+				}
+			};
+		}());
+
+		或者是：
+
+			var myobj = (function(){
+				var name = "my,oh my";
+
+				// 实现公有部分
+				return {
+					getName:function() {
+						return name;
+					}
+				};
+			}());
+			****模块模式的基本框架
+
+
+	原型和私有性
+		问题：将私有成员和构造函数一起使用时，其中缺点在于
+			每次 构造对象 时， 私有成员都重新创建。
+
+		构造函数中添加到this 的任何成员都有这个问题。
+
+
+		解决： 
+			为了避免复制工作以及 节省内存。
+			将常用的属性方法 添加到 构造函数的prototype属性中。
+
+			在多个实例中共享隐藏的私有成员。
+				构造函数的私有属性 + 对象字面量的私有属性
+
+
+			function Gouzao() {
+				// 私有成员
+				var name = 'ipad';
+				this.getName = function() {
+					return name;
+				};
+			}
+
+			Gouzao.prototype = (function(){
+				var browser = "Mobile webkit";
+				return {
+					getBrowser: function() {
+						return browser;
+					}
+				};
+			}());
+
+			var toy = new Gouzao();
+			console.log(toy.getName, toy.getBrowser); // 特权own自有 方法， 特权 原型方法。
+
+
+
+	揭示模式
+		将私有方法暴露为公共方法。
+		揭示模块模式
+
+		revealing module pattern.
+			es5中，可选择 将一个对象冻结。
+
+		例子：
+			var myarray;
+			(function(){
+				var astr = "[object Array]",
+					toString = Object.prototype.toString;
+
+				function isArray(a) {
+					return toString.call(a) === astr;
+				}
+
+
+				function indexOf(haystack, needle) {
+					var i = 0,
+						max = haystack.length;
+						for(; i < max; i ++){
+							if(haystack[i] === needle) {
+								return i ;
+							}
+						}
+
+					return -1;
+				}
+
+				myarray = {
+					isArray : isArray,
+					indexOf: indexOf,
+					inArray: indexOf
+				};
+			}());
+
+			例子中有两个私有变量，两个私有函数。
+
+			例子最后，对象 中填充了认为适合 公共访问的功能。
+
+				同一个私有函数indexOf() 可暴露为 es5 风格的 indexOf以及 PHP范式的 inArray。
+
+
+		意外：
+			公共 indexOf()方法发生意外， 但私有indexOf() 方法仍然是安全的。
+
+			所以inArray() 将继续正常运行。
+
+
+
+模块模式
+
+	提供了结构化的思想并且有助于组织日益增长的代码。
+
+	提供了一种 创建自包含 非耦合  代码片段 的有利工具，可将其视为黑盒功能。
+
+	该模式是
+		命名空间，即时函数， 私有和特权成员， 声明依赖 模式的组合。
+
+
+	步骤：
+		建立个命名空间。
+
+		MYAPP.namespace('MYAPP.utilities.array');
+
+		定义该模块。
+			对于保持私有性的情况。
+
+			MYAPP.utilities.array = (function(){
+
+				// 依赖
+
+				var uobj = MYAPP.utilities.object,
+					ulang = MYAPP.utilities.lang,
+
+					// 私有属性
+					array_string = "[object Array]",
+					toStr = Object.prototype.toString;
+
+
+					// 私有方法。
+					...
+
+					// var 变量定义结束
+
+
+				// 可选的一次性初始化过程
+				// ...
+
+
+				// 公有API
+				return {
+					// todo 这是返回一个对象，即具有公共接口的实际模块。
+				};
+			}());
+
+-------------------------------------
+	揭示模块模式
+		
+		MYAPP.utilities.array = (function(){
+
+			//私有属性
+
+			var ...
+
+			// 私有方法
+
+
+
+			// var  定义结束
+
+			// 揭示公有API 
+			return {
+				isArray : isArray,
+				indexOf : inArray
+			};
+		}());
+
+
+
+
+---------------------
+创建构造函数的模块
+	
+	MYAPP.utilities.Array:
+
+	MYAPP.namespace('MYAPP.utilities.Array');
+
+	MYAPP.utilities.Array = (function(){
+
+		// 依赖
+
+		var uobj = MYAPP.utilities.object,
+			ulang = MYAPP.utilities.lang,
+
+			// 私有属性和方法
+			Constr;
+
+			// var 变量定义结束
+
+		// 可选的一次性初始化过程
+		//...
+
+		// 公有的API ----构造函数
+		Constr = function(obj) {
+			this.elements = this.toArray(o);
+		};
+
+
+		// 公有API -- 原型
+
+		Constr.prototype = {
+			constructor: MYAPP.utilities.Array,
+			version: "2.0",
+			toArray: function(obj){
+				for(var i = 0, a =[], len = obj.length; i < len ; i += 1){
+					a[i] = obj[i];
+				}
+				return a;
+			}
+		};
+
+		// 返回要分配给新命名空间的构造函数
+		return Constr;
+	}());
+
+
+
+	var arr = new MYAPP.utilities.Array(obj);
+
+
+	将全局变量导入到模块中
+		导入全局变量有助于加速即时函数中的全局符号解析的速度。
+
+		因为导入的变量成了该函数的局部变量。
+
+		MYAPP.utilities.module =  (function(app,global){
+
+
+			// 引用全局对象
+			// 以及现在被转换成局部变量的 全局应用程序命名空间对象  MYAPP 和 this
+		}(MYAPP, this));
+
+
+
+
+
+
+沙箱模式
+	
+	解决了命名空间模式的缺点：
+
+		对单个全局变量的依赖变成对 应用程序的全局变量依赖。
+			命名空间模式中，没有办法将同一个应用程序 或库 的两个版本运行在同一个 页面中，因为 两者都用了一个全局符号名。
+
+		以点分隔的标识符，代码量大， 运行时需要解析很长时间。
+
+
+	含义：
+		提供了一个可用于模块运行的环境， 不会对其他模块和个人沙箱造成任何影响。、
+
+
+	简单的参考实现：
+
+		沙箱模式中，是个全局构造函数。  Sandbox。
+		代码的隔离沙箱运行环境。
+
+		使用沙箱的方法：
+
+			new Sandbox(function(box){
+				// 此处写代码。
+			});
+
+			对象box与命名空间例子中的MYAPP是相似的，有所需要的所有库函数，能使代码正常运行。
+
+
+		添加两个额外特征：
+			通过些神奇特征，可假设在创建对象时，不需要new操作符。
+				Sandbox()构造函数可接受 额外的配置参数， 参数指定了对象实例所需要的 模块名。 
+			我们希望代码是模块化的，因此绝大部分 Sandbox() 提供的功能 将被限制在模块中。。
+
+		此时，实例化对象的代码是：
+
+			Sandbox(['ajax', 'event'], function(box) {
+				// console.log(box);
+			});
+
+			参数也可单个传递。 略。
+
+		归纳：
+			用通配符 "*" 参数 表示 "使用所有可用模块"。的表示方法。
+			当假设没传递任何模块时， 沙箱 默认为 "*"
+
+			因此根据以上惯例， 使用所有模块写为：
+
+			Sandbox('*', function(box) {
+				// console.log(box);
+			})
+			Sandbox(function(box){
+
+			});
+
+			使用样例：
+
+				Sandbox('dom', 'event', function(box) {
+					// 使用DOM 和事件来运行
+
+					Sandbox('ajax', function (box){
+
+						// 另一个沙箱化 对象 
+
+
+						// 用Ajax处理
+					});
+
+					// 这里没有Ajax模块
+				});
+
+
+			从以上例子我们可以看出，当使用本沙箱模式时， 可通过将代码包装到回调函数中从而保护全局命名空间。
+
+			若需要，可将数据存储为 该Sandbox() 构造函数的静态属性。
+
+			最后，可根据所需要的模块类型创建 不同的实例，并且这些实例 互相独立运行。
+
+
+	实现Sandbox() 构造函数以及其模块。从而实现功能。
+
+	准备：
+		实现增加模块：
+
+			Sandbox()构造函数也是对象，因此可向他添加个modules 的"静态属性"。 该属性的 包含键值对 的另一个对象。
+
+			键： 模块名字；
+			值： 实现每个模块的对应函数。
+			Sandbox.modules = {};
+
+			Sandbox.modules.dom = function(box){
+				box.getElement = function() {};
+				box.getStyle = function() {};
+				box.foo = "bar";
+			};
+
+
+			Sandbox.modules.event = function(box) {
+				// 若需要，就访问Sandbox 原型， 如下语句
+				// box.constructor.prototype.m = "mmm";
+				box.attachEvent = function() {};
+				box.detachEvent = function() {};
+			};
+
+			Sandbox.modules.ajax = function(box){
+				box.makeRequest = function() {};
+				box.getResponse = function(){};
+			};
+
+
+			例子中，我们增加了模块DOM，event，以及ajax, 这些都是 在库或复杂Web应用中常见的功能片段。
+
+			实现每个模块的函数 都可接受当前实例box作为参数， 且可以向该实例中添加额外属性和方法。
+
+		实现构造函数。
+			Sandbox() ---可能希望重命名这种类型的函数， 以便使得名字对于 库或应用程序来说是有字面意义的。
+
+
+			function Sandbox() {
+				// 将参数转换成一个数组
+
+				var args = Array.prototype.slice.call(arguments),
+					// 最后一个参数是 回调函数
+					callback = args.pop(),
+					// 模块可以作为一个数组传递， 或作为 单独的参数传递
+					modules = (args[0] && typeof (args[0]) === "string") ? args : args[0],
+					i;
+
+				// 确保该函数 作为构造函数被调用
+				if(!(this instanceof Sandbox)) {
+					return new Sandbox(modules, callback);
+				}
+				// 向 this添加的属性
+				this.a = 1;
+				this.b = 2;
+
+				// 向核心 'this'  对象添加模块
+				// 不指定函数名称或指定 "*" 都表示 "使用所有模块"
+				if(!modules || modules === '*') {
+					modules = [];
+					for(i in Sandbox.modules) {
+						if(Sandbox.modules.hasOwnProperty(i)) {
+							modules.push(i);
+						}
+					}
+				}
+
+
+				// 初始化所需的模块(函数。)
+
+				for(i = 0; i < modules.length; i += 1) {
+					Sandbox.modules[modules[i]](this);
+				}
+
+				// 执行回调
+				callback(this);
+				
+			}
+
+			// 需要的任何 原型属性
+			Sandbox.prototype = {
+				name: "My Application",
+				version: "1.0",
+				getName : function() {
+					return this.name;
+				}
+			};
+
+
+	代码中的关键部分：
+		一个类型检查语句，检查  this instanceof Sandbox ，这表明 使用者如何调用  Sandbox()的。
+		可在构造函数 中，将一些属性添加到 this。实例中。也 可 添加到 函数的 prototype中。
+
+		需要加载的模块 以模块名称数组的形式传递， 或以单个参数，或者通过 "*"/ 省略 的形式传递。 表明我们应载入所有 可用模块。
+		可以仅加载 最基本的模块(也叫种子),且根据 约定的规则，从外部文件中加载任何所需模块。
+
+		当我们知道所需模块时，便可进行初始化，可调用实现每个模块的函数。
+
+		最后一参是回调函数。 该回调函数会在使用新创建的实例时，最后被调用。该回调实际上的 用户的沙箱，  它可以获得一个填充了所需功能的box对象。
+
+
+
+		理解： 
+			Sandbox     手机品牌名
+			Sandbox()   生产手机
+
+			Sandbox.modules={};    手机有哪些功能模块。
+
+			检查是怎么 调用的 Sandbox。 没new，相当于 白写。  
+				this instanceof Sandbox
+			
+			new Sandbox();
+
+				第一个参数没有，或者 '*' 将所有模块都加到this ,否则将指定的添加。
+
+				然后将所有的模块 初始化到 this指代对象，
+				Sandbox.modules[modules[i]](this)。
+
+			callback(this)。 此处的this已经是 填充了功能的 手机。
+
+
+静态成员
+
+	公有，在没 创建实例时也可用。
+	私有：对于该类的用户是不可见的。
+
+
+	公有静态成员：
+		js没有特殊语法来表示静态成员。
+
+		通过构造函数且向其 添加属性的方式， 获得与类式， classy(具有class性质)。
+
+		备忘模式采用了同样思想。
+
+		静态方式 调用一个实例方法，无法正常运行，
+		实例对象 调用静态方法同样如此。
+
+		将静态方法添加到原型上：
+			使得静态方法与实例一起工作。
+
+
+		Gadget.prototype.isShiny = Gadget.isShiny;
+		iphone.isShiny(); // 输出和 静态方法的输出一致。
+
+		注： 此时this指向问题。
+
+
+
+	如何以静态，非静态方式调用同一个方法。
+
+
+	var Gadget = function(price) {
+		this.price = price;
+	};
+
+	// 静态方法
+
+	Gadget.isShiny = function(){
+
+		var msg = "you bet";
+
+		if( this instanceof Gadget) {
+			// 只在非静态下 工作
+			msg += ', it costs ￥' + this.price + "!";
+		}
+
+		return msg;
+	};
+
+	Gadget.prototype.isShiny = function() {
+		return Gadget.isShiny.call(this);
+	};
+
+
+	测试静态方法调用
+		Gadget.isShiny() // "you bet"
+		var a = new Gadget('888.88');
+		a.isShiny(); // "you bet, it costs ￥888.88!";
+
+
+
+私有静态成员
+	
+	指成员有：
+		同一个构造函数创建的所有对象共享该成员
+		构造函数外部不可访问该成员。
+
+		构造函数外部不可访问该成员。
+
+
+	例子：
+
+		var Gadget = (function(){
+			var counter = 0;
+
+			// 返回该构造函数新的实现
+			return function() {
+				console.log(counter += 1);
+			};
+		}());
+
+
+		var g1 = new Gadget();
+		var g2 = new Gadget();
+		新的Gadget构造函数 只是简单的 递增和 记录其私有counter 成员。
+
+		该静态属性实际上称为了对象ID 标识符。
+
+		该标识符可能有用， 可用方法将该数据返回。
+
+
+			var Gouzao = (function(){
+
+				var counter = 0,
+					NewGouzao;
+
+
+				NewGouzao = function() {
+					counter += 1;
+				};
+
+				NewGouzao.prototype.getLastId = function() {
+					return counter;
+				};
+
+				return NewGouzao;
+			}());
+
+
+			当涉及单体模式时，
+
+
+
+
+对象常量
+
+
+	js没有常量的概念。
+
+	使用命名约定，将不该修改的变量，用大写字母突出显示。已经在 内置js对象中使用了。 Math.PI; Number.MAX_SAFE_INTEGER
+
+
+	通用的constant常量对象实现方法。
+
+		set(name, value)
+
+		isDefined(name)
+
+		get(name);
+
+
+	实现：
+		注意：
+			原始值可允许设为常量。
+			不和内置属性名冲突。 hasOwnProperty() 检查。
+
+			在所有常量名前面添加随机生成的前缀，？
+
+
+		var constant = (function(){
+
+			var constants = {},
+				ownProp = Object.prototype.hasOwnProperty,
+				allowed = {
+					string: 1,
+					number: 1,
+					boolean: 1
+				},
+				prefix = (Math.random() + "_").slice(2);
+
+
+			// 公共接口
+			return {
+				set: function(name, value) {
+					if(this.isDefined(name)){
+						return false;
+					}
+					if(!ownProp.call(allowed, typeof value)) {
+						// 这是 看允许常量值，合法不合法。
+						return false;
+					}
+
+					constants[prefix + name] = value;
+					return true;
+				},
+
+				// 看要设置的常量是否已经定义成 内置的了。
+				isDefined: function(name){
+					return ownProp.call(constants, prefix + name);
+				},
+
+				get: function(name) {
+					if(this.isDefined(name)){
+						return constants[prefix + name];
+					}
+
+					return null;
+				}
+			};
+		}());		
+
+		测试：
+
+			constant.isDefined("maxwidth");
+
+			constant.set("maxwidth", 480);
+
+			constant.isDefined("maxwidth");
+
+			constant.set("maxwidth", 320);
+
+			constant.get("maxwidth");
+
+
+链模式
+	当不关注函数返回值时， 返回this。
+
+	优点：
+		创建更简洁的代码。
+
+		帮助分隔函数，创建更简短、具有特定功能的函数。 这提高了代码的可维护性。
+
+	缺点：
+		更难以调试。
+
+			当链中的一个 静默失效时， 无法找到方法， train wreek 模式火车失事
+
+		DOM的 API 也倾向于链模式。
+
+
+
+method()方法
+	向编程语言中添加便利的功能，称为语法糖？
+
+
+	使用：
+
+		var Person = function(name) {
+			this.name = name;
+		}.
+			method('getName', function() {
+				return this.name;
+			}).
+
+			method('setName', function() {
+				this.name = name;
+				return this;
+			});
+
+
+	method() 方法的两个参数：
+		新方法的名称。
+		方法的实现。
+
+	代码中可看出， 该新方法然后 可添加到 Person 类中。 实现是另一个函数。 实现函数内的this指向 了由Person 所创建的对象。
+
+
+	使用：
+		var a = new Person('Adam');
+		a.getName();
+		a.setName('Eve').getName(); // logs 'Eve'。
+
+
+	实现：  
+		if(typeof(Function.prototype.method !== "function")){
+			Function.prototype.method = function(name, 实现函数){
+				this.prototype[name] = 实现函数;
+				return this;
+			};
+		}	
+
+		此处，this指向了 构造函数，其原型得到了增强。
+
+
+
+小结：
+	命名空间模式：
+		以保持全局代码干净， 帮助组织代码结构。
+	声明依赖：
+
+	私有模式的主题的探讨：
+		私有成员、
+		特权方法： 外部访问私有成员的方法。
+		边缘情况下的私有性；
+		具有私有成员的 对象字面量的使用 以及将私有方法揭示为公共方法。
+
+	所有用于构建块的这些模式都是很强大的模块模式。(module pattern);
+		将全局变量导入到模块中
+		导入全局变量有助于加速即时函数中的全局符号解析的速度。
+		因为导入的变量成了该函数的局部变量。
+		MYAPP.utilities.module =  (function(app,global){
+			// 引用全局对象
+			// 以及现在被转换成局部变量的 全局应用程序命名空间对象  MYAPP 和 this
+		}(MYAPP, this));
+
+
+	沙箱模式：
+		可作为长命名空间的替代方法，
+		也可为 代码和模块创建 独立的环境。
+		模块作为 Sandbox 的 静态属性。
+
+
+	对象常量， 静态方法(公有，私有)， 链 和 method() 方法。
+
+
+chap6  代码复用模式
+	
+	尽可能争取编写少的代码，多复用自己或其他人编写好的。
+	尤其是那些质量优秀、 通过测试、 可维护、 可扩展性、 文档化的可复用代码。
+
+
+	代码的继承性。
+	内容：
+		基于类特性 / 非基于类特性的 继承特性。
+
+	目标： 复用代码。		
+
+		对象组合， 
+		mix-in 技术, 
+		技术上没永久继承时， 仅仅借用和复用所需要的功能。
+
+	Gang of Four 该书作者们。
+		优先使用对象组合， 而不是类继承。
+
+
+
+传统与现代继承模式的比较：
+
+	传统 classical inheritance
+		传统的意义：
+			只是 class类 的一种表现形式。
+
+	其他的编程语言。
+		类的概念， 以此作为对象的蓝图。
+
+	js中对象 是简单的键值对， 可动态创建和修改。
+
+	js中有构造函数， new操作符和 使用类的语言，语法类似。
+
+	除了与Java中 强类型限制的情况不同外，其他也类似。
+	Person仍然只是一个函数。
+
+	语法上的相似性：
+		类的方式考虑js。产生了一些假定在 类的基础上的 开发思路和继承模式。称之为 类式 继承模式。
+
+		这里，现代模式表述： 其他任何不需要以 类的方式考虑的模式。
+
+
+
+使用类式继承时的预期结果。
+	
+	实现类式继承的目标：
+		通过构造函数 Child() 获取来自于另外一个构造函数Parent() 的属性，从而创建对象。
+
+注意：
+	虽然讨论的是类式继承模式， 尽量避免使用 class，这个单词。
+	表述为 构造函数， 更精确，不产生歧义。 开发团队交流努力消除 class的使用， 当涉及js时， "class"对于不同人来说意义可能不同。
+
+
+	function Parent(name) {
+		this.name = name || 'Adam';
+	}
+
+	Parent.prototype.say = function () {
+		return this.name;
+	};
+
+	function Child(name) {
+
+	}
+
+	inherit(Child,Parent);
+
+
+	模式：1----默认模式
+		注意： new操作符 
+		function inherit(C, P) {
+			C.prototype = new P();
+		}
+
+		var kid = new Child();
+		kid.say() ;
+
+
+	追溯原型链。
+		指向构造函数 Parent() 的 prototype 属性的隐式链接 __proto__。
+		就可访问原型对象。 Parent.prototype。
+
+		此处仅仅使用 __proto__来解释原型链， 即使在一些环境中 提供了该属性， 在开发中，也不 使用 该属性。
+
+
+	Child() 是空的， 没有任何属性添加到 Child.prototype中。  所以 new Child() 创建的对象除了包含隐式链接__proto__外，几乎是空的。
+
+
+	var kid = new Child();
+	kid.name; // logs Patrick
+	kid.say();   logs Patrick
+
+
+	缺点：
+		同时继承了连个对象的属性，即添加到this的属性以及原型属性。
+
+注意： 
+	对于构造函数一般 经验：将可复用的成员添加到原型中。。
+
+
+		该函数不支持将 参数传递到 子构造函数中，而子构造函数 又将参数传递到父构造函数中，考虑下个例子；
+			var s = new Child('Seth');
+			s.say();
+
+			结果可能不是所期望的。子构造函数可以将参数传递给 父构造函数， 但是，如此做，每次创建个子  对象就要执行该继承机制， 且机制效率低下，
+
+			重复的创建父对象。
+
+
+	模式#2-----借用构造函数。
+
+		解决从子构造函数到父构造函数的参数传递问题。
+
+
+		function Child(a, c, b, d) {
+			Parent.apply(this, arguments);
+		}
+		只能继承在父构造函数中添加到this的 属性。同时，不能继承已经添加到 原型中的成员。
+
+		使用该模式时， 子对象获得的是继承成员的副本， 而#1 中 仅仅获取了引用。
+
+
+		例子---演示差异：
+
+			function Article() {
+				this.tags = ['js', 'css'];
+			}
+
+			var article = new Article();
+
+			// 模式#1
+			function BlogPost() {}
+			BlogPost.prototype = article;
+			var blog = new BlogPost();
+
+			// 模式#2
+			function StaticPage() {
+				Article.call(this);
+			}
+			var page = new StaticPage();
+
+			console.log(article.hasOwnProperty('tags'));
+			console.log(blog.hasOwnProperty('tags'));
+			console.log(page.hasOwnProperty('tags'));
+			T F T。
+
+			新对象会获得父对象中 tags成员的副本。
+
+
+		修改继承的 tags属性。
+			blog.tags.push('html');
+			page.tags.push('php');
+			console.log(article.tags.join(', '))
+
+			logs   "js, css, html".
+
+			继承过程中， page.tags独立创建了副本。
+
+
+	该模式下，原型链的工作流程。
+
+		function Parent(name) {
+			this.name = name || 'Adam';
+		}
+
+		// 向该原型添加功能
+
+		Parent.prototype.say = function() {
+			return this.name;
+		};
+
+		function Child(name) {
+			Parent.apply(this, arguments);
+		}
+
+		var kid = new Child('Patrick');
+		kid.name; // Patrick
+		typeof kid.say;  logs "undefined"
+
+		模式中， 继承是 一个一次性的操作，仅仅会复制 父对象的属性并将其作为 子对象自身的属性。
+
+		也不会保留 __proto__链接。
+
+--------------------------------------------
+		实现多重继承：
+
+		function Cat(){
+			this.legs = 4;
+			this.say = function() {
+				return "miaomiaomiao";
+			}
+		}
+
+		function Bird() {
+			this.wings = 2;
+			this.fly = true;
+		}
+		function CatWings() {
+			Cat.apply(this);
+			Bird.apply(this);
+		}
+
+		var jane = new CatWings();
+		console.dir(jane);
+
+
+
+-----------------------
+	优缺点：
+		无法从原型中继承任何东西， 且原型也仅仅是添加可重用方法以及属性的 位置， 不会为每个实例重新创建 原型。
+
+		优点：
+			获得父对象自身成员的真实副本， 不会存在子对象意外覆盖 父对象 属性的风险。
+
+
+	如何才能使子对象也能继承原型属性， 以及如何使kid能够 访问 say() 方法。
+
+
+模式#3----借用和设置原型
+	结合前两种模式。
+
+	// 借用构造函数
+	function Child(a,c,b,d) {
+		Parent.apply(this, auguments);
+	}
+
+	Child.prototype = new Parent();
+
+
+	优点：
+		代码运行后的结果对象能够获得父对象本身的成员副本，
+		以及指向父对象中 可复用功能 (以原型成员方式实现 的那些功能) 的引用。
+
+		同时，子对象也能传递任意参数 到父 构造函数中。
+
+		实现了----->
+			继承父对象的一切东西，成员副本，复用功能。
+			安全的修改自身  属性，且不会带来修改其父对象的风险。
+
+
+	缺点：	
+		父 构造函数被调用两次， 因此这导致了其效率低下的问题。自身的属性被继承两次。？
+
+
+		示例：
+			function Parent(name) {
+				this.name = name || 'Adam';
+			}
+
+			Parent.prototype.say = function() {
+				return this.name;
+			};
+
+
+			function Child(name) {
+				Parent.apply(this, auguments);
+			}
+
+			Child.prototype = new Parent();
+
+			var kid = new Child('Patrick');
+			kid.name;
+			kid.say();    // logs  Patrick
+
+			delete kid.name;
+			kid.say();     // logs  "Adam"
+
+		代码：
+			say() 已被正确地继承。 name属性被继承两次。 ，在删除kid本身的name 属性的副本后？--副本？
+			看到的是原型链表现出来  所引出的name属性。
+
+
+类式继承模式#4----共享原型
+	
+	经验法则：
+		可复用成员应该转移到 原型中而不是 放置在 this中。
+
+	因此出于继承的目的，任何值得继承的东西都应该放置在原型中实现。
+
+	所以，让子对象的原型 指向 父对象原型？
+		原话： 设置为相同的即可。
+		function inherit(C, P) {
+			C.prototype = P.prototype;
+		}
+
+	当前， 模式提供了 简短而迅速的原型链查询， 因为所有的 对象实际上共享了 同一个原型。
+
+		存在的缺点：
+			继承链下方的某处 存在一个 子对象修改了原型， 将影响到所有的 父对象和 祖先对象。
+
+	解决：
+
+模式#5  临时构造函数。
+	临时构造函数， 断开父对象与子对象 的原型之间的 直接链接关系。 解决问题，同时继续受益于原型链带来的好处。
+
+
+	function inherit(C, P) {
+		var F = function() {};   // 充当了子对象和父对象之间 的代理。临时代理构造函数 
+		F.prototype = P.prototype;
+		C.prototype = new F();
+	}
+	子对象将  仅仅继承 原型 对象的属性。  父构造函数添加到 this的任何成员 都不会继承。
+
+
+	所有继承了Parent() 的不同构造函数，以及所有由 其子 构造函数 创建的对象 都可重用 该 say() 方法。
+
+	1.  存储下超类
+		该模式的基础上，添加一个指向原始父对象的引用。 像 其他编程语言中 访问超类一样，偶尔 派上用场。
+
+		由于super 是保留字， superclass可能让人误解js中 有类。
+
+		function inherit(C, P){
+			var F = function() {};
+			F.prototype = P.prototype;
+			C.prototype = new F();
+			C.uber = P.prototype;
+			C.prototype.constructor = C; // 我自己加的。
+		}
+
+	2.重置构造函数指针
+		为了以后 使用该 构造函数。
+		否则： 所有 子对象将会报告 Parent() 是他们的构造函数，这是没用处的。
+
+		constructor 属性，主要用于提供对象的信息。 可方便的用于 运行时对象的 内省   ？？内部检查？  constructor.name == XXX.
+		可重置该 属性，使其指向期望的构造函数 且不影响其功能。
+
+		function inherit(C, P){
+			var F = function() {};
+			F.prototype = P.prototype;
+			C.prototype = new F();
+			C.uber = P.prototype;
+			C.prototype.constructor = C; // 我自己加的。
+		}
+
+
+	这种模式 ，也被称为  使用代理函数 / 代理构造函数的模式， 而不是使用 临时构造函数的 模式。
+	因为临时构造函数 实际上是 一个用于获得父对象的原型的代理。
+
+
+	对于上述的一个常见优化是， 避免在每次需要继承时都创建 临时(代理) 构造函数。
+		仅仅创建一次 临时(代理) 构造函数，且修改其原型。
+
+
+		var inherit = (function(){
+			var F = function() {};
+			return function(C, P){
+				F.prototype = P.prototype;
+				C.prototype = new F();
+				C.uber = P.prototype;
+				C.prototype.constructor = C;
+			}
+		}());
+
+
+================================
+Klass
+	
+	许多js库都模拟了类的概念， 增加了更便利的语法。
+
+	都有一套有关如何命名类方法的公约， 这也被认为是类的构造函数，， initialize/ _init 和其他类似的构造函数名， 在创建对象时，这些方法 被自动调用。
+
+	存在从其他类继承的类
+	在子类中 可访问父类或超类。
+
+	示例：
+		va Man = klass(null, {
+			_construct: function(what) {
+				console.log("Man's constructor");
+				this.name = what;
+			},
+
+			getName: function() {
+				return this.name;
+			}
+		})
+		该类没继承其他类，意味着后台继承了Object类。
+		该类也是个构造函数。
+
+	null, 第一个参数，将被继承的父类
+	第二参， 对象字面量所提供的新类 的实现。
+
+
+	扩充该类，创建 SuperMan类
+
+
+		var SuperMan = klass(Man,{
+			_construct: function (what) {
+				console.log("SuperMan's constructor");
+			},
+			getName: function() {
+				var name = SuperMan.uber.getName.call(this);
+				return "I am" + name;
+			}
+		});
+
+
+		大多数基于类的语言中， 每次调用子类的构造函数时，父类的构造函数也将会被自动调用。
+
+----->
+	测试 instanceof 期望返回
+
+	clark instanceof Man;
+	clark instanceof SuperMan; // 都是true
+
+
+	var klass = function(Parent, props) {
+		var Child, F, i;
+
+		// 1.
+		// 新构造函数
+		Child = function() {
+			if(Child.uber && Child.uber.hasOwnProperty("__construct")) {
+				Child.uber.__construct.apply(this, arguments);
+			}
+
+			if(Child.prototype.hasOwnProperty("__construct")) {
+				Child.prototype.__construct.apply(this, auguments);
+			}
+		};
+
+		// 2.
+		// 继承
+		Parent = Parent || Object;
+		F = function() {};
+		F.prototype = Parent.prototype;
+		Child.prototype = new F();
+		Child.uber = Parent.prototype;
+		Child.prototype.constructor = Child;
+
+
+		// 3.
+		// 添加实现方法
+		for(i in props) {
+			if(props.hasOwnProperty(i)) {
+				Child.prototype[i] = props[i];
+			}
+		}
+
+
+		// 返回该 "class"
+		return Child;
+	};
+
+	避免使用该模式。
+
+		优点：
+			可以调整语法和公约以使其与您喜爱的语言风格相类似。
+
+
+
+原型继承
+
+	无类继承模式。
+		考虑： 有一个想要复用的对象，且想创建的第二个对象需要从第一个对象中获取其功能。
+
+	示例：
+	
+
+		function object(obj) {
+			function F() {};
+			F.prototype = obj;
+			return new F();
+		}
+
+		var parent = {
+			name: "Papa"
+		};
+
+		var child = object(parent);
+
+		console.log(child.name);
+		使用原型继承模式时的原型链。
+			child() 最初是个空对象，没有自身的属性，但同时又通过 受益于 __proto__ 链接有其父对象的全部功能。
+
+	讨论：
+
+		对象继承自对象，不论 父对象如何创建。
+
+		function Person() {
+			this.name = "Adam";
+		}
+
+		Person.prototype.getName = function() {
+			return this.name;
+		}
+
+		var papa = new Person();
+
+		var kid = object(papa);
+
+		// 测试自身的属性 和继承的原型属性
+		// kid.getName();  
+
+		解释：
+			this.name 是创建对象 的 Own 属性，
+			getName, 是继承的原型属性。
+
+
+
+增加到es5 中。
+	es5 中， 原型继承模式已经成为语言的一部分。该模式通过 Object.create() 实现。
+
+
+	var child = Object.create(parent, {
+		age: {value : 2 }
+	});
+	child.hasOwnProperty("age"); // true。
+
+
+
+通过复制属性实现继承 模式
+
+	浅复制：
+	function extend(parent, child) {
+		var i;
+			child = child || {};
+
+		for(i in parent) {
+			if(parent.hasOwnProperty(i)) {
+				child[i] = parent[i];
+			}
+		}
+
+		return child;
+	}
+
+	深度复制：
+		对象，数组通过引用传递的应注意。
+
+
+	function extendDeep(parent, child) {
+		var i,
+			toStr = Object.prototype.toString,
+			astr = "[object Array]";
+
+		child = child || {};
+		for(i in parent) {
+			if(parent.hasOwnProperty(i)) {
+				if(typeof(parent[i] === "object")) {
+					child[i] = (toStr.call(parent[i]) === arrStr) ? [] : {}; // 判断是数组还是对象
+					extendDeep(parent[i], child[i]);
+				}else {
+					child[i] = parent[i];
+				}
+			}
+		}
+		return child;
+	}
+
+
+	var dad = {
+		counts: [1,2,3],
+		reads: {paper: true}
+	};
+
+	var kid = extendDeep(dad);
+
+	kid.counts.push(4);
+	kid.counts.toString();  1234
+	dad.counts.toString();  123
+
+	dad.reads === kid.reads; // false
+	kid.reads.paper = false;
+
+
+	kid.reads.web = true;
+	dad.reads.paper; // true
+
+	jq库中的 extend() 可创建深度复制 的副本。
+	本模式中，只涉及对象和 他们自身的属性。
+
+
+
+混入
+	
+	不复制完整对象，而是从多个对象中复制出任意成员并将 这些成员组合成一个 新的 对象。
+
+	mix-in的实现：
+		简单，只需遍历每个参数，且复制出传递给该参数的每个对象中的每个属性。
+
+
+		function mix() {
+			var arg, prop, child = {};
+			for(arg = 0; arg < arguments.length; arg += 1) {
+				for(prop in arguments[arg]) {
+					if( arguments[arg].hasOwnProperty(prop)) {
+						child[prop] = arguments[arg][prop];
+					}
+				}
+			}
+
+			return child;
+		}
+
+		该函数将所有传入对象的属性都 合到了一起。
+
+
+注意：
+	若习惯需 mix-in的概念， 可能希望在修改 一个或多个父对象时， 可影响其子对象， 本节实现知识简单 循环、 复制自身的属性，以及断开与父对象之间的链接。
+
+
+
+	借用方法模式
+		call() apply()
+
+		可传递对象， 任意参数以及借用方法， 将其绑定到 对象中， 以作为 this本身的成员。
+
+
+	例子：
+		借用数组的方法：
+
+			function f() {
+				var args = [].slice.call(arguments, 1, 3);
+				return args;
+			}
+
+			slice 左闭右开。 (1,2)  [1,2,3] -->2
+
+
+
+借用和绑定
+	
+	借用方法的内部，this所指向的 对象基于 调用表达式 而确定的。
+
+	有时，最好能锁定 this的值，或者将其绑定到特定对象并 预先确定该对象。
+
+	绑定对象和方法的关系：
+
+		function bind(obj) {
+			return function() {
+				return m.apply(obj, [].slice.call(arguments));
+			};
+		}
+
+	返回的函数可通过闭包来访问 obj, 和method。
+
+	奢侈的拥有绑定需要付出 的代价就是额外闭包的开销。
+
+
+	es5中 ，bind添加到 了Function.prototype。
+
+		var newFunc = obj.someFunc.bind(myobj, 1, 2, 3);
+
+		将 someFunc() 和 myobj绑定到一起， 且填充 someFunc() 期望的前3个参数。
+
+
+	es5 之前的环境中实现：
+
+		if(typeof(Function.prototype.bind) === "undefined") {
+			Function.prototype.bind = function(thisArg) {
+				var fn = this,
+					slice = Array.prototype.slice,
+					args = slice.call(arguments, 1);
+
+
+				return function() {
+					return fn.apply(thisArg, args.concat(slice.call(arguments)));
+				} 
+			}
+		}
+
+
+
+小结：
+	代码重用是 最终目的，继承只是实现这一目标的方法之一。
+
+总结：
+	类式继承，构造函数 上实现 "继承"
+		1.默认方式，子对象原型 指向 父对象。
+		    new Child() 中只有 __proto__，用的都是父对象
+		2.借用构造函数
+			实现参数传递。
+		3.借用构造函数，指定原型
+
+		4.共享原型
+			存在的缺点：
+			继承链下方的某处 存在一个 子对象修改了原型， 将影响到所有的 父对象和 祖先对象。
+		5.临时构造函数
+			存储超类，重置构造函数指针。
+			圣杯模式。 避免每次调用都创建临时构造函数
+
+	原型继承
+		可复用的成员写在原型对象。
+		
+		Object.create(obj, {});
+		深浅 复制。
+		mix-in
+		借用和绑定。
+
+
+chap7  设计模式
+	
+	设计模式一书，提供了许多面向对象软件设计中的很多解决方案，
+
+	这些模式与语言和实现方式无关。
+
+	js是一种弱类型、 动态的、 基于原型的语言。这些语言特性使得它非常容易 、甚至是普通的方式 实现其中的一些模式。
+
+
+
+单体模式
+	的思想在于保证一个特定类仅有一个实例。
+
+	js中没有类， 当创建一个新对象时， 实际没有对象与其类似，新对象已经是单体了。
+
+	可认为为每次使用 对象字面量创建对象时，实际上正在创建单体。
+
+
+
+
+注意： 
+	当人们在js上下文中谈论 "单体" 时，指的是模块模式。
+
+
+	使用 new 操作符
+		每次返回的都指向 完全相同的对象的新指针。
+
+	示例代码：
+		var uni = new Universe();
+		var uni2 = new Universe();
+
+
+		需要 Universe构造函数缓存 对象实例 this, 以便当第二次调用该函数时，能够创建并返回同一个对象。
+
+			用全局变量存储该实例。 不推荐， 因为一般原则下，全局变量是有缺点的。除此之外，任何人都能够覆盖  该全局变量。即使是意外事件。
+
+			可在构造函数的静态属性中缓存该实例。
+				js中的函数也是对象。 可使用类似， Universe.instance 将实例缓存在该属性 中。
+				缺点： instance 公开可访问， 外部代码可能修改， 导致实例丢失。
+
+			可将该实例包装在闭包中。保证实例的私有性，且不会被构造函数外的代码修改。
+				代价是带来了额外的闭包开销。
+
+
+
+
+	静态属性中的实例
+
+		function Universe() {
+
+			// 先查看是否有
+			if(typeof(Universe.instance === "object")) {
+				return Universe.instance;
+			}
+
+			// 正常运行
+			this.start_time = 0;
+			this.bang = "Big";
+
+			// 缓存 
+			Universe.instance = this;
+
+			// 隐式返回
+			// return this;
+		}
+
+		缺点在于 instance属性公开， 可能被修改。
+
+
+	闭包中的实例：
+
+		重写构造函数。
+
+		function Universe() {
+			var instance = this;
+
+			// 正常运行
+			this.start_time = 0;
+			this.bang = "Big";
+
+			// 重写
+			Universe = function() {
+				return instance;
+			};
+		}
+
+		首次运行时，返回this。之后的每次调用，将执行 重写的构造函数。
+		该重写构造函数通过闭包访问了私有 instance
+		变量。 且返回了该instance 。
+
+
+		实际上使用了自定义函数模式。
+			重写构造函数， 构造函数会丢失所有在初始定义和 重定义 之间添加的属性。
+
+
+			测试：
+
+				// 原型先添加属性
+				Universe.prototype.nothing = true;
+
+				var uni = new Universe();
+
+				// 已经创建一次，调用一次后
+				// 再向 该原型添加属性
+				Universe.prototype.everything = true;
+
+				var uni2 = new Universe();
+
+				-------
+				ceshi
+
+				// 
+
+				uni.nothing;
+				uni2.nothing;
+
+				uni.everything;
+				uni2.everything;
+
+				// 结果看上去是正确的
+				uni.constructor.name;
+
+				uni.constructor === Universe; // false;
+
+			之所以不同， 是因为 uni.constructor 仍然指向了原始的 构造函数。
+
+			构造函数已经改变
+			console.dir(Universe)
+				[[Scope]]:  Closure
+							Script
+							Global
+			原型也被冲洗了。
+
+	需要原型和 构造函数指针按照预期的那样运行。
+
+		function Universe() {
+
+			// 缓存实例
+			var instance;
+
+			// 重写构造函数
+			Universe = function Universe() {
+				return instance;
+			};
+
+
+			// 保留原型属性
+			Universe.prototype = this;
+
+			// 实例
+			instance = new Universe();
+
+			// 重置构造函数指针
+			instance.constructor = Universe;
+
+			// 所有功能
+			instance.start_time = 0;
+			instance.bang = "Big";
+
+			return instance;
+		}
+
+
+
+		测试：
+			// 更新原型并创建实例
+			Universe.prototype.nothing = true;
+			var un1 = new Universe();
+
+			Universe.prototype.everything = true;
+			var un2 = new Universe();
+
+			// 他们是相同的实例。
+			console.log(un1 === un2);
+
+
+			// 无论原型属性何时定义
+			// 所有原型属性都起作用
+			un1.nothing && un1.everything && un2.nothing && un2.everything;
+
+			console.log(un1.bang);
+			console.log(un1.constructor === Universe);
+
+
+		var Universe;
+
+		(function(){
+			var instance;
+
+			Universe = function() {
+				if (instance) {  // 如果instace 已经是 对象了。
+					return instance;
+				}
+
+				instance = this;
+
+				// 所有功能
+				this.start_time = 0;
+				this.bang = "Big";
+			};
+		}());
+
+
+
+
+
+工厂模式
+	设计该模式的目的是 为了创建对象。 它 通常在类或类的静态方法中实现。
+
+		实现的目标：
+			当创建相似 对象时 执行重复操作。
+			编译时不 明确具体类型时， 为工厂客户提供一种创建 对象的接口。
+
+
+	静态类语言中第二点显得更 重要。 在静态语言，在编译时不知道实例所属的类。js中 实现起来比较容易。
+
+
+		实现例子：
+
+			公共父构造函数 CarMaker.
+
+			名为factory() 的CarMaker 的静态方法，该方法创建Car 对象。
+
+			从CarMaker继承 的专门 构造函数 CarMaker.Compact/ CarMaker.SUV/ CarMaker.Convertible。 都被定义为父类的静态属性， 以便保证全局变量空间命名空间免受污染。
+
+
+			var corolla =  CarMaker.factory('Compact');
+
+			当前的工厂方法接受 在运行时以字符串形式指定 的类型。
+
+
+		示例：
+			// 父构造函数
+			function CarMaker() {}
+
+			// 父构造函数的一个方法
+			CarMaker.prototype.drive = function() {
+				return "我这个车, 有 " + this.doors + "门 ";
+			}
+
+			// "静态" 工厂方法
+
+			CarMaker.factory = function(type) {
+				var constr = type,
+					newcar;
+
+				// 若相关构造函数不存在，就报错
+				if(typeof(CarMaker[constr] !== "function")) {
+					throw {
+						name: "Error",
+						message: constr + " 构造函数不存在"
+					};
+				}
+
+				// 已知构造函数存在
+				// 使原型继承父类， 仅继承一次
+
+				if(typeof(CarMaker[constr].prototype.drive !== "function")) {
+					// 当子构造函数，原型属性没有 drive方法
+					CarMaker[constr].prototype = new CarMaker();
+				}
+				// 创建一个新的实例
+
+				new car = new CarMaker[constr]();
+
+				// 可选择性的调用些方法然后返回
+				// ...
+
+				return newcar;
+			};
+
+			// 定义 特定汽车制造商
+			CarMaker.Compact = function() {
+				this.doors = 4;
+			};
+
+			CarMaker.Convertible = function() {
+				this.doors = 2;
+			};
+			CarMaker.SUV =  function() {
+				this.doors = 24;
+			};
+
+
+			实现该工厂模式没特别困难。
+			所有需要做的就是寻找能够创建 所需类型对象的构造函数。
+			继承部分仅是可以放进工厂方法的一个公用重复代码片段的范例， 而不是对没中类型的 构造函数的重复。
+
+
+	内置对象工厂。
+
+		"自然工厂"的例子， 内置的全局 Object()构造函数。它也表现出工厂的行为，因为它根据输入类型而创建不同的对象。
+		无论 new 使用与否，都可调用 Object()。
+
+
+
+迭代器模式
+	包含某种数据集合的对象，该数据可能存储在一个复杂数据结构内部， 需要提供方法能访问数据结构中每个元素。
+
+	next()方法。 依次调用该方法必须返回下一个 连续的元素。 特定数据结构中， "下一个"所代表的意义由您来决定。
+
+
+	hasNext() ，判断是否已经到达数据末尾。
+
+	在实现迭代器模式时，私下的存储数据和指向下一个可用元素的指针 是很有意义的。
+
+
+		demo:
+
+			var agg = (function(){
+				var index = 0,
+					data = [1,2,3,4,5],
+					length = data.length;
+
+				return {
+					next: function() {
+						var element;
+						if(!this.hasNext()) {
+							return null;
+						}
+						element = data[index];
+						index = index + 2;
+						return element;
+					},
+
+					hasNext: function() {
+						return index < length;
+					},
+					rewind: function() {
+						index = 0;
+					},
+
+					current: function() {
+						return data[index];
+					}
+				};
+			}());
+
+	为提供更简单的访问方式以及 多次迭代数据的能力：还可提供
+
+		rewind()
+			重置指针到初始位
+		current()
+			返回当前元素，因为不可能在不前进指针的情况下使用 next() 执行该操作。
+
+		实现：
+
+			var agg = (function(){
+				// 省略数据，局部变量的定义。
+				return {
+					// 跳过 next() hasnext()
+
+					rewind: function() {
+						index = 0;
+					},
+
+					current: function() {
+						return data[index];
+					}
+				};
+			}());
+
+		测试该迭代器：
+			while(agg.hasNext()){
+				console.log(agg.next());
+			}
+
+			agg.rewind();
+			console.log(agg.current());
+
+
+
+装饰者模式
+	该模式中，可以在运行时动态添加附加功能到对象中。
+	处理静态类时可能是个挑战。 js中，由于对象是可变的因此添加功能到对象中的 过程不是问题。
+
+	该模式的一个比较方便的特征在于其预期行为的可定制和可配置特性。
+	从仅具有一些基本功能的普通对象开始， 从可用装饰资源池中选择需要用于 增强普通对象的那些功能， 且按照顺序进行装饰，尤其当装饰 顺序很重要时。
+
+	用法：
+		销售商品的web引用。
+		每笔销售是一个新的sale对象，该对象知道 价格, getPrice() 可返回价格。 根据不同情况， 可能需要额外功能装饰 该对象。跨州消费时，需要支付联邦税，魁北克省税。
+		遵循该模式， 需要使用联邦税装饰者和 魁北克省税装饰者 来装饰 该对象。 之后可使用 价格格式化功能 装饰盖对象。
+
+		var sale = new Sale(100);
+		sale = sale.decorate('fedtax');
+		sale = sale.decorate('quebectax');
+		sale = sale.decorate('money');
+		sale.getPrice();
+
+		也可能没省税，但可能需要另一种货币形式
+		var sale = new Sale(100);
+		sale = sale.decorate('fedtax');
+		sale = sale.decorate('money');
+		sale.getPrice();
+
+
+		该方法很灵活，可用于增加功能以及调整运行时对象。
+
+
+	实现：
+		使得每个装饰者成为一个对象。每个装饰者实际上继承了目前已经被前一个 装饰者进行增强后的对象。
+
+		效果是， 当 sale.getPrice() 时，调用了money装饰者的方法。 每个装饰方法首先调用父对象的 方法， money 的 getPrice() 会调用 quebec的 getPrice()。 根据需要 依次调用 fedtax的 getPrice() ...。 
+		直到，调用链攀升到 由 Sale() 构造函数所实现 的原型 未经装饰 的 getPrice()。
+
+
+		实现：
+			function Sale() {
+				this.price = price || 100;
+			}
+			Sale.prototype.getPrice = function() {
+				return this.price;
+			};
+			
+			装饰者对象 都以 构造函数的属性 的方式来实现。
+			Sale.decorators = {};
+
+				先看一个装饰者示例：
+
+				Sale.decorators.fedtax = {
+					getPrice: function(){
+						var price = this.uber.getPrice();
+						price += price * 5 / 100;
+						return price;
+					}
+				};
+				先从父对象获得值，之后再装饰修改。
+
+				装饰者数量由需求决定，本例中，他们是核心Sale()功能的扩展， 也可实现成插件。 
+				它们甚至可 驻留在其他文件中，被第三方 开发人员开发和共享。
+
+
+				Sale.decorators.qubec = {
+					getPrice: function() {
+						var price = this.uber.getPrice();
+						price += price * 7.5 / 100;
+						return price;
+					}
+				};
+
+				Sale.decorators.money = {
+					getPrice: function() {
+						return "$" + this.uber.getPrice().toFixed(2);
+					}
+				};
+
+				Sale.decorators.cdn = {
+					getPrice(): function () {
+						return "CDN$" + this.uber.getPrice().toFixed(2);
+					}
+				};
+
+			decorate()， 它可以将所有的块拼接在一起。
+				调用： sale = sale.decorate('fedtax');
+			新装饰的对象newobj 将继承目前我们所拥有的 对象。(无论是原始对象，还是已经添加了最后的装饰者的对象)， 这也就是对象this。
+
+			-------------
+			首先，设置了 newobj 的 uber属性，以便于 子对象可访问父 对象。
+
+			之后， 从装饰者中将所有额外属性复制到新装饰的对象newobj 中。
+
+			最后返回newobj。
+				本例子中，实际上成为更新了 的 sale对象。
+
+				Sale.prototype.decorate = function(decorator) {
+					var F = function() {},
+						overrides = this.constructor.decorators[decorator],  //取到 装饰者
+						i,
+						newobj;
+					F.prototype = this;
+					newobj = new F();
+					newobj.uber = F.prototype;
+
+					for(i in overrides) {
+						if(overrides.hasOwnProperty(i)) {
+							newobj[i] = overrides[i];
+						}
+					}
+					return newobj;
+				};
+
+	小结：
+		装饰者模式，给原始对象添加功能扩张，增强原始对象的功能。
+
+		function Gouzao(price) { this.price = price || 100}
+		Gouzao.prototype.getPrice = function() {return this.price;}
+
+		需求，对价格格式化，价格上+ 税
+		Gouzao.prototype.decorators = {};
+
+		decorator.jiashui = {
+			getPrice: function(){
+				var price = this.uber.getPrice;
+				price += 0.5 * price;
+				return price;
+			}
+		}
+
+		var obj = new Gouzao();
+		obj = obj.decorate('jiashui');
+		obj.getPrice();
+
+		Gouzao.prototype.decorate = function(decorator) {
+			var newobj,
+				overrides = this.constructor.decorators[decorator],
+				i,
+				F = function() {};
+			F.prototype = this;
+			newobj = new F();
+			newobj.uber = F.prototype;
+
+			for(i in overrides){
+				if(overrides.hasOwnProperty(i)){
+					newobj = overrides[i];
+				}
+			}
+			return newobj;
+		}
+
+
+	使用列表实现
+
+		利用了js语言的动态性质，不使用继承。
+
+		不是使每个 装饰方法  调用链中前面 的方法， 可简单的将前面方法的结果作为参数 传递给下一个方法。 
+
+		该实现方法：
+			很容易的支持 反装饰 或撤销装饰， 就是从装饰者列表中删除一个项目。、
+
+
+		用法示例：
+			var sale = new Sale(100);
+			sale.decorate('fedtax');
+			sale.decorate('quebectax');
+			sale.decorate('money');
+			sale.getPrice();
+
+			当前的构造函数，有一个装饰者列表，且作为自身属性。
+
+
+			function Sale(price) {
+				this.price = price || 100;
+				this.decorators_list = [];
+			}
+
+		装饰者：
+
+			Sale.decorators = {};
+			Sale.decorators.fedtax = {
+				getPrice: function(price) {
+					return price + price * 5 / 100;
+				}
+			};
+
+			Sale.decorators.quebec = {
+				getPrice: function(price) {
+					return price + price * 7.5 / 100;
+				}
+			};
+
+			Sale.decorators.money = {
+				getPrice: function(price) {
+					return "$" + price.toFixed(2);
+				}
+			};
+
+
+		Sale.prototype.decorate = function(decortor) {
+			this.decorators_list.push(decortor);
+		};
+
+		Sale.prototype.getPrice = function() {
+			var price = this.price,
+				i,
+				max = this.decorators_list.length,
+				name;
+			for(i = 0; i < max ; i += 1){
+				name = this.decorators_list[i];
+				price = Sale.decorators[name].getPrice(price);
+			}
+			return price;
+		};
+
+		模式的第二种实现方法更为简单，且不涉及继承。
+		装饰方法也简单。 所有的工作 都是通过 同意被装饰的 方法来完成。
+
+			若要有更多 可被装饰的方法，那每个额外的装饰方法都需要重复遍历 装饰者列表这一部分的代码。
+
+			这很容易 抽象成一个辅助方法，通过它来接受方法 并使其成为可装饰的方法。
+
+		在这样的实现中，sale 中的 decorators_list属性 变成了对象，且该对象中的每个属性都是以装饰对象数组中的方法和值命名。
+
+			decorators_list = {
+				money : 返回的值,
+			}
+
+
+策略模式
+	运行时选择算法。 代码的客户端可使用同一个接口来工作， 但是它却根据用户正在试图执行任务的 上下文，从多个算法中选择用于处理特定任务的算法。
+
+	使用该模式的一个例子是 解决表单验证问题。创建有验证方法的验证器 对象。
+
+		根据具体的表单形式以及待验证的数据，验证器的客户端可能选择不同类型的检查方法。
+		验证器 将选择最佳的 策略以 处理任务，且将具体的数据验证委托给适当的算法。
+
+		配置： 检查的对象。  types。
+			验证哪些数据，type ： 检查的方法， checker;  
+	数据验证示例
+
+		一个数据块，可能来自网页上的一个表单，需验证其是否有效。
+
+		var data = {
+			first_name: "",
+			last_name: "",
+			age: "",
+			username: ""
+		};
+
+	为使验证器知道什么是最好的策略，首先需要配置该验证器。  且设置认为 是有效且 可接受的规则。
+
+		如：
+			validator.config = {
+				first_name: "isNotEmpty",
+				age: 'isNumber',
+				username:'isAlphaNum'
+			}
+
+		此时，验证器对象已经配置完毕 并可用于数据处理。
+
+			validator.validate(data);
+			if(validator.hasErrors()) {
+				console.log(validator.messages.join("\n"));
+			}
+
+	如何实现验证器的？用于检查的可用算法也是对象，它们有个预定义的接口， 提供了 validate() 和 可用于提示错误消息的一行帮助信息。
+
+		validator.types.isNumber = {
+			validate: function (value) {
+				return !isNaN(value);
+			},
+
+			instructions: "the value can only be a valid number, e.g. 1,  3.14  or 2010"
+		};
+
+		validator.types.isAlphaNum = {
+			validate: function (value) {
+				return !/[^a-z0-9]/i.test(value);
+			},
+			instructions: "值只能 有数字字母"
+		}
+
+
+		核心的 validator对象：
+
+			var validator = {
+
+				// 所有可用对象, 可用检查对象
+				types: {},
+
+				// 在当前验证会话中的 错误消息
+				messages: [],
+
+				// 当前验证配置 ， 当前需要验证哪些字段
+				// 名称: 验证类型
+				config: {},
+
+				// 接口方法
+				// `data` 为键-值对
+				validate: function(data) {
+
+					var i,
+						msg,
+						type,
+						checker,
+						result_ok;
+
+					// 重置所有信息
+					this.messages = [];
+
+					for( i in data ){
+
+						if(data.hasOwnProperty(i)){
+							type = this.config[i]; // 进行什么样的类型检查
+							checker = this.types[type]; // 具体的检查者（方法）
+
+
+							if(!type) {
+								continue; // 不需要验证
+							}
+
+							if(!checker) {
+								throw {
+									name: "验证出错",
+									message: "没有处理方法去验证 类型 " + type
+								};
+							}
+
+							result_ok = checker.validate(data[i]);
+
+							if(!result_ok) {
+								msg = "无效的数据输入，在该区域 *" + i + "*, " + checker.instructions;
+
+								this.messages.push(msg);
+							}
+						}
+					
+					}
+
+					return this.hasErrors(); //返回帮助信息。
+				},
+
+				// 帮助程序
+				hasErrors: function() {
+					return this.messages.length !== 0;
+				}
+			};
+
+
+	validator对象是通用的，
+		增强validator对象的方法是添加更多的类型检查。 若在多个页面使用它， 将有一个优良的特定检查集合。
+
+		之后，针对每个新的用例，只需要配置该验证器，并运行 validate() 方法。
+
+
+
+外观模式
+
+	为对象提供了一个可供选择的接口。
+
+	创建一个方法以包装重复的方法调用。
+
+	如：
+		当处理浏览器事件时，有以下方法。
+
+			stopPropagation()
+			preventDefault()
+
+		两个单独的方法，且有不同目标。它们应该保持互相独立，但同一时间，常被一起调用。
+		所以，不需要在程序中到处复制这俩方法调用， 可创建外观方法从而调用这俩方法。
+
+			var myevent = {
+				// ...
+				stop: function(e) {
+					e.preventDefault();
+					e.stopPropagation();
+				}
+				// ...
+			};
+
+		外观模式，也适合于浏览器脚本处理，可将浏览器的差异处理隐藏在外观后。
+
+			之前的代码，添加 IE 的API
+
+		对重新设计和重构工作 也有帮助。 当需要替换一个具有不同实现的对象时，使用外观模式， 首先考虑新对象的 API，在原有对象前 创建一个外观。
+		当需要完全取代原有对象时，仅需修改更少 的客户端代码。 因为任何最新的客户端代码已经使用了这个API。
+
+
+
+代理模式
+	一个对象充当另一个对象的接口。代理是 介于对象的客户端 (请求服务，获得响应)  和对象本身之间， 且对该对象的访问进行保护。
+
+	看起来像额外开销，但出于性能因素考虑很有用。 代理充当 本地对象的 守护对象， 且试图使本体对象做尽可能少的工作。
+
+
+	使用该模式的一个例子，延迟初始化 的方法。
+		初始化本地对象开销大，并且客户端初始化该本体对象后，应用程序还不用它。
+		此时，用代理替换本体对象的接口。 代理接收请求，直到该本体对象明确的被实际使用之前，代理从不会将该请求传递给本体对象。
+
+
+
+	范例：
+		本体对象执行些开销很大的操作，该模式很适用。
+
+		web应用中，开销最大的操作就是网络请求，因此，合并更多的HTTP 请求 就很需要。
+
+
+		例子：
+			视频展开。 播放选定艺术家视频的小程序。
+
+
+			构成：
+				视频标题的清单。
+					点击一个标题时，下边区域展开以显示有关视频的更多信息。且有启用视频播放功能。
+
+				详细的信息和网址不是该页面的一部分，需要通过 建立web服务 调用 以进行检索获得。
+
+				web服务可接受多个以 视频ID为参数的查询， 可构造更少的请求，且每次检索多个 视频数据， 加速应用程序。
+
+			应用程序支持同时展开多个或全部视频信息， 这是合并web服务请求的一个完美机会。
+
+
+		没有代理的情况：
+
+			主要参与者两个对象：
+				videos ： 负责展开/折叠 videos.getInfo() 信息区， 播放视频 videos.getPlayer
+				http:	http.makeRequest() 来负责与服务器的通信。
+
+
+			使用代理 proxy时， 位于对象 videos 和对象 http之间。
+
+
+			HTTP结构：
+
+				链接列表：
+
+			事件处理程序：
+
+				var $ = function(id) {
+					return document.getElementById(id);
+				};
+
+
+			$('vids').onclick = function(e) {
+				var src, id;
+
+				e = e || window.event;
+
+				src = e.target || e.srcElement;
+
+				if(src.nodeName !== "A") {
+					return;
+				}
+
+				if(typeof(e.preventDefault === "function")) {
+					e.preventDefault();
+				}
+
+				e.returnValue = false;
+
+				id = src.href.split('--')[1]; // HTML中 a 的 href属性 视频ID前 有 --，以 -- 为界， 拿到数组，取出 索引为 1 的视频ID。
+
+
+				if(src.className === "play") {
+					src.parentNode.innerHTML = videos.getPlayer(id);
+					return;
+				}
+
+				src.parentNode.id = "v" + id;
+				videos.getInfo(id);
+			};
+
+
+			在该处理程序中，我们对其中两次点击感兴趣：
+				展开折叠 getInfo
+				播放视频  getPlayer。
+
+			切换所有信息片段的 点击处理程序
+
+			$('toggle-all').onclick = function(e) {
+				var hrefs,
+					i,
+					max,
+					id;
+
+				hrefs = $('vids').getElementsByTagName('a'); //  a 标签的集合。
+
+				for(i = 0, max = hrefs.length; i < max; i += 1) {
+					// 跳过播放链接 
+					if(hrefs[i].className === "play") {
+						continue;
+					}
+
+
+					// 跳过选中节目
+					if(!hrefs[i].parentNode.firstChild.checked) {
+						continue;
+					}
+
+					id = hrefs[i].href.split('--')[1];
+					hrefs[i].parentNode.id = "v" + id;
+					videos.getInfo(id);
+				}
+			};
+
+
+			video 对象
+
+				getPlayer()
+					返回HTML 请求以播放Flash 视频
+
+				updateList()
+					该回调接收所有来自 web服务的数据 ， 且生成 HTML 代码以用于扩展信息片段。
+				getInfo()
+					用于切换信息片段的可见性，且在http 对象的调用中 将updateList() 作为回调函数传出去。
+
+
+				---片段
+				var videos = {
+					getPlayer: function(id) {},
+
+					updateList: function(data) {}
+
+					getInfo: function(id) {
+
+						var info = $('info' + id);
+
+						if(!info) {
+							http.makeRequest([id], "videos.updateList");
+							return;
+						}
+
+						if(info.style.display === "none") {
+							info.style.display = '';
+						}else {
+							info.style.display = 'none';
+						}
+					}
+				};
+
+
+				http对象
+					var http = {
+						makeRequest: function(ids, callback) {
+							var url = 'http://query.yahooapis.com/v1/public/yql?q=',
+								sql = 'select * from music.video.id where ids IN (%ID%)',
+								format = 'format=json',
+								handler = "callback=" + callback,
+								script = document.createElement('script');
+
+
+							sql = sql.replace('%ID%', ids.join('","'));
+							sql = encodeURIComponent(sql);
+
+							url += sql + '&' + format + '&' +handler;
+
+							script.src = url;
+							document.body.appendChild(script);
+						}
+					};
+
+	注意：
+		YQL 是种 meta web服务，它提供了一种通过使用 类似SQL 的语法以获取大量其他web服务的能力， 且不需要每个服务的API。
+
+
+			进入代理模式：
+
+				proxy对象进入本场景， 接管HTTP 和 videos 之间的通信。
+
+				一个简单的逻辑将多个请求合并起来： 一个 50ms的视频缓冲区。
+
+				videos不直接调用 HTTP 服务，调用proxy。 
+
+				proxy在转发请求前一直等待。若来自于videos的其他调用 进入了 50ms的等待， 请求将合并为一个。
+				50ms 对用户不易察觉，有助于合并请求，
+
+				且当点击切换并同时展开 >1 个 视频时，该延迟能加速用户体验。
+
+				显著降低服务器负载，该 Server仅需要处理数量更少的请求。
+
+
+				------
+				修改版本的代码中，唯一改变的是 videos 的getInfo() 调用成 proxy.makeRequest()， 不直接http.makeRequest()。
+
+					proxy.makeRequest(id, videos.updateList, videos);
+
+
+				var proxy = {
+					ids: [],
+					delay: 50,
+					timeout: null,
+					callback: null,
+					context: null,
+
+					makeRequest: function(id, callback, context)  {
+
+
+						// 加入到该队列中
+						this.ids.push(id);
+
+						this.callback = callback;
+
+						this.context = context;
+
+						// 设置超时时间
+						if(!this.timeout) {
+							this.timeout = setTimeout(function(){
+								proxy.flush(); // 发送请求， 清空队列。
+							}, this.delay);
+						}
+					},
+
+
+					flush: function() {
+
+						http.makeRequest(this.ids, "proxy.handler");
+
+						// 清除定时器和 队列
+						this.timeout = null;
+						this.ids = [];
+					},
+
+					handler: function (data) {
+
+						var i,
+							max;
+
+						// 单个视频
+						if(parseInt(data.query.count, 10) === 1) {// 10进制
+							proxy.callback.call(proxy.context, data.query.results.Video);
+							return;
+						}
+
+
+						// 多个视频
+						for(i = 0, max = data.query.results.Video.length; i < max; i += 1) {
+							proxy.callback.call(proxy.context, data.query.results.Video[i]);
+						}
+					};
+				}
+
+			到服务器的三轮往返消息：
+				http 作为本地对象。
+				Videos 对 HTTP 的调用，改成 proxy 对http 的调用。
+
+	缓存代理：
+
+		代理可通过将之前的请求结果缓存到 proxy对象新的 cache属性中。 从而进一步保护对 本体对象 http 的访问。
+
+
+中介者模式
+
+	应用程序，都是由一些单个的对象所组成。 所有这些对象需要一种方式来实现相互通信， 通信方式在一定程度上不降低可维护性， 安全性。
+
+	应用程序增长，将添加更多对象。
+
+	代码重构期间，对象将重新整理，或删除。
+
+	当对象互相知道太多信息，且直接通信(调用方法，属性)，导致产生 不良的紧耦合问题。 tight coupling。 牵一发动全身。
+
+	该模式缓解了该问题，并促进形成松耦合，提高维护性。独立的对象之间不直接通信，而是通过 meditator对象。 一个独立对象状态改变， 会通知 meditator， meditator将该变化传达给每一个需要的人。
+
+
+
+	示例：
+		一定时间，比较按按钮次数。 游戏程序。
+
+		本例参与对象：
+			玩家1，玩家2，计分板Scoreboard, 中介者 Mediator。
+
+		中介者了解所有其他对象信息。
+			与输入设备 进行通信。 并处理键盘按键事件， 且决定哪个玩家前进了一个 回合，随后还将该消息通知给玩家。
+
+		玩家进行游戏时：
+			用1分 来更新其分数， 且通知中介者他所做的事情。
+
+		中介者将更新后的分数传达给计分板。计分板随后更新显示的分值。
+
+		该模式使得更新游戏变得很简便。 如添加个玩家，或添加个显示剩余时间的显示窗口。
+
+
+		function Player(name) {
+			this.points = 0;
+			this.name = name;
+		}
+
+		Player.prototype.play  = function() {
+			this.points += 1;
+			mediator.played(); // 通知中介者。
+		}
+
+		计分板对象，update() 方法，不知道任何玩家的接口，也不保存分值， 仅根据 mediator给定的值 显示当前分数。
+
+
+		var scoreboard = {
+
+			// 待更新的 HTML 元素
+			element: document.getElementById('results'),
+
+			// 更新得分显示
+			update: function (score) {
+				var i,
+					msg = '';
+
+				for(i in score) {
+					if(score.hasOwnProperty(i)) {
+						msg += '<p><strong>' + i + '<\/strong>: ';
+						msg += score[i];
+						msg += '<\/p>';
+					}
+				}
+
+				this.element.innerHTML = msg;
+			}
+		};
+
+
+		mediator对象。首先初始化游戏，在它的setup() 方法中创建 player对象。， 记录对象到自己的 players属性中。
+		其中， played() 方法在每轮游戏后，由player调用。
+			该方法更新score 哈希表且将其发送到 scoreboard 中用于 显示分值。
+
+
+		var mediator = {
+
+			// 玩家
+			players: {},
+
+			// 初始化
+			setup: function () {
+				var players = this.players;
+					players.home = new Player('Home');
+					players.guest = new Player('Guest');
+			},
+
+			// 若有人玩了， 则通知计分板 更新得分值
+			played: function() {
+				var players = this.players,
+					score = {
+						Home: players.home.points,
+						Guest: players.guest.points
+					};
+
+				scoreboard.update(score);
+			},
+
+			keypresshandler: function (e) {
+				e = e || window.event;
+				if(e.which === 49) {
+					// 按键 1
+					mediator.players.home.play();
+					return;
+				}
+
+				if (e.which === 48) {
+					// 按键0
+					mediator.players.guest.paly();
+					return;
+				}
+			}
+		};
+
+
+		运行
+			mediator.setup();
+			window.onkeypress = mediator.keypresshandler;
+
+			// 游戏30s结束
+			setTimeout(function() {
+				window.onkeypress = null;
+				alert('Game over');
+			}, 30000);
+
+
+
+观察者模式
+
+	广泛应用于客户端js编程中。所有浏览器事件 是该模式的例子。
+
+	也称为自定义事件 custom events, 是由用户编程实现的事件， 当与浏览器触发的事件相比时。
+
+	该模式的一个别名  订阅/发布 subscriber/ publisher 模式。
+
+
+	设计模式的动机：
+		促进形成松散耦合。
+		不是一个对象调用另一个对象的方法。而是一个对象订阅 另一个对象的特定活动， 且在状态改变后获得通知。
+
+		订阅者，也称观察者。 被观察的对象称为发布者或者主题。
+
+		当发生了一个重要事件。发布者将会 通知(调用) 所有订阅者， 且可能经常 以事件对象的形式 传递消息。
+
+
+	示例#1： 杂志订阅。
+
+		发布者： paper， 订阅者: 如joe。
+
+			paper ：
+				subscribers 	
+					属性，存储所有订阅者。 订阅行为，就是加入该数组。
+	
+				subscribe()  订阅者注册某类型事件，订阅某活动， 等待通知。
+					添加订阅者。
+					当事件发生，需要通知、调用 订阅者的某个方法。--- 回调函数 所以，用户订阅时， 订阅者应向 paper  提供他 的一个方法。
+
+				unsubscribe()  订阅者解除绑定，
+					删除订阅者方法。
+				publish()  
+					传递给事件对象，发布，通知，调用 订阅者 提供的方法。
+
+
+			三个方法都需要一个 type参数， 发布者可能触发多个事件(一本杂志，一份报纸)， 而用户可能仅选择订阅其中的一种。
+
+
+		通用发布者功能。
+
+			var publisher = {
+
+				subscribers: {
+					any: []  // 事件类型：订阅者们[]
+				},
+
+				subscribe: function(fn, type) {  // 事件类型，处理函数。
+					type = type || 'any';
+					if (typeof(this.subscribers[type] === "undefined")) {
+						this.subscribers[type] = [];
+					}
+					this.subscribers[type].push(fn); // 发布者对象，注册订阅者， fn 是当某type 事件发生时，可被调用的方法 。
+				},
+
+
+				unsubscribe: function(fn, type) {   // 解除某事件类型下的一个处理函数
+					this.visitSubscribers('unsubscribe', fn, type);  // 执行动作。
+				},
+
+				publish: function (publication, type) { // 某事件类型下，发布的处理函数
+					this.visitSubscribers('publish', publication, type);  // 发布的内容 publication
+				},
+
+				visitSubscribers: function(action, arg, type) {
+					var pubtype = type || 'any', // 发布 发生的 事件类型
+						subscribers = this.subscribers[pubtype], // 该类型下的 订阅者们，有哪些订阅者。
+						i,
+						max = subscribers.length;
+
+					for(i = 0; i < max; i += 1) {
+						if(action === 'publish') {
+							subscribers[i](arg);  // 向所有的处理函数 传参， 之后执行。  参数就是 发布的内容
+						} else {　// 程序走到这个分支，不懂了
+							if(subscribers[i] === arg) {
+								subscribers.splice(i, 1);
+							}
+						}
+					}
+				}
+			};
+
+
+			------------创建发布者
+			function makePublisher(obj) {
+				var i;
+				for(i in publisher) {
+					if (publisher.hasOwnProperty(i) && typeof(publisher[i] === "function")) {
+						obj[i] = publisher[i];
+					}
+				}
+
+				obj.subscribers = {
+					any: []
+				};
+			}
+
+
+			具体：
+				实现 paper 对象
+
+				var paper = {
+					daily: function () {
+						this.publish("今日的头条");
+					}
+					monthly: function() {
+						this.publish(" 有趣的月度分析", "monthly");
+					}
+				};
+
+				构造成发行者：
+					makePublisher(paper);
+
+
+
+				订阅者对象 joe
+
+					var joe = {
+						drinkCoffee : function (paper) {
+							console.log(this); // 订阅者数组。
+							console.log('读杂志' + paper);
+						},
+						sundayPreNap: function(monthly) {
+							console.log('睡觉前读的杂志' + monthly);
+						}
+					};
+
+				订阅， paper 上注册 joe
+
+					paper.subscribe(joe.drinkCoffee);
+					paper.subscribe(joe.sundayPreNap, 'monthly');
+
+				joe 为默认 任意 事件提供了一个可被调用的方法， 
+					另一个可被调用的 方法 用于 当 'monthly'  类型的事件发生时的情况。
+
+
+
+			触发些事件
+
+				paper.daily();
+				paper.daily();
+				paper.monthly();
+
+			所有这些出版物产生的事件都会调用 joe的适当方法。
+
+
+
+		该代码好的地方在于，
+			paper对象没有硬编码joe, 
+			joe中也 没有硬编码paper。
+
+			此外，本代码中没有哪些 知道所有一切的中介者对象。
+
+			参与对象是 松耦合的，
+				所以可向 paper 添加更多的 订阅者。而不需要修改这些对象。
+
+
+
+		例子的进一步扩展，
+			让 joe 称为发布者。(使用博客和微博时，任何人都可以是 出版者)。 因此 joe 成了 发布者 且可在 推特上发布更新
+
+			makePublisher(joe);
+			joe.tweet = function (msg) {
+				this.publish(msg);
+			};
+
+
+			想象下， paper 想了解 读者 的推特，且订阅 joe 的信息。 那么要 一个：
+				paper.readTweets = function (tweetneirong) {
+					console.log('召开会议， 我们的读者想 要 ' + tweetneirong);
+				};
+
+				// joe 注册 paper.readTweets ，当joe更新，调用 paper.readTweets;
+				joe.subscribe(paper.readTweets);
+
+
+				joe.tweet('想多看点动漫的内容');
+
+
+
+
+实例#2 键盘按键游戏
+	
+	中介者模式中， mediator对象 至少有 其它 参与对象并调用它们的方法。 
+
+	观察者模式中， game对象会让 对象订阅感兴趣的 事件。
+		如， scoreboard 对象将会订阅 game 的 "scorechange" 事件。
+
+
+	回顾下通用的 publisher 对象，调整其接口，使其更接近 浏览器世界：
+
+		不采用 publish(), subscribe(), 以及 unsubscribe() 方法。
+			采用 以 fire(), on(), remove() 命名的代码。
+
+		事件的 type 将一直被使用， 因此它成为了上述函数的 第一个参数。
+
+		除了订阅者的函数外，还提供 一个额外的 context, 从而支持回调方法使用 this 以引用自己的对象。
+
+
+
+
+	代码部分：
+
+	var publisher = {
+		subscribers: {
+			any: []   // 事件 type: 订阅者们，提供的方法, 订阅者的函数
+		},
+
+		on: function (type, fn, context) {   // 发布者注册 记录订阅者( 的处理函数)
+			type = type || 'any';
+
+			fn = typeof(fn) === "function" ? fn : context[fn];
+
+			if (typeof(this.subscribers[type]) === "undefined") {
+				this.subscribers[type] = [];
+			}
+
+			this.subscribers[type].push({
+				fn : fn,
+				context: context || this
+			});
+		},
+
+		remove: function (type, fn, context) {
+			this.visitSubscribers('unsubscribe', type, fn, context);
+		},
+
+		fire: function (type, publication) {
+			this.visitSubscribers('publish', type, publication);
+		},
+
+		// 关于订阅者的操作
+		visitSubscribers: function (action, type, arg, context) {
+			var pubtype = type || 'any',  // 发布的是哪种事件类型。
+				subscribers = this.subscribers[pubtype], // 订阅了这种事件类型的订阅者
+				i,
+				max = subscribers ? subscribers.length : 0;
+
+
+			for(i = 0; i < msx; i += 1) {
+				if(action === 'publish') {
+					subscribers[i].fn.call(subscribers[i].context, arg);
+				} else {
+					if ( subscribers[i].fn === arg && subscribers[i].context === context) {
+						subscribers.splice(i, 1);
+					}
+				} // ????
+			}
+
+		}
+	};
+
+
+	新的 Player() 构造函数：
+
+		function Player(name, key) {
+			this.points = 0;
+			this.name = name;
+			this.key = key;
+			this.fire('newplayer', this); // 触发newplayer 事件
+		}
+
+		Player.prototype.play = function() {
+			this.points += 1;
+			this.fire('play', this);
+		};
+
+
+	新函数接受 key， 玩家用于得分所按的键盘的键 (之前代码将键 硬编码到程序中)。 
+
+	当创建新的 player对象时，一个名为 newplayer 的事件被触发， 每次当玩家玩游戏的时候， 事件 play 将被触发。
+
+	计分板对象保持不变。
+
+	新的 game 对象可记录所有 player 对象， 
+		因此他可产生一个分数，且触发 "scorechange" 事件。
+		它还将 从浏览器中 订阅 所有 keypress 事件。且知道每个键 所对应的玩家：
+
+
+		var game = {
+
+			keys: {},
+
+			addPlayer : function (player) {
+				var key = player.key.toString().charCodeAt(0);
+
+				this.keys[key] = palyer; // 玩家和 键 对应下。
+			},
+
+			handleKeypress: function (e) {
+				var i,
+					players = this.keys,
+					score = {};
+
+				for( i in players) {
+					if(palyers.hasOwnProperty(i)) {
+						score[players[i].name] = players[i].points;
+					}
+				}
+
+				this.fire('scorechange', score);
+			}
+		};
+
+
+		可将任何对象转变成发布者的函数 makePublisher(), 没有改变。
+		game对象 变成了一个发布者 (因此，它能够触发 "scorechange" 事件)， 且Player.prototype 也成了 发行者，以便每个 player 对象都能够 向 任何决定监听的玩家 触发 'paly' 和 'newplayer' 事件。
+
+			makePublisher(Player.prototype);
+			makePublisher(game);
+
+		玩家 对象 订阅 了 play  和 newplayer 事件
+		game对象 订阅了 浏览器中 的 "keypress")事件
+		scoreboard 对象则订阅了 game 发布者的"scorechange" 事件。
+
+			Player.prototype.on("newplayer", "addPlayer", game);
+			Player.prototype.on("play", "handlePlayer", game);
+			game.on("scorechange", scoreboard.update, scoreboard);
+			window.onkeypress = game.handleKeypress;
+
+
+		on() 方法使 订阅者可 指定 回调函数 为 函数引用或字符串的方式。 只要提供了 上下文环境，如 game对象。 以字符串方式提供的回调函数就能正常运行。
+
+		动态创建多个 player对象(与按键一起)， 用户想创建多少个player对象都可以。
+
+			var playername,
+				key;
+
+			while(1) {
+				playername = prompt("添加玩家(名称)");
+
+				if(!playername) {
+					break;
+				}
+
+				while(1) {
+					key = prompt("使用按键" + playername + "?");
+
+					if(key) {
+						break;
+					}
+				}
+
+				new Player(playername, key);
+			}
+
+
+观察者模式中，可以摆脱那种从开始一直跟随到 最后的那种过程式 顺序代码执行的程序。
+
+
+
+
+总结：
+	单体模式，
+		function Gouzao() {
+
+			// 先查看是否 已经设置了 Gouzao.instance ，且值是个对象
+			if(typeof(Gouzao.instance === "object")) {
+				return Gouzao.instance;
+			}
+
+			// 正常运行
+			this.start_time = 0;
+			this.bang = "Big";
+
+			// 缓存 到 instance
+			Gouzao.instance = this;
+
+			// 隐式返回
+			// return this;
+		}
+		function Gouzao() {
+			var instance;
+			instance = this;
+			Gouzao = function Gouzao() {
+				
+				return instance;
+			}
+			this.name = "唯一一个对象";
+			return instance;
+		}
+		function Universe() {
+			var instance = this;
+
+			// 正常运行
+			this.start_time = 0;
+			this.bang = "Big";
+
+			// 重写
+			Universe = function() {
+				return instance;
+			};
+		}
+		function Universe() {
+
+			// 缓存实例
+			var instance;
+
+			// 重写构造函数
+			Universe = function Universe() {
+				return instance;
+			};
+
+
+			// 保留原型属性
+			Universe.prototype = this;
+
+			// 实例
+			instance = new Universe();
+
+			// 重置构造函数指针
+			instance.constructor = Universe;
+
+			// 所有功能
+			instance.start_time = 0;
+			instance.bang = "Big";
+
+			return instance;
+		}
+
+	装饰者模式
+		对象的那些数据需要装饰，增强
+			构造函数的属性中保留，装饰者
+		列表实现：
+			哪些方法需要增强，愿意被装饰的方法，创建装饰对象。
+			装饰者存储在列表中。
+			原对象的方法 变的复杂些。
+
+	工厂模式
+		作为构造函数的静态属性。
+
+	迭代器模式
+		next() 
+		hasNext()
+		rewind()
+		current()
+
+	策略模式
+		运行时选择算法。
+		使用同一个接口。
+			如验证器对象。
+		配置:
+			validator.config = {
+				type : checker   // 哪种数据类型，哪个检查者 checkers 
+				                 // 检查者们对象 { 验证(), 说明信息 instructions};
+			}
+		总的 validate() 中 
+			有个存储消息的 [], hasErrors()---看有没有错误信息, 
+
+	外观模式
+		在重构设计中， 原有对象创建外观，新对象直接使用。 
+
+	中介者模式
+		对象的通信方式。
+
+	代理模式
+		本地对象 的客户端对象， 代理对象， 本地对象
+		保护本地对象。 减少服务器端的负载。
+		缓存代理：
+			代理对象，存储请求的结果，便于多次进行同一个请求的情况
+
+	发布/订阅模式
+		浏览器对象 发布者。
+		发布者对象 上，注册添加 订阅者 对于某种  事件类型 type 的 处理函数。
+			当发布者上 有了type 的事件， 调用 处理函数 (包含事件信息的事件对象)
+
+
+当前创造的价值，
+未来能创造的价值，
+当下技术的广度和深度：
+	
+学习能力；
+
+沟通能力
+	表达能力
+	理解能力
+
+面试官的面试表单：
+	给评分
+
+	面试之间， 复习1面中不会的，模糊的。
+
+	2面后,定级：
+		阿里系
+			P1- P13
+
+		百度
+			T1-T12
+		腾讯系
+			T1-1 --T4
+
+		P4   T4 T1-3
+
+		P5， T5， T2-1
+		一面专， 多面通
+
+简历： 
+	目的：体现一专多通
+	核心：突出重点 避重就轻 实时求是
+
+
+	关键字：
+		精通， 掌握， 熟悉， 了解
+	简历结构一定简单清晰：
+		什么学校
+		岁数
+		掌握技术
+		工作经历 。。。
+
+		忽略不相关
+
+		学会给面试官挖坑：
+			比如：写上熟练VUE，
+				面试官就问： VUE， 谈到 js, 谈设计模式，谈思想
+				开发组件
+
+		逻辑能力。
