@@ -1,0 +1,1985 @@
+	进行CSS网页 布局，语义明确，结构合理是追求的目标；内
+容和表现分离，体现基本的web 标准网站开发思想。在实际开发工
+作中，根据不同的站点特征与项目需求，深入地思考、 灵活地组
+织。只有不断地追求进步与卓越，才能走在技术的前列。
+内容结构
+	以合适标签来建立富含语义的文档。
+	合理的结构，合适的标签 组织页面内容。
+
+	装饰图标，文本缩进，边框设置。
+
+	以图换字。
+		增强页面适应性，使页面编码具有语义。搜索引擎优化。
+
+		{	
+			text-indent: 文本缩进， 不换行， 溢出隐藏。
+			white-space: nowrap;
+			overflow: hidden;
+			background: url() 背景图片的定义。
+		}
+
+		网站LOGO是 一种表现的 形式，logo的 内容实际上是 网站的标题。
+		以图换字体现css布局核心思想---内容表现分离。
+		
+		直接将图片插入在页面：
+			不具有语义，页面的LOGO应该是文字性的标签，而非一张图片
+			即使可 alt属性，但不够鲜明；
+			访客没下载到图片，无法获取网站信息
+			很多便携式设备不支持 css和图片显示，使得页面变的不可阅读
+			盲人通过特定软件读页面内容，图片语音设备无法识别。
+
+
+表现
+	背景图片 position: 设置，左顶，右底。 图片高度。 
+
+	一定范围内高度自适应
+	text-indent: 2em。
+	同时设置 class id, class获得通用属性定义，id 为元素单独定义样式。
+
+	同时设置 class id, class获得通用属性定义，id 为元素单独定义样式。
+
+	切割图片时，考虑到实现一定范围内的高度自适应,
+		图片定位左、底部。 
+
+		内容较多时，背景图片仍然与底部对齐，图片高度有效范围内，不 会被 内容 "撑破"
+
+	保证图片质量的情况下， 尽可能优化 图片文件，减小体积。
+
+
+
+综合
+	文章列表截字处理。
+		便于调整修改
+		保障信息的完整， 标题完全放在 HTML文档，是否显示由css控制，有利于SEO,搜索引擎优化。爬取的信息不是一部分。
+
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			overfolow: hidden;
+		
+
+	网站文件与目录结构。
+		文件混杂在一起，不利于维护和更新，显著降低网站运行速度，对网站开发和 扩展不利。
+
+
+		css目录 
+			放置网站表现层文件。
+			内部建立 images 目录， 存放网站外观所用的图片文件。
+
+		网站根目录下 images目录
+			存放网站内容层 的图片文件
+		
+	css样式规划与样式组织
+		link 引入文件的优点在于。
+
+		套用相同样式的文件 指定引用同一个文件， 统一修改和编辑，便于整站设置与网络统一
+
+
+		浏览器缓存的作用，css文件被缓存，极大提高网页打开速度。
+
+		缺点：
+			单个页面，个别元素单独设置不够灵活。
+			添加进通用的 文件，增加文件提及，不利于网站编码优化。
+
+
+	对图片的分类
+		切割导出 表现层图片
+
+			对效果图切割，图片文件进行优化，选择适当类型保存。
+
+			图片优化以较小 文件体积，照顾最大的视觉效果为宗旨。
+
+		CSS sprites 原理
+			css网页布局之前，大量的装饰性图片，
+			在访客浏览网页时，会产生很多的服务器请求以下载 显示图片文件。 
+			这对服务器造成压力，访客网络环境差，图片甚至无法加载。
+
+			应用后，装饰性图片被分离到css文件中定义。
+			通过 css 属性 (background-image -repeat -position)
+			该原理即是通过 background-position来实现 只显示想要的部分。
+
+			将具有类似属性的文件，集成存储于一个图片文件。以 -position 为核心，对 background属性灵活应用 是 css sprites原理的精华。
+
+		表现层图片，主要用来装饰、 划分页面的不同区域等。 这类图片一般由css引入到 页面中。
+			内容层图片一般应用 img标签插入到 页面中。
+
+
+其他
+	相关文章是页面内容的延伸阅读，可以有效地增加网站的粘度。
+
+	实现当前页 效果
+		body 的 id确认所在页面， nav 中 li确定 对应的 菜单链接。
+		再定义各页面 中 css样式的区别。
+
+
+	cursor: default, crosshair, hand, move, help, wait, text, url()自定义。
+
+	装饰，点缀分离至css样式文件
+	导航菜单，分隔小竖条
+		ul 的左边框 li 的右边框
+
+
+	定义列表：
+		dl 的条目可带有文本，图片，其他多媒体页面元素
+		定义列表可更好地 表现属于、 索引等内容，它可更好地对所表示的内容进行描述。
+
+		dt 标识 组成定义列表的 术语或标题部分，其后跟随的是 dd标签
+			标识对 它的定义、 解释、 或内容索引等。
+
+	css网页布局的主要特点 不只是，css属性与技巧，
+		更重要的是对页面的 理解与 XHTML文档的编写。
+
+		要有这些基础。
+		web标准 页面制作思维的理解执行。
+-----------------------------------------------------------------
+
+
+
+分析页面效果图
+
+	1.可将首页页面看成是一列六行的布局形式。
+
+	页面元素的组成与结构。
+
+
+规划及切图。
+	
+	页面规划
+		页面的嵌套和组成，
+
+		css编码中，雷同的代码可用 群组选择器，及css属性层叠 进行精简。
+
+		外观表现，HTML 结构
+
+			区别
+
+	切图：
+		网站内容图片，css用的图片
+
+		内容索引区圆角边框，栏目介绍链接 区圆角边框的 额外处理。
+			内容索引文字、 栏目介绍文字可能不固定。
+			适当地增加 图片高度，通过编码方法实现一定范围内的高度自适应。
+
+
+*****栏目导航的当前页效果*****
+
+为 body 标签赋予id 的缘由。
+
+
+	XHTML编码
+		页面结构
+		头部，底部编码
+			logo层，
+			<div id = "logoarea">
+				<h3 id="logo"><a href="#" title="从 Hello World开始">Hello World</a></h3>
+			</div>
+
+			即使用户禁用图片与 CSS样式，也能准确知道当前所在页 名称和主体。
+		
+			banner层
+				只是作为形象展示需要 而设置，不产生真正意义上的 Banner作用。
+
+			版权层 footer
+
+		主体内容的编码：
+			构成。
+			列表形式 ol, ul, dl
+
+
+	应用CSS 样式组建网页
+		css, 将结构化的 XHTML 文档定义成与效果图 一致的页面。
+
+		页面布局CSS样式
+
+			top层
+
+			header层
+				logo
+				banner
+
+			main层
+
+				区别首页和内页
+
+				container层，
+				linkarea 层
+				内页中
+					两层形成 两列式布局。
+
+			页面底部版权区层
+
+			清楚浮动
+
+			:after{
+				content: "";
+				clear: both;
+				display: block;
+			}
+
+		各个页面元素及细节完善
+
+			header层
+				logo层，logo 图片以 h3 背景图片的方式引入页面。
+
+
+		3 首页主体内容 CSS样式
+			切割图片时，考虑到实现一定范围内的高度自适应,
+			图片定位左、底部。 
+
+			内容较多时，背景图片仍然与底部对齐，图片高度有效范围内，不 会被 内容 "撑破"
+
+			标题的背景图片就 左/顶。
+
+			两者结合形成闭合的圆角边框，在者同一张背景图片的有效高度内 可进行相对自由的 滑动。
+
+
+
+			top
+			header
+			main
+				container
+				linkarea
+					dl dt dd
+
+		3.内页主体内容
+
+
+
+	css 编码精简与合并
+		css 的继承， 层叠， 优先性。并未展现
+
+
+简洁布局
+	分析效果图， 根据页面特点及版式进行 规划切图
+
+	1.
+		头部形象展示, 导航菜单， 左侧边栏(放置导航或其他页面元素)， 内容区(页面的主要展示内容)， 页脚(版权信息或底部菜单)
+
+
+	2.布局规划及切图
+		各个元素之间的关系，以什么标签去组织要表现的内容。
+
+
+		页面布局规划
+			页面大致几个区域的内容，
+			分层。
+				每个层有几块内容；
+
+				每个层，每个块的形式与内容。
+
+
+		切图
+			图片，网站设计艺术表现的载体， 美化网页，增强视觉效果。
+
+			色彩丰富程度，选择图片格式。
+
+	3.编码
+		页面有良好的结构、 语义， 嵌套是否合理。
+
+		页面主体元素的结构。
+
+			main层作为包围层，实现内容区和侧边栏的居中。
+
+			命名，以区域所在含义命名。
+
+****反向浮动--布局
+			页面主体 container 层放在 sider层前。通过CSS进行"反向浮动" 调整位置，实现效果图 效果。
+
+			易于被搜索引擎收录。
+
+		header层
+			以 为链接文字设置背景图片的方式引入 logo，文字隐藏。
+
+			搜索框。
+				form 的 id和name。
+
+			菜单
+				一组没有特定相关顺序的相关条目的集合。
+
+		内容层，底部
+
+		侧边栏。
+			栏目标题，图片--无序列表组织。他们在该层有唯一性。
+
+		css 样式，定义所有元素
+			header 层 logo区域的css
+
+				#header #logo{
+					float: left;
+					margin-top: 15px;
+					background:url();
+				}
+				# header #logo a{
+					display: block;
+					width:138px;
+					height: 45px;
+
+					text-indent: 150px;
+					white-space: nowrap;
+					overflow: hiden;
+				}
+				实现隐藏链接文本。
+					将文本推出可视区域，或设置其为none。
+
+				slogon 
+					文本缩进， 不换行， 溢出隐藏。
+				search区域
+					关键字输入框
+
+						#header #search #keyword {
+							float: left;
+							width: 172px;
+							height: 18px;
+							
+							line-height: 18px;
+							color: #06f;
+							border: 1px solid #999;
+							background: #fff url('') no-repeat 0 0;
+							text-indent: 20px;
+						}
+
+					表单输入框美化思路。
+						装饰图标，文本缩进，边框设置。
+
+				内容区，footer层。
+
+				侧边栏
+					链接标签 a 含有图片元素时 border进行设置。
+
+
+	6.分析变化与切图
+		新页面中 header层有 背景图片，为不改动结构可将此图片作为 body 的背景。
+
+		色彩丰富，测彩渐变过渡 用JPG，
+
+
+	7.通过修改css 样式重构 页面
+		重构的前提。
+
+
+		调整页面布局的css样式。
+			body，设置背景图片，设置背景色
+
+
+		调整页面头部与导航菜单css 样式
+
+			菜单列表项，链接标签宽度自动伸缩，padding
+
+
+
+
+--------------------------------------------------------
+chap3
+	
+	嵌套合理，语义明确的HTML文档。
+
+	相对重要的内容置于文档前部。
+
+	灵活运用背景设置，将多个图片集成于同一个图片文件。利用 background-position: 设置显示不同区域。
+
+
+案例效果图分析
+	
+
+	网站首页布局结构：
+		左侧为标签文字链接区域，右侧为标签链接、 网站LOGO 与 图片推荐。 中间主内容区域 ，多行布局。
+
+		Banner 图片、 网站导航、 中部内容区 和底部导航与友情链接。
+
+			中部内容区也是由6个页面元素组成。
+
+			分别是6个网站栏目的内容调用。
+
+
+	栏目列表页  布局结构 效果图分析
+		与首页比， 在页面布局方面没有变化。
+
+		中部内容区不同
+			栏目名称与当前页面位置、 
+			左侧图片链接
+			栏目内容列表
+			翻页链接条。
+
+	内容终端页
+		中部内容区有区别：
+			栏目名称与当前页面位置
+			文章标题
+			文章副标题
+			文章内容
+
+
+
+布局规划与切图
+	
+	考虑最大可能的共用页面元素。
+
+	1。页面布局规划
+
+		都是左中右三列式布局。
+
+		wrap
+			column main side
+
+			main
+				banner图片，导航，底部导航友情链接。 共有区域
+
+			side 层
+				标签链接
+				网站LOGO
+				图片推荐。
+
+				内容的重要性，可放在 main层 前边。
+
+				利用反向浮动，放在合适位置。
+
+
+		网站首页的 中部内容区
+			栏目内容调用。 6个。div。
+
+
+		栏目列表页 中部内容区
+			栏目名称与当前页面位置、 
+			左侧图片链接
+			栏目内容列表
+			翻页链接条。
+		内容 终端页中部内容区
+			栏目名称与当前页面位置、
+			文章标题
+			副标题
+			内容
+
+
+	2.切割及导出图片
+		保证图片质量的情况下， 尽可能优化 图片文件，减小体积。
+
+		实现三列在高度上的自适应。
+			当中部内容较多时，页面自然地 撑开而增加高度， 此时3 列结构在视觉上 是存在的。
+
+			wrap层设置背景图片，垂直方向重复排列。
+
+		共有元素的图片切割。
+
+			网站内容图片，页面表现所需要的图片。
+
+
+
+		网站首页中部内容区图片的切割
+
+			栏目图片调用
+			栏目标题分隔线。
+
+			艺术字图片组合成一张图片。
+				背景图片 定位，显示不同部分。
+
+				链接悬浮状态改变，也可用图片显示。
+
+
+			首页文章列表前的 icon图标。
+
+		栏目列表页
+			中部内容区图片的切割，
+
+			制作成 icon图标组合图片。
+
+
+		制作icon图标组合图片。
+
+
+
+	XHTML编码
+		根据规划，分析，的结构， 布局。进行编码。
+
+
+		页面主体元素 XHTML编码
+
+			页面结构图。三列式布局。
+
+			<!-- 页面某个主体元素End -->
+
+			页面主体内容在前， 表现渲染时，可反向浮动。
+
+		页面共有元素的编码
+
+			这些元素的编码建立后，作为通用模块应用于网站首页、 栏目列表页、 内容终端页。
+
+
+			column 层
+				位于页面左侧，由2组便签链接构成，每组3个。
+			sider层
+				标签链接 logo 图片推荐
+
+				标题标签的应用
+
+			main层
+				Banner图片、网站导航，底部导航和友情链接
+
+				banner图片，可能是一张背景图片 background,img, 外部引用的 js脚本，也可能是 一个 Flash动画。
+					适应不同的变化，为他建立一个 独立的div。
+
+				底部导航区
+					div做父容器，两个ul 放置他们。
+
+
+			清除浮动的影响
+
+		中部内容区---网站首页
+			表现和内容。
+
+			段落p 标签放置 图片调用。
+
+			未定义任何 css样式的 网站首页效果。
+
+
+		中部内容区---栏目列表页
+			栏目名称，当前位置
+				div>h3 + span
+			左侧图片用一个div,考虑将来格式的改变
+				div > a> img
+			内容列表 
+				ul
+			翻页链接条
+				可用段落p 标签作为其容器。
+
+		中部内容区---内容终端页
+			栏目名称，当前位置
+			文章标题
+				副标题
+				内容
+					div做容器
+
+
+	4.应用css样式组建网页
+
+		页面布局css样式
+
+			确定页面的总体框架，如分为几行几列，页面内容如何排列组合。
+			深入细节，
+			形成效果图。
+
+
+				整体布局声明： *{}
+
+			应对可能出现的大分辨率浏览环境，css编码
+				body {
+					background: #f3f3eb;
+				}
+
+
+			wrap层 设置
+				背景图片。
+
+			column 层向左浮动；
+				设置溢出隐藏，防止内容将容器撑开 导致布局变形。
+
+			main层
+				承载网站主要内容。
+				banner，设置溢出隐藏。
+				nav
+				footer层
+
+	
+		页面共有元素css样式的深入编写
+			column层的 css样式
+				overflow:hidden
+
+				display: inline;
+				解决IE6,双倍边距的 bug。
+
+
+			main层
+				背景图片，repeaty应对中部内容较多时高度的变化。
+				right 86px
+
+				banner层
+					float:left; overflow: hidden;
+
+				nav层
+
+
+				footer
+					两个 ul组成。
+
+					相似元素通用定义，
+						减小css文件体积，提高页面打开速度，减轻服务器负担。
+
+
+
+					定位， 浮动， 盒子部分， 背景，居中对齐， 溢出
+
+					特定元素的特定样式。
+					以图换字。
+
+			sider层
+				标签链接
+					左浮动
+					列表项的样式
+
+				网站LOGO
+					以图换字。
+						增强页面适应性，使页面编码具有语义。搜索引擎优化。
+
+
+					网站LOGO是 一种表现的 形式，logo的 内容实际上是 网站的标题。
+					以图换字体现css布局核心思想---内容表现分离。
+直接将图片插入在页面：
+	不具有语义，页面的LOGO应该是文字性的标签，而非一张图片
+	即使可 alt属性，但不够鲜明；
+	访客没下载到图片，无法获取网站信息
+	很多便携式设备不支持 css和图片显示，使得页面变的不可阅读
+	盲人通过特定软件读页面内容，图片语音设备无法识别。
+
+
+
+				<h4><a></a></h4>
+
+				h4 {float: left;}
+				h4 a {
+					display: block;
+					width:
+					height:
+
+					text-indent:
+					white-space: nowrap;
+					overflow: hidden;
+					background: url() ; /* 背景图片定义*/
+				}
+
+			图片链接推荐
+				背景图片。
+
+
+
+	内容区
+		首页：
+			更多文字链接 a display:block；
+				white-space:nowrap;
+				text-indent: ;
+				overflow: hidden;
+
+
+			栏目名称图片：
+				background-position: 6个div单独设置。
+
+			图片调用 由段落p 标签引入页面。
+
+				p>a>img
+
+				.homelist p {
+					float: left;
+				}
+				.homelist p a {
+					display: block;
+					width:
+					height:
+					border:
+				}
+				.homelist p a:hover {
+					border:
+					background:
+				}
+				.homelist p a img{
+					width:
+					height:
+					margin:
+					border:
+					overflow: hidden;
+				}
+
+				文章列表
+				.homelist ul{
+					float: right;
+					width:
+					margin-top:
+				}
+
+
+css 断字
+
+	文章列表截字处理。
+		便于调整修改
+		保障信息的完整， 标题完全放在 HTML文档，是否显示由css控制，有利于SEO,搜索引擎优化。爬取的信息不是一部分。
+
+
+			.homelist ul li {
+				float: left;
+			}
+
+			.homelist ul li a {
+				display: block;
+				width: 
+				height:
+				line-height:
+				text-indent: 空出 图标的距离
+				color: 
+				background:  背景图片定义
+
+				white-space: nowrap;
+				text-overflow: ellipsis;
+				overfolow: hidden;
+			}
+
+			.hidden ul li a:hover {
+				color: #c00;
+				background-position: 2px -24px;  设置背景图片定位
+			}
+
+			#channel_h6 ul{
+				width: 310px;
+			}
+			#channel_h6 ul li a {
+				width: 310px;
+			}
+
+
+	中部内容区---栏目列表页
+
+		#main #slist_title{
+			float: left;
+			width:
+			height:
+			margin:
+		}
+
+		以图换字 ，隐藏栏目名称的文字
+		#main #slist_title h3{
+			float: left;
+			width:
+			height:
+
+			text-indent:
+			white-space: nowrap;
+			overflow: hidden;
+			background: url() 背景图片的定义。
+		}
+
+		当前位置
+
+		#main #slist_title span{
+			float:right;
+			width:
+			height:
+			margin:
+			line-height:
+			text-align:
+			color:
+		}
+		链接样式省略。
+
+		图片链接层
+
+			#main层 #show_pic {
+				float: left;
+				width:
+				height:
+				margin:
+				display:inline IE6双倍边距？
+			}
+
+			悬停效果:
+				边框，背景色设置
+				#main #show_pic a {
+					display: block;
+					width:
+					height:
+					border:
+					background:
+				}
+
+				#main #show_pic a img {
+					width:
+					height:
+					margin:
+					border:
+					overflow: hidden;
+				}
+
+				#main #show_pic a:hover {
+					border:
+					background:
+				}
+
+				#main #show_pic a:hover img {
+					border:               // 图片边框定义
+				}
+
+			内容列表：
+				容器右侧，ul
+
+				#main #show_list {
+					float:right;
+					width:
+					height:
+					margin-right:
+					display: inline; ?
+					background: url();
+					overflow:hidden;
+				}
+
+				#main #show_list li{
+					float: left;
+				}
+
+				#main #show_list li a{
+					display: block;
+					width:
+					height:
+					border-bottom:
+					line-height:
+					font-size:
+					text-indent: 缩进
+					color:
+					background:url();
+
+					white-space:nowrap;
+					text-overflow:ellipsis;
+					overflow: hidden;
+				}
+
+				#main #show_list li a:hover {
+					border-bottom: 
+					color:
+					text-decoration:
+					background-position:     //背景图片定位。
+				}
+
+				翻页区域
+
+				#main #pagebar {
+					float: right;
+					width:
+					height:
+					margin:
+					padding-right:
+					line-height:
+					text-align:
+					display:    设置内联消除 bug?
+				}
+
+				#main #pagebar span  {
+					padding-right:
+					color:
+					font-weight:
+				}
+
+				#main #pagebar a {
+					padding: 0 5px;
+					color: #c00;
+				}
+
+				#main #pagebar a:hover{
+					color: #000;
+				}
+
+		中部内容区---内容终端页
+			 栏目名称和 栏目列表页中相同。
+			 把该层拿过来。
+
+
+			 #main h1 {
+			 	float: left;
+			 	width:
+			 	height:
+			 	margin-left:
+			 	text-indent:
+			 	line-height:
+			 	font-size:
+
+			 	color:
+			 	display: inline; ?
+			 	background:
+			 	overflow: hidden;
+			 }
+			 #main h2 {
+			 	float: left;
+			 	width:
+			 	height:
+			 	margin:
+			 	line-height:
+				
+				text-indent:
+				color:
+				display: ?			 	
+			 }
+
+			 #main #content{
+			 	float: left;
+			 	width: 
+			 	margin: 
+			 	background:url();
+			 	display: inline; 
+			 }
+
+			 #main #content p{
+			 	width: 600px;
+			 	margin-bottom:
+			 	line-height:
+			 	text-indent: 2em;
+			 	font-size: 14px;
+			 	color: #333;
+			 }
+
+
+
+	5.网站文件与 CSS 样式规划整理
+		规划组织网站文件 与 css样式
+
+
+		网站文件与目录结构。
+			文件混杂在一起，不利于维护和更新，显著降低网站运行速度，对网站开发和 扩展不利。
+
+
+			css目录 
+				放置网站表现层文件。
+				内部建立 images 目录， 存放网站外观所用的图片文件。
+
+			网站根目录下 images目录
+				存放网站内容层 的图片文件
+
+
+		css样式规划与样式组织
+			link 引入文件的优点在于。
+
+			套用相同样式的文件 指定引用同一个文件， 统一修改和编辑，便于整站设置与网络统一
+
+
+			浏览器缓存的作用，css文件被缓存，极大提高网页打开速度。
+
+			缺点：
+				单个页面，个别元素单独设置不够灵活。
+				添加进通用的 文件，增加文件提及，不利于网站编码优化。
+
+
+
+
+chap4
+	3个模版页 ，7 个页面组成完整小型站点。
+
+	页面布局 以 "三行两列" 为主线。
+
+	css网页布局的主要特点 不只是，css属性与技巧，
+	更重要的是对页面的 理解与 XHTML文档的编写。
+
+	要有这些基础。
+	web标准 页面制作思维的理解执行。
+
+
+	1.效果图分析
+		三行两列
+
+
+	2. 布局规划与切图
+
+		页面布局规划
+			构建页面基本结构。
+
+  			header 
+  			wrap
+				main
+				sider
+  			footer
+  				首页下，要有放友情链接的div
+
+
+  			有了基本的页面布局结构，开始对各个页面及他们的组成元素进行规划。
+
+
+  				栏目列表页的中部
+
+
+
+  				文章内容区元素布局规划。
+
+
+  			3个 模版页 的结构已经清晰。 细节有待考虑。
+
+
+  		切割导出 表现层图片
+
+  			对效果图切割，图片文件进行优化，选择适当类型保存。
+
+  			图片优化以较小 文件体积，照顾最大的视觉效果为宗旨。
+
+  			CSS sprites 原理
+  				css网页布局之前，大量的装饰性图片，
+  				在访客浏览网页时，会产生很多的服务器请求以下载 显示图片文件。 
+  				这对服务器造成压力，访客网络环境差，图片甚至无法加载。
+
+  				应用后，装饰性图片被分离到css文件中定义。
+  				通过 css 属性 (background-image -repeat -position)
+  				该原理即是通过 background-position来实现 只显示想要的部分。
+
+  				将具有类似属性的文件，集成存储于一个图片文件。以 -position 为核心，对 background属性灵活应用 是 css sprites原理的精华。
+
+
+
+  			表现层图片，主要用来装饰、 划分页面的不同区域等。 这类图片一般由css引入到 页面中。
+  			内容层图片一般应用 img标签插入到 页面中。
+
+
+  			集成的图片 设置宽高，设置固定间隔。
+
+  			三个模版页
+  				表现层图片的切割
+
+
+  		切割导出 内容层图片
+  			网站所展示信息的一部分，应用 img标签插入页面。
+
+  			图片动画要制作成 Flash的 swf文件。
+
+
+  	3.网站文件与 css样式规划
+		组织文件，规划样式，这些问题将影响网站的更新与维护，对后续开发，团队协作有着很大的影响。
+
+
+		css
+			css样式文件，表现层图片
+		js
+		img 
+			内容层图片 
+				缩略图，大图。
+
+
+
+		css样式规划
+			原则： 
+				共用的代码放到一个文件。
+				尽量减小文件体积
+
+			网站首页 页面元素较多，建立单独文件存放其所需样式代码。
+
+
+
+
+
+	4.XHTML编码
+		此时基本要素都已具备， 规划已经到位，分析思路也已成型， 所需图片就绪。
+
+		页面布局与规划中，已经可看到文档清晰的结构，继续深入，
+			先编写主体框架 和 容器， 构建出结构
+			再编写细节页面元素完善页面代码。
+
+
+		页面主体布局 XHMTL编码
+				
+			页面XHTML主体结构。
+
+				header
+				footer
+				wrap
+					main
+					sider
+1569159593 
+
+
+		页头，页脚层 XHTML 编码
+
+			<div id ="header">
+				<h4><a title="">XX网站</a></h4>
+				<p><a>加入收藏夹</a></p>
+				<ul></ul>
+				<ul></ul>
+			</div>
+
+			增加提示效果以及优化页面内容，主要的链接编写title信息。
+
+			页脚层
+				<div id="footer">
+					<h5><a></a><h5>
+					<ul></ul>
+					<p><a href="#top" title="返回顶端"></a></p>
+					<p></p>
+				</div>
+
+				页面顶部建立锚标记，<a name="top" id="top"></a>
+
+
+		页面共有元素XHTML 编码
+			推荐图片
+				<ul>
+					<li><a><img alt=""/><span></span></a></li>
+				</ul>
+
+			最近更新
+				<div>
+					<h3><a></a></h3>栏目标题
+					<p><a>更多</a></p>
+					<ul></ul>
+
+				</div>
+
+			旗帜广告
+				<div class="banner_sider_a">
+					<a href="#" title=""><img src alt /></a>
+				</div>
+
+			推荐阅读
+				用定义列表写
+
+				<dl>
+					<dt>
+						<dd></dd>
+						<dd></dd>
+						<dd></dd>
+					</dt>
+					<dt>
+					</dt>
+				<dl>
+
+定义列表：
+	dl 的条目可带有文本，图片，其他多媒体页面元素
+	定义列表可更好地 表现属于、 索引等内容，它可更好地对所表示的内容进行描述。
+
+	dt 标识 组成定义列表的 术语或标题部分，其后跟随的是 dd标签
+		标识对 它的定义、 解释、 或内容索引等。
+
+
+
+			网站首页编码完善
+
+				图片动画插入
+					<div id="home_pic"></div>作为其容器。
+
+					用js 插入。
+						swf.js文件，放在 网站的images文件夹下。
+						<head> <script>以载入此js文件</script></head>
+
+					<div id="home_pic">
+						<script>swf();</script>
+					</div>
+
+
+				网站4个栏目文章列表的编码
+					<div class="homelist" id="col1">
+						<h3><a>信息</a></h3>
+						<p><a>更多>>></a></p>
+						<ul>
+							<li></li>
+							<li></li>
+							<li></li>
+						</ul>
+					</div>
+
+
+class id 同时配合使用。
+
+
+			栏目列表页
+
+				在 main层 新建一层 放置 已有的内容，为之后发展做准备。
+
+					<div id="list">
+						内容放在这里。
+					</div>
+
+
+				两个图片广告，图片不同外，其他都一致。
+					<p class="list_guanggao_a"><a><img /></a></p>
+					<p class="list_guanggao_a"><a><img /></a></p>
+
+
+				翻页链接
+					<p id="pagebar">
+						<a href="#">&lt;&lt;</a>
+						<span>1</span>
+						<a href="#">2</a>
+
+					</p>
+
+				左侧的旗帜广告
+					<div><a></a></div>
+
+			内容终端页
+				文章内容区
+
+				<div id="article">
+
+					栏目标题，文章导航
+
+					<h3><a>xxxx</a></h3>
+					<ul>
+						<li>文章。。。</li>
+						<li>文章。。。</li>
+					</ul>
+
+					文章标题，正文
+					<h1> 标题</h1>
+					<div id="article_con">
+
+						<p>内容》。 </p>
+						<p> 1111</p>
+
+					</div>
+
+					标签链接
+					<h6>Tags标签: <a href="#"></a></h6>
+					相关文章栏目标题，相关文章列表
+				</div>
+
+
+	5.应用css样式
+
+		还原效果图。
+
+		页面布局css样式
+
+			整体布局声明
+				*{}
+				研究表明，它的使用将会增加网页运行负担。
+
+				css reset技术？控制调整浏览器预设。
+
+				body背景色， img的边框
+
+			必要的地方要清除浮动
+				习惯。
+
+
+			header
+
+			wrap
+
+
+				margin-bottom失效。。
+
+
+		页头header层 css样式
+			#header h4 {
+				float: left;
+			}
+
+			#header h4 a {
+				display: block;
+				width:
+				height:
+				background:url();
+
+				text-indent:
+				white-space:
+				overflow:hidden;
+			}
+
+			#header p {
+				float: right;
+				width:
+				height:
+				text-align:
+				line-height:
+				font-size:
+			}
+
+			#header p a {
+				color:
+			}
+			#header p a:hover{
+				color:
+			}
+
+			#header #nav {
+				float: right;
+				width:
+				height:
+			}
+			#header #nav li {
+				float:left;
+				margin-left:
+				display:
+			}
+
+			#header #nav li a{
+				display:block;
+				width:
+				height:
+
+				text-indent:       文字推出可视区域
+				background:url();
+				white-space: nowrap;
+				overflow:hidden;
+			}
+
+			设置每个链接的背景图
+				background-position: 
+
+			悬停状态的背景图
+
+			热门标签链接
+
+				#header #navtag{
+					float: left;
+					width:
+					height:
+					padding-left:
+					background:url() ...;
+
+				}
+
+				#header #navtag li {
+					float: left;
+					height: 38px;
+				}
+
+				#height #navtag li a {
+					display: block;
+					margin-top:
+					padding: 0 3px;
+					font-size:
+					color:
+				}
+				悬停状态。
+
+				ie6 7 的特殊处理。
+
+		footer层 css样式
+			组成部分:
+				网站底部LOGO(h5) 、底部导航、 相关链接、返回顶部链接、 版权文字。
+
+				网站首页的特殊页脚
+				#home #footer {
+					padding-bottom:0; /* */
+				}
+
+			#footer h5 {
+				float: left;
+			}
+
+			#footer h5 a {
+				display: block;
+				width:
+				height:
+				margin:
+				
+				background:url() ... 以图换字
+				text-indent:
+				white-space:
+				overflow:hidden;
+			}
+
+
+装饰，点缀分离至css样式文件
+	导航菜单，分隔小竖条
+		ul 的左边框 li 的右边框
+
+
+			#footer #footer_nav{
+				float: left;
+				width:
+				height:
+				margin-top:
+				border-left:
+			}
+
+			#footer #footer_nav li {
+				float: left;
+				height:
+				padding:0 8px;
+				border-right: 1px solid #f60;
+			}
+
+			链接的样式。
+
+			相关文章链接
+
+				#footer #footer_nav_2 {
+					float: left;
+					width:
+					height:
+					margin-top:
+					border-left: 1px solid #999;
+				}
+
+				#footer #footer_nav_2 li {
+					float: left;
+					height:
+					padding: 0 8px;
+					font-size:
+					border-right:
+				}
+
+				链接状态的样式 。
+
+				返回顶端链接 p标签组织，可视为 以图换字的 页面链接元素。
+
+					#footer #pagetop {
+						float: left;
+						margin-top:
+					}
+
+					#footer #pagetop a {
+						display:
+						width:
+						height:
+
+						text-indent
+						white-space:
+						background:url() ...;
+						overflow: hidden;
+					}
+
+					#footer #pagetop a:hover {
+
+					}
+
+					版权文字
+
+						#footer #copyright{
+							float:left;
+							width:
+							height:
+							margin-top:
+							line-height:
+							color:
+						}
+
+						#footer #copyright a{
+							color:
+						} 悬停也是color。
+
+
+			共有元素---最近更新，推荐图片
+				#update {
+					float: left;
+					width:
+					height:
+					margin-bottom:
+					background:url() ...;
+				}
+
+				栏目标题
+
+				#update h3{
+					float: left;
+					width:
+					height:
+					padding-left:
+					overflow:
+				}
+
+				#update h3 a {
+					line-height:
+					font-size:
+					color:
+				}
+
+				#update p {
+					float:right;
+					width:
+					height:
+					overflow:hidden;
+				}
+
+				#update p a {
+					line-height:
+					color:
+				}
+
+			最近更新的文章列表。
+				#update ul {
+					float: left;
+					width:
+					height:
+					margin:
+					overflow:hidden;
+					display: inlien ; // IE 6 双倍边距
+				}
+				#update ul li {
+					float: left;
+					width:
+					line-height:
+					color:
+
+					white-space:
+					text-overflow: ellipsis;
+					overflow:
+				}
+
+				链接，和样式。
+
+
+			推荐图片
+				#tuijian_pic {
+					float: left;
+					margin-bottom: 10px;
+				}
+
+				#tuijian_pic li {
+					float: left;
+					margin-left: 10px;
+					display: inline;
+				}
+
+				#tuijian_pic li a {
+					display: block;
+					width:
+					height:
+					border:
+					padding:
+					background:
+					overflow:hidden;
+				}
+
+
+				#tuijian_pic li a img {
+					width:
+					height:
+					padding:
+					border:
+				}
+
+				#tuijian_pic li a span {
+					display: block;
+					width:
+					height:
+					margin:
+					line-height:
+					text-align:
+
+					color:
+					cursor:
+
+					white-space:nowrap;
+					text-overflow: ellipsis;
+					overflow:hidden;
+				}
+
+				悬停状态。
+
+				#tuijian_pic li a:hover {
+					border: 1px solid #f60;
+					text-decoration:
+					background:
+				}
+				#tuijian_pic li a:hover img{
+					border:
+					background:
+				}
+				#tuijian_pic li a:hover span{
+					color:
+					text-decoration:
+				}
+
+cursor: default, crosshair, hand, move, help, wait, text, url()自定义。
+
+
+			推荐阅读，旗帜广告的css样式
+				自定义列表
+
+				#tuijian_list {
+					float: left;
+					width:
+					line-height:
+					background:url() ...;
+				}
+
+				#tuijian_pic dt {
+					float:right;
+					width:208px;
+					height:
+					margin:
+					color:
+
+					white-space:
+					text-overflow: ellipsis;
+					overflow:
+					display:
+				}
+
+				#tuijian_pic dt a {
+
+				}链接、悬停的css 样式定义
+
+
+				缩略图
+				#tuijian_pic .tjl_pic{
+					float: left;
+					width: 72px;
+					height: 72px;
+					margin:8px 0 18px 8px;
+					display: inline;
+				}
+				#tuijian_pic .tjl_pic a {
+					display: block;
+					width:
+					height:
+					border:
+				}
+				#tuijian_pic .tjl_pic a img {
+					width:
+					height:
+					margin:
+				}
+				#tuijian_pic .tjl_pic a:hover{
+					
+					border:
+					background:
+				}
+
+				文本索引简介
+				#tuijian_pic .tjl_text {
+					float: right;
+					width:
+					height:
+					margin-right:
+					text-indent:
+					display:
+				}
+				#tuijian_pic .tjl_text a {
+					color: #666;
+				}
+				#tuijian_pic .tjl_text a:hover {
+					color: #333;
+					text-decoration
+				}
+				
+
+				栏目信息
+					#tuijian_pic .tjl-coldate {
+
+					}...
+
+
+			旗帜广告
+				.banner_sider_a {
+					float: left;
+					width: 
+					height:
+					margin-bottom:
+					border:
+					background:
+				}
+
+				.banner_sider_a a {
+					display:block;
+					margin:3 px;
+				}
+
+
+		首页样式完善
+			图片动画
+
+				#home_pic {
+					float:left;
+					width: 310px;
+					height:
+					margin:
+					padding:
+					border:
+					background:
+					display:inline;
+				}
+
+			阅读排行
+
+				#paihang {
+					float: left;
+					width:
+					height:
+					margin:
+					background:url()...
+				}
+				#paihang li {
+					float: left;
+					margin: 6
+					display:inline;
+				}
+				#paihang li#ph1_1 {
+					margin-top:
+				}
+				#paihang li a {
+					display: block;
+					width:
+					height:
+					padding:
+					background:url() ...;
+				}
+
+
+				排行的标题
+				#padding li a strong {
+					display: block;
+					width: 
+					height:
+					line-height:
+					font-size:
+
+					color:
+					cursor:
+
+					white-space:
+					text-overflow:ellipsis;
+					overflow:hidden;
+				}
+
+				排行背景
+					background-position:
+
+
+			网站4个栏目列表
+				.homelist {
+					float: left;
+					width:
+					height:
+					margin:
+					background:
+					display:inline;
+				}
+
+				.homelist h3{
+					float:left;
+					width:
+					height:
+					padding-left:
+					overflow:hidden;
+				}
+
+				.homelist h3 a {
+
+				}
+				.homelist p {
+					float:right;
+					width:
+					height:
+					overflow:
+				}
+
+			文章列表
+
+				.homelist ul {
+					float: left;
+					width: 
+					height:
+					margin:
+					overflow:
+					display:
+				}
+
+				.homelist ul li {
+					float:left;
+					width:
+					line-height:
+
+					font-size:
+					color:
+
+					white-space: nowrap;
+					text-overflow: ellipsis;
+					overflow: hidden;
+				}
+
+
+			页脚
+				#friendlinks {
+					width:
+					height:
+					margin:
+					padding:
+					line-height:
+					background: url() ...
+				}
+				#friendlinks a{
+
+				}...
+
+
+				#friendlinks .color _a {
+
+				}
+
+
+		栏目列表页 css样式完善
+			#list {
+				float: left;
+				width:
+				margin:
+				background:
+				display:
+			}
+
+			#list h3 {
+				float: left;
+				width:
+				height:
+				line-height:
+
+				text-indent:
+				font-size:
+				background:url() ...
+				overflow:hidden;
+			}
+			#list h3 a {
+				color:
+			}
+
+			#list ul{
+				float: left;
+				width:
+				margin:
+				display:
+			}
+
+			#list ul li {
+				float: left;
+				padding-top:
+				line-height:
+				color:
+			}
+			#list ul li a{
+				display:block;
+				width:
+				color:
+				border-bottom:
+
+				white-space:nowrap;
+				text-overflow:ellipsis;
+				overflow: hidden;
+			}链接样式。
+
+			翻页链接, 
+			#pagebar {
+				float: left;
+				width:
+				height:
+				padding-left:
+				font-size:
+				background:url()...;
+			}
+				内链接元素的样式
+				#pagebar a,#pagebar span {
+					display: block;
+					float: left;
+					margin-right:
+					padding:
+					border:
+					color:
+					font-weight:
+					background:url() ...;
+				}
+
+
+				图片广告
+				.list gg_a {
+					float: right;
+					width:
+					height:
+					margin:
+					border:
+					display:
+				}
+
+				.banner_sider_b{
+					float: left;
+					width:
+					height:
+					margin-bottom:
+					border:
+				}
+				.banner_sider_b a {
+					display: block;
+					width:
+					height:
+					margin:
+					overflow: hidden;
+				}
+
+		内容终端页完善
+			#article {
+				float:left;
+				width:
+				margin:
+				background:
+				display:
+			}
+
+			标题
+			#article h3 {
+				float:left;
+				width:
+				height:
+				line-height:
+				text-indent:
+				font-size:
+				background: url() ...;
+				overflow:hidden;
+			}
+
+			#article #article_nav {
+				float: left;
+				width:
+				height:
+				padding:
+				line-height
+				background:
+			}
+			#article #article_nav li {
+				width:
+
+				white-space:
+				text-overflow:
+				overflow:
+			}
+
+			文章标题 {
+
+			}
+
+			#article #article_con {
+				float: left;
+				width:
+				margin:
+				line-height:
+				font-size:
+				color:
+				display:
+			}
+			正文段落
+			#article #article_con p {
+				margin:
+				line-height:
+				text-indent:
+				font-size:
+			}
+
+			设置标签链接 文章关键字的归纳
+
+			#article h6 {
+				float: left;
+				width:
+				height:
+				margin:
+				line-height:
+				text-indent:
+				color:
+				background: url() ...;
+				overflow: hidden;
+			}
+
+			相关文章是页面内容的延伸阅读，可以有效地增加网站的粘度。
+
+			#article h5 {
+				float: left;
+			}
+
+			#article_similar {
+				float: left;
+				width:
+				padding:
+				background:
+			}
+
+			旗帜广告。。。
+
+
+
+	6. 网站文件成型与调整
+		html 文件 成型与保存
+
+
+		实现当前页 效果
+			body 的 id确认所在页面， nav 中 li确定 对应的 菜单链接。
+			再定义各页面 中 css样式的区别。
+
+			#home #header #nav li#menu_1 a {
+				background-position: 0 -80px;
+			}
+
+			#channel4 #header #nav li#menu_5 a {
+				background-position: ;
+			}
