@@ -35,3 +35,16 @@ Be interesting.Be cool.应该计划好。
 a guru castigate you,give a bundle of manual,a genius see the synopsis,return a credential.
 领袖专家权威 批评惩戒修订 一捆 手册 大纲 证明文件文凭
 
+2019-08-13 22:56:03
+这两天很困。
+应该学会忍受寂寞。
+
+2019-08-25 22:02:41
+奋斗！
+数组
+列表，一组有序的数据。
+栈：类似列表的数据结构。LIFO
+队列用于存储按顺序排列的数据。FIFO
+
+2019年10月15日 23:03:51
+需要挣钱。
