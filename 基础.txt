@@ -174,3 +174,180 @@ lesson1
 
 编程思想和编程工具。将思想利用工具量化出来。
 量化思维的过程。   
+
+课时三
+	回顾
+	form表单里有很多组件来一起搭个伴做事。
+		数据名，数据值。的传送
+	单选框
+		题目的选项 name保证一样。
+		1.apple<input type="radio" name="fruit" value="apple">
+		2.orange<input type="radio" name="fruit" value="orange">
+		3.banana<input type="radio" name="fruit" value="banana">
+	复选框
+		type="checkbox"
+
+
+	来讲一个企业级应用
+		<form method="get" action="">
+		<h1>选择性别
+		</h1>
+		male:<input type="radio" name="sex" value="male">
+		female:<input type="radio" name="sex" value="female">
+
+		<input type="submit" value="提交">
+		</form>
+
+		产品要有几个特点
+			刚需，用户体验感好，用户粘性（使用方法等问题）
+			懒操作：减少用户的操作，培养用户的懒习惯。
+			默认选中的话，就能减少用户的操作。
+			---> 实现默认选中。
+
+			checked属性。 checked="checked"。
+				复选框也OK。
+
+
+	form最后一个组件
+		<select name="province">
+			<option></oprion>
+			<option></oprion>
+			<option></oprion>
+		</select>
+			这儿我们要写数据名。写在select里于情于理 都合适。于法也更合适。代表一道题的题干
+			数据值的话也就放在 option中，value属性的值要优先。
+			可设置每个选项都是成哥。
+			<select name="选择最喜欢的人">
+				<option value="成哥">贝克汉姆</option>
+				<option value="成哥">成哥</option>
+			</select>
+
+	我们讲了很多标签，html css js是不同语言。都希望包含更多的内容。
+		如：h5的video 标签。
+
+	成哥：面试的初筛。
+		和浏览器打交道很多。
+		问题：主流的浏览器和内容
+			IE      trident
+			chrome  webkit
+			safari  blink
+			主流浏览器，有一定的市场份额，必须有独立研发的内核。
+
+		答案：shell + 内核
+
+			IE                trident
+			Firefox           Gecko
+			Google chrome     Webkit/blink(2014投入市场)
+			Safari 冲浪        Webkit
+			Opera丹麦人开发的   presto
+
+	注释 comment
+		1.写备注 这是关于。。。的功能<!-- -->
+		  标注解释
+		2.调bug，调试。
+	工程师
+		产品经理拿产品原型， 设计师，运营，测试 的 沟通。
+
+		评估周期：
+			项目开发时间 * 3/3.5。项目的一个周期。保证抗风险能力。
+			1/4 的时间开发。
+
+	html    css    javascript
+	结构    样式    行为
+
+	css依赖于html。
+		cascading style sheet  层叠样式表
+	一、引入css
+		1.行间样式
+			<div style="
+				width:100px;
+				height: 100px;
+			"></div>	
+		2.页面级css
+		head里写style标签
+		<style type="text/css">
+			div{
+				width: 100px;
+				height: 100px;
+				background-color: #0f0;
+			}
+		</style>
+		压场，过场。
+		3.外部css 文件
+			css文件里
+				div{
+					width: 100px;
+					height: 100px;
+					border-radius: 50%;
+					background-color: black;
+				}
+				head标签里写 link标签。两个属性告诉浏览器要引入js文件，js文件的地址 hypertext reference。
+
+
+	二、服务器和客户端
+		数据传输两端的区别。
+		代码下载到本机去执行。
+			下载点儿，执行点儿。
+			原有的线程继续执行，内核会给css的下载再建一个线程。---> 异步加载
+
+			异步的
+			同步的
+				计算机的同步和异步。
+				synchronize 
+
+	三、选择器
+		成哥有电影票，要给一个人。
+		选择器
+			css如何选择HTML 元素。
+		1.	id选择器，元素的头标签上 id="名字"
+				#only {
+					background-color: #f00;
+				}
+
+			一个人给俩号也不行。
+			一一对应的。东西。
+				beast roseOnly。 darryRing的一个forever系列。
+				1克拉100分。 汪峰送章子怡1500万。
+
+				色阶问题。 d e f ......
+		2.  class 选择器 老邓找不到了。通过特征，特点来获得HTML元素
+			class="demo"
+			.demo {
+				background-color: yellow;
+			}
+
+			你和衣服是多对多的。 一个元素有多个class。
+			一个class 可以有多个元素使用。
+			<div class="demo demo1"></div>
+				被两个class 选中并且作用上效果。
+		3.标签选择器
+			选择一批人，如选出一个班的男生。
+			span><div><span></div>
+			span {
+				color: #f40;
+				font-weight: bold;
+			}
+			无论套的多深，都将选中。全国所有男人，屋里的也算。
+
+		4.通配符选择器 any 任意 全局的标签。
+			* {
+				background-color: green;
+			}
+
+		5. 属性选择器
+			[id] 有 id 属性的元素。
+			[id="only"] {}
+		对比这几个选择器的优先级
+			通过id #only .demo 类选择器 选中 某个/些 元素。
+			!important > 行间样式 > id > class | 属性 > 标签选择器 > 通配符
+
+	tip: css权重
+		!important      infinity   
+		行间样式         1000
+		id              100
+		class|属性|伪类  10
+		标签| 微元素     1
+		通配符           0
+						256进制
+
+		计算机中 Infinity 是定量值，表示为无穷大。
