@@ -227,7 +227,7 @@ lesson1
 
 	成哥：面试的初筛。
 		和浏览器打交道很多。
-		问题：主流的浏览器和内容
+	tip:	问题：主流的浏览器和内容
 			IE      trident
 			chrome  webkit
 			safari  blink
@@ -235,11 +235,11 @@ lesson1
 
 		答案：shell + 内核
 
-			IE                trident
-			Firefox           Gecko
-			Google chrome     Webkit/blink(2014投入市场)
+			IE                trident 三叉戟
+			Firefox           Gecko   壁虎，变形
+			Google chrome     Webkit/blink(2014投入市场)  眨眼睛，闪烁，一瞬间	
 			Safari 冲浪        Webkit
-			Opera丹麦人开发的   presto
+			Opera丹麦人开发的   presto  说变就变。
 
 	注释 comment
 		1.写备注 这是关于。。。的功能<!-- -->
@@ -293,7 +293,8 @@ lesson1
 			异步的
 			同步的
 				计算机的同步和异步。
-				synchronize 
+				synchronize 同步的
+				asynchronize 异步的
 
 	三、选择器
 		成哥有电影票，要给一个人。
@@ -341,12 +342,12 @@ lesson1
 			通过id #only .demo 类选择器 选中 某个/些 元素。
 			!important > 行间样式 > id > class | 属性 > 标签选择器 > 通配符
 
-	tip: css权重
+	tips: css权重
 		!important      infinity   
 		行间样式         1000
 		id              100
 		class|属性|伪类  10
-		标签| 微元素     1
+		标签| 伪元素     1
 		通配符           0
 						256进制
 
