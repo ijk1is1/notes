@@ -352,3 +352,347 @@ lesson1
 						256进制
 
 		计算机中 Infinity 是定量值，表示为无穷大。
+
+
+课时5
+	复习回顾
+	复杂选择器的计算。用权重。
+		<div><span>123</span></div>
+	1.父子选择器/派生选择器
+		真正要选的在后边，前边是他的限制条件。
+		父子选择器的每一个层级都没有必要是标签选择器。只需父子关系成立。直接或间接都成立。
+		div span{
+			background-color: red;
+		}
+	2.直接子元素选择器
+		div下面的直接一级子元素em。
+		div > em {
+			background-color: green;
+		}
+
+		问题：section div ul li a em {
+			background-color: red;
+		}
+			做成了一个元素嵌套的 树。 自右向左的顺序遍历。
+			
+
+	3.并列选择器
+		<div>1</div>
+		<div class="demo">2</div>
+		<p class="demo"></p>
+
+		用多个条件并列到一起，不加空格进行限制的 选择器。不断缩小范围。
+
+		问题：
+			div.classDiv#idDiv>p.classP#idP
+
+			接下来我们来修饰他。
+
+		只要出现在同一排的选择器，就把他们的权重相加。符合先来后到。
+
+	4.分组选择器
+		将n个选择器分组，共用同一个代码块。
+		em{
+			background-color:red;
+		}
+		strong{
+			background-color:red;
+		}
+		em, strong, span{
+			background-color: red;
+		}
+		一般这么写：
+			em,
+			strong,
+			span{
+				background-color: red;
+			}
+
+		.demo1{
+			background-color: red;
+		}
+		.demo2{
+			background-color: green;
+		}
+		哎，这个元素，给你个颜色，再给你个宽高。 这不会覆盖。
+
+	二、css 代码块
+		写在选择器的后边。
+		属性名和属性值 以 : 连接，每个属性以;分割。
+		div{
+			font-size: 12px;
+			font-weight: bold;
+		} 
+		任何编辑工具设置字体的是高度。
+		font
+			font-size: 
+				浏览器默认的字体是16px。
+			font-weight: 
+				100-900。
+				lighter, normal 400, bold--> 700, bolder 
+
+				跟字体包有关，是否有bolder 这个级别。
+				记不住，用字典。
+			font-style:
+				italic;
+			font-family:
+				arial;
+				乔布斯发明的。
+				cursive。这个字体给中文设置，很好看。
+			color:
+				#f40;
+
+				1.土鳖式 (纯英文单词) 测试用。
+				2.颜色代码 人能看3个颜色。皮皮虾32种颜色。
+					光学三原色。
+						r      g      b
+						饱和的拼到一起，是白光，看不见。
+					每两位代表一个颜色。
+						00-ff(颜色的饱和程度)
+						#000000 红。绿。蓝 的饱和程度为0。
+					颜色代码的每两位都重复，就可简写为3位的。
+
+					15年，xila葡萄。葡萄酒有个单宁。单宁能抗氧化。 
+					勃艮第区   罗曼蒂康迪。酒庄。 
+					5大酒庄。
+
+					阿里巴巴logo。是个笑脸。
+						#f40。这个颜色是经过评选的。
+
+				3.颜色函数
+					rgb(0, 0, 0);
+
+		border:
+			1px solid black;复合属性。
+			width: 0;
+			height: 0;
+			border-width: 2px;
+			border-style: solid; dotted/dashed  点状虚线/条状虚线。
+			border-color: #000;
+			border-left-color: red;
+			border-top-color: green;
+			border-right-color: blue; 
+			border-bottom-color: transparent;
+
+课时6
+	回顾
+		div{
+			width: 100px;
+			height: 100px;
+			border: 1px solid black;
+			border-width: 10ppx;
+			border-style: dotted;
+			border-color: red;
+			// 或
+			border-left-width: ;
+		}
+		边框和边框的交界是个斜线。
+
+	一、 修饰文本
+		这个框由内容撑开。<div>新浪新闻</div>
+		text-align: 
+			center; right;
+		/*
+		css只有块注释。
+		 */
+
+		单行文字所占高度，文本的行高。(word中的行间距。)
+			line-height: 20px;
+		问题：单行文本在容器中水平居中。
+			两种方法。padding 也可以。
+
+		text-indent: 2em;
+		em
+			1em = 1 * font-size;
+			          该标签的font-size。
+			       1个文本的高度。(宽度)
+			1.2倍行高
+				1.2em。
+			单位：xx给出的衡量标准。	
+			绝对单位和相对单位。
+			px，像素
+				1个像素只能展示一个颜色。
+				屏幕的分辨率，每英寸垂直方向能展示的像素点数。
+				1个像素点，同一时间只展示一种颜色。
+				相对单位。
+
+		text-decoration:
+			line-through; none; underline; overline;
+
+			开发标准： 行为，结构，样式相分离。
+			del 原价50元
+			span 原价50元
+				span{
+					text-decoration: line-through;
+				}
+			span{
+				color: rgb(0, 0, 238); a标签的颜色。
+				text-decoration: underline;
+				cursor: pointer; /help/e-resize/w-resize/copy/move
+			}
+			
+	二、伪类选择器
+		先选中某个标签。
+		a:hover{
+			color: orange;
+		}
+		搜索词条。query
+			前后端连接时候会用到搜索词条。一个词条给搜索出多少东西。前端来设置这个样式。
+
+		选择到某个元素的选择器:hover{} 给这个选择器加鼠标移入效果。
+
+		a: hover{
+			background-color: #f40;
+			color: #fff;
+			font-size: 16px;
+			font-family: arial;
+			font-weight: bold;
+			border-radius: 10px;
+			text-decoration: underline;
+		}
+
+	三、归类总结
+		1.行级元素、内联元素 inline
+		feature: 内容决定元素位置
+				 不可以通过css改变宽高
+		span strong em a del
+
+		2.块级元素   block
+		feature: 独占一行
+				 可以通过css改变宽高
+
+		div p ul li ol form address
+
+		3.行级块元素  inline-block;
+		feature: 内容决定大小
+				 可以改宽高
+		图片img，只设置一个宽或高。在不知道比例的情况下避免拉伸。 后边能站人吗？占多大地方。
+
+		display:
+			inline; block; inline-block;
+			通过这个css属性来控制元素的样式，来改变原先元素的特点。
+
+	tip: img 标签并排时，有缝隙。4px。
+		怎么触发：凡是带有 inline 的元素都有文字特性。
+		解决： margin-left: -4px;不一定这么大。border设为0 。？
+
+		压缩代码：
+			img这些单词用 1个字母代替。叫gz压缩?
+			去空格去回车。
+
+	tip: 一个工程师的开发经验：
+		1.拟定一个元素，然后做装修。
+		2.有一点想法，知道编出什么东西。先定义功能，后选配。
+			每个功能(css) 都完成一定功能。相当于一个功能列表。
+			更多样灵活。符合模块化开发的流程。
+
+			先定义功能，后让别人引用。
+			用别人的css 工具库。
+
+			先读文档，理解写的为啥那么好。
+
+			底层开发框架组。
+
+		自定义标签，
+			初始化标签。标签选择器的用法。
+			习主席。搜索，百度，关键词是红。
+
+			em{
+				font-style: normal;
+				color: #c00;
+			}
+			ul{
+				list-style: none;
+				padding: 0;
+				margin: 0;
+			}
+
+			再递进一下。通配符选择器。
+				初始化所有标签。 margin padding。不想要。
+				不用分组选择器的原因。
+				通配符选择器的权重是0。其他选择器想改直接就改了。
+
+		库文件：
+			初始化标签。
+			自定义功能。
+
+
+	tip:
+		盒子模型。
+		针对HTML每一个元素的，都符合盒模型语法特点。
+		盒子三大部分：
+			盒子壁 border
+			内边距 padding
+			盒子内容 width + height;
+
+			margin 我们和其他盒子的距离。
+		margin + border + padding + (content = width + height)
+
+		Chrome浏览器控制台。
+			Element ，HTML和css 调试控制台。
+			两个盒子依然是嵌套关系，不过是大小一样。
+
+		padding:
+			100px;  复合属性。
+			padding-left: 100px; 自然就撑开了。
+
+		盒模型的计算。
+			可视区的大小。
+			realWidth : 160px
+			realHeight: 160px
+
+		远视图的制作。
+
+	tip: 
+		层模型。
+		定位position
+		absolute; 让元素变为可以被定位元素。
+		left: 100px;
+		top: 100px;
+		计算机的y轴 是自上向下的。
+		bottom: 下边线距离浏览器的底儿。很少选。
+
+		body
+			有个自有的 很多浏览器中 margin为8px。
+
+		opacity: 0.5;
+		第一个div 变成可定位元素。
+
+		1.absolute
+			(同一个点，不同层面。)
+			脱离原来位置进行定位。
+			(原来位置释放了。)
+			相对于最近的有定位的父级进行定位，如果没有，那么相对于文档进行定位。
+		2.relative
+			保留原来位置进行定位。
+			相对于自己原来的位置进行定位。
+			(不影响后续元素)
+
+			例子： div.wrapper>div.content>div.box
+		完成定位的条件：参照物，有个定位。
+
+		必须减少对后续元素的破坏。
+		relative 做参照物， absolute 做定位。
+					基架		          定位技术。
+
+		3.fixed
+			广告定位。
+			<div>增强老邓身体机能的神奇药物。</div。
+			你怎么动，他都不动。
+
+			文档一屛的话。有滚动的话(就固定下定位)
+				div{
+					position: absolute;
+					left: 50%;
+					top: 50%;
+					width: 100px;
+					height: 100px;
+					background-color: red;
+					margin-left: -50px;
+					margin-top: -50px;
+				}
+				负值，就镶在墙里了。半个身位。
+
+		z-index: 1; 层模型。
+
+			五环。让五环在屏幕中间居中。
