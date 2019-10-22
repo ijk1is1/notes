@@ -696,3 +696,331 @@ lesson1
 		z-index: 1; 层模型。
 
 			五环。让五环在屏幕中间居中。
+
+课时7
+	回顾:
+		五环。五环是一个整体，必须在一个舞台上布置。
+
+		<div class="plat">
+			div.circle1$*5	
+		</div>
+
+		css:
+			先初始化标签。
+			分组选择器，共用一块代码。就是用来简化代码的。
+			.circle1,
+			.circle2{
+				width: 100px;
+			}
+			这个圆脱离原来位置，串到了第一个圆的位置上。
+
+			居中这5个圈。也就是居中这5个圈所在的容器。
+			这个容器没有被撑开，是因为作为内容的都是绝对定位元素已经脱离原来位置定位的，不在这个容器所在的空间了。父级容器没有撑开。
+
+			absolute了，但是缺少参照物。父级也有个定位。relative?不影响其他元素，但是是相对于自身定位的。没办法居中到浏览器中间。 改成absolute。
+			相对于文档居中，就absolute。 相对于视口居中，就fixed。
+
+	tip:
+		两栏布局
+			要求： 一个固定，一个自适应。
+			让一栏定位过去；让后边被压住的部分让出来。
+			自适应元素让出距离，另一个元素定位过去。
+			看起来两栏不行，不能把内容压住。
+
+			为啥先写 right。结构反过来可以吗？
+			这样会： 黑色区域先出生，粉色区域后出生。
+			粉色区域调完position后，虽然脱离原来位置，但出生位置是第二行。
+
+	tip:
+		两个经典bug。 
+		margin塌陷-问题描述：
+			父亲带着儿子往下走。
+			儿子也margin-left: 50px; 但是在margin-top的 时候，不相对于父亲的顶边往下走。 
+			父子嵌套的元素，垂直方向的margin，父子元素是结合到一起的，margin取最大值。
+			子级相对于父级，好像没有顶一样，margin塌陷。
+
+		解决(没办法解决，只能是弥补,因为可能会触发新的问题)：
+			1.给父级加个线，border，子级就可以了。
+			手法残暴，不专业。
+			语法上，编程手法上不专业。产品经理不让。
+			不可行。
+			2.改变父级(这个大盒子)的渲染规则，让他变为bfc。针对需求，哪个没影响，就用哪个。
+			
+
+		tip:
+			bfc block format context
+				每个盒子里有一个完整的渲染规则。通过手段改变盒子的渲染规则。
+				触发bfc 后，特定的盒子会遵循另一套语法规则。
+				改变一丁点的规则。就解决了 margin塌陷。
+
+			如何触发一个盒子的bfc?
+				position: absolute; 
+				display: inline-block;
+				float: left/right;
+				overflow: hidden; (溢出盒子的部分隐藏展示)
+
+				这个盒子就变成bfc元素了。针对需求，哪个没影响，就用哪个。
+
+		margin合并-问题描述
+			<span>123</span>
+			<span>234</span>
+			区域不能共用。两个span 刚开始是有文本分隔符的。
+			margin-left,和margin-right。
+				《战略》
+					美特涅
+					世界上没有永恒的敌人，没有永恒的朋友。
+					保证敌人和敌人的矛盾大于 敌人和我们的矛盾。
+					不利的矛盾过渡到对我们有利的矛盾。
+
+			正常情况下是不能共用的。
+				div  margin-bottom: 100px;
+				div  margin-top: 100px;
+				兄弟关系。
+
+		解决：
+			1.给其中的1个div或两者都加个div，让该div 变成bfc元素。
+			加HTML 和css。
+			每一块HTML 叫结构，不能随便改结构。不可行。
+			2.不解决。垂直方向的margin合并。直接计算就好。
+
+	tip:
+		浮动模型。
+		float: left/right;
+			语法：。
+			文字环绕效果。 让元素站队。
+			效果：
+				1.浮动元素产生了浮动流。
+				所有产生了浮动流的元素，块级元素看不到他们；
+				产生了bfc的元素和文本类属性(带有inline)的元素以及文本都能看到浮动元素。
+
+		包裹浮动元素-例子：
+			把容器的宽高都去掉，变成自适应容器了。内容会撑开容器。宽度没限制，高度会撑开。
+
+			div.wrapper>div.content*3
+
+			.content{
+				float: left;
+			}
+			为什么父级没有包住浮动的子级元素？
+				浮动元素产生了浮动流，浮动流对块级元素有影响。
+				块级元素看不到浮动元素。
+
+			解决：
+				1.父级元素加个高。解决一小部分问题，不健康的解决办法。 后端传来了更多数据时就不可行。
+
+				2.清除周边的浮动流。
+				p{
+					border-top: 0 solid black;
+					clear: both;
+				}
+				逻辑上在这儿出生，就能清除，把父级撑开。
+				最后一个元素的逻辑上的后边。
+
+课时9
+	回顾：
+		包裹浮动元素。
+
+		HTML代表的是结构。咱们真正的解决bug，弥补一个问题。不能随便修改结构。
+
+		!importan
+		行间样式
+		id
+		class|属性|伪类
+		标签|伪元素
+		通配符
+
+	伪元素
+		tag element
+		天生存在于任意一个元素里。会伴随元素出生。
+		span::before{
+			content: "成哥";
+		}
+		修改样式结构。可以被css操作，但不存在在HTML里。
+		span::after{
+			content: "，是的，的确是这样。"
+		}
+		没有确切的结构，只能通过操作css属性。content
+
+		天生的行级元素。inline的
+		改成 display:inline-block; 就可以。
+
+		.wrapper::after{
+			content: "";
+			clear: both;
+			display: block;
+		}
+		.wrapper选中的元素，逻辑上的最后一个位置。
+
+	要使得clear属性生效的话。必须是对块级元素加上才可以。
+
+	触发了bfc的元素，文本类元素和文本，都能看到浮动元素。
+
+	tip:
+		设置了position: absolute; float: left/right;
+		会在内部把元素转换成 inline-block元素。宽高由内容撑开。
+
+		例子: 
+			<span>123</span>
+			span{
+				position: absolute;
+				width: 100px;
+				height: 100px;
+				background-color: red;
+			}
+			刚开始是不能变宽高的，设置了position: absolute 或者 float 后就可以了。
+
+
+	tip:
+		浮动：
+		css2.0 1999，08年3.0。
+		报纸布局。
+		img后放点文字。刚开始是底对齐的。设置float后，后边文字就顶对齐了。
+
+	例子：
+		ul>li*3
+			天猫
+			聚划算
+			天猫超市
+
+			ul.nav
+				li.list-item
+		css内容
+			*{
+				margin: 0;
+				padding: 0;
+				color: #424242;
+				font-family: arial;
+			}
+			a{
+				text-decoration: none;
+			}
+			.nav{
+				list-style: none;
+			}
+			.nav .list-item{
+				float: left;
+				margin-left: 10px;
+			}
+
+			是有a 标签的吧？来个空锚点占位。居中,来个border 参考。
+			li 不能定宽的。我们来加padding。
+
+		父级元素包裹浮动元素。都清除浮动流。消除浮动流带来的影响。
+			.nav::after{
+				content: "";
+				display: block;
+				clear: both;
+			}
+
+
+课时10
+	tip:
+		溢出容器，要打点展示
+
+		1.单行文本
+			文字足够容器宽度的时候就展示出来。
+			white-space: nowrap;
+			over-flow: hidden;
+			text-overflow: ellipsis;
+		2.多行文本
+			前端工程师把容器的宽高，字的大小计算好。给后端，后端计算好。用...实现。
+			PC端不实现。针对老版本浏览器实现。
+			移动端来实现。
+
+			多行不打点，只做截断处理。
+				容器高和行高，计算一下。
+				容器 overflow: hidden。
+
+	tip:
+		背景图片处理
+			width: 200px;
+			height: 200px;
+			border: 1px solid black;
+			background-image: url(fy.jpg);
+			background-size: 100px 100px;
+			background-repeat: no-repeat;
+			background-position: 100px 100px;
+				left top center ; center center
+				50% 50% 也会居中。
+
+		以图换字
+			图片的用途。有的图片来自资源方。
+
+			<a></a>
+				display: inline-block;
+				text-decoration: none;
+				color: #424242;
+				width: 190px;
+				height: 90px;
+				border: 1px solid black;
+				background-image: url();
+				background-size: 
+
+			一旦浏览器采取了默认加载策略，我们的网站也要好使。css, javascript屏蔽掉。
+
+			1.三件套
+			  	text-indent: 190px;
+			  	white-space: nowrap;
+			 	overflow: hidden;
+			2.padding 能把容器撑开，也能放背景图片。
+				容器的高 height: 0
+						padding-top: 图片的高;
+						overflow: hidden;
+
+		规则：
+			行级元素只能嵌套行级元素
+			块级元素可以嵌套任何元素
+			p标签里不能套块级元素
+				会被截断。
+			a标签里不套 a标签。
+
+	作业：写个淘宝网的首屏。
+
+课时11 
+	一个特别的辅助工具。
+	公众号。
+		定位宗旨： 学习的生态系统。
+			人生不只有技术。
+
+课时12
+	css补充
+		div.wrapper>div.content
+
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		.wrapper{
+			height: 30px;
+			background-color: black;
+		}
+		.content{
+			width: 1200px;
+			margin: 0 auto;
+			height: 30px;
+			background-color: #0f0;
+		}
+
+	凡是带有inline的元素都有文本的特点，叫文本类元素。
+
+	img元素容忍中间有空格了。
+		inline-block。 属于文本类元素。所以有 文字分隔符。
+
+	position: absolute; float: left/right;
+	元素会被设置为 display: inline-block;
+
+	文本对齐方式。
+		1.文本放一起，会底对齐
+		2.图片和文字放一起
+			<img>呵呵
+				文本类元素，和文本一样，都会体现出底对齐。
+
+		3.<span></span>呵呵
+		一个行级块元素或者一个文本类元素里边有文字了。外部文字会和里边文字底对齐。
+
+	调一行元素的对齐线
+		vertical-align: -2px; middle值好像是-1或是-2。
+
+
+课时13
+	
