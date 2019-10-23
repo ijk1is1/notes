@@ -1023,4 +1023,97 @@ lesson1
 
 
 课时13
-	
+	opacity 透明度。
+
+	伪元素正常情况是inline
+	div::before{
+		content: "";
+		display: inline-block;
+		width: 12px;
+		height: 11px;
+		background-image: url(data: )
+			图片是由无数个像素点组成的。 地址请求过来的二进制进行解析。
+		background-size: 100% 100%;
+		margin-right: 5px;
+		/*字的对齐线*/
+		vertical-align: -1px;
+	}
+
+	例子，姬教授贴吧。
+		前后留余，用padding。 保留背景颜色;
+
+	div::after{
+		content: "";
+		display: inline-block;
+		width: 6.5px;
+		height: 11.5px;
+		background-image: url(data: );
+		float: right;
+		margin-top: 3px;
+	}
+
+	tip:居中
+		不用line-height。
+		让文字高度 == 容器高度。让容器的padding 把文字夹住。
+
+
+	题：
+		position的值的区别。
+		absolute, relative
+			脱离原来位置定位，保留原来位置定位。
+			都是层模型
+			absolute相对于距离自己最近的定位元素进行定位。
+
+		font-size: 20px; 设置的是字体的高。
+
+		水平垂直居中：
+			50% 50%, 半个身位。
+
+		opera7 是一个经典版本。之后新版本用了webkit。
+
+		三栏布局。
+
+		去除
+			content: "";
+			display: block;
+			clear: both;
+			父级里加个新的 zom: 1。
+
+		使用语义化的html标签及css完成以下布局
+			div.wrapper
+				img.img
+
+			容器默认宽度320px, 图片100* 100。
+
+			css
+				.wrapper{
+					width: 320px;
+					border: 2px solid black;
+				}
+
+				.wrapper:hover{
+					width: 400px;
+				}
+				.wrapper .img{
+					width: 100px;
+					height: 100px;
+					float: left;
+				}
+
+				.content1{
+					font-size: 20px;
+					line-height: 20px;
+					height: 40px;
+					overflow: hidden;
+					color: #333;
+					margin-bottom: 8px;
+				}
+
+				.content2{
+					font-size: 12px;
+					line-height: 1.2em
+					color: #666;
+				}
+
+姬成老师的qq邮箱
+	79368009@qq.com。
