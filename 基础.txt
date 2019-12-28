@@ -13,11 +13,11 @@ lesson1
 	<head>
 		
 		<meta charset="utf-8">	
-			给浏览器指定一个"字典"，编码字符集。
-			gb2312 亚裔语言。只有简体中文，没繁体。
-			gbk 国家标准版本。包含了繁体中文字符集，
-			unicode  万国码
-			utf-8 8bit。
+			给浏览器指定一个"字典"，编码字符集。告诉浏览器用哪个编码字符集。
+				gb2312 亚裔语言。只有简体中文，没繁体。
+				gbk 国家标准版本。包含了繁体中文字符集，
+				unicode  万国码
+				utf-8 8bit。
 
 		<title></title>
 		<meta content="服装" name="keywords">
