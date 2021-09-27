@@ -173,6 +173,7 @@ git config --help
 git help config
 linux系统   man git-[子命令]
 
+
 Git对象，git存储对象的仓库；
 创建仓库：
 1.裸仓库-没有.git目录，没有工作区，只是用来协同的； 已有的工作环境纳入git的管理
@@ -181,4 +182,4 @@ git init --bare git_bare_repo
 git clone 远程地址
 git clone 仓库/  新的仓库路径参数
 
-
+明天继续
