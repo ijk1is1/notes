@@ -153,3 +153,32 @@ margin塌陷， margin合并， bfc。
 
 2020年7月7日 00:23:14
 重新建立新秩序，加油。
+
+2021年9月27日 11:29:15
+时隔一年多，坚持使用下去。
+git 分布式版本控制系统的优势；
+git 配置
+1.配置三个级别 --system --global --local
+2.针对global 增删改查，--add （同一个键有多个值） --get user.name（获取最近一次的值） --unset user.name [有多个值时要加上表达式]
+--list 列举出所有值。
+3.配置git命令的简写
+git config --global alias.co checkout
+git c 两次table键，列出命令
+git config -- 使用table，列出可选择的参数
+
+命令带多个参数， git config --global alias.lol "log --oneline"
+
+4.查看文档
+git config --help
+git help config
+linux系统   man git-[子命令]
+
+Git对象，git存储对象的仓库；
+创建仓库：
+1.裸仓库-没有.git目录，没有工作区，只是用来协同的； 已有的工作环境纳入git的管理
+git init --bare git_bare_repo
+2. 克隆
+git clone 远程地址
+git clone 仓库/  新的仓库路径参数
+
+
