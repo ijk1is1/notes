@@ -183,3 +183,56 @@ git clone 远程地址
 git clone 仓库/  新的仓库路径参数
 
 明天继续
+
+2021年9月28日 23:49:16
+
+git 配置
+1.三个级别
+git config --system --global --local
+git config --global --list
+git config --global --get user.name
+git config --global --add user.name eoe
+git config --global --unset? user.name
+2. 起别名
+git config --global alias.lol "log --oneline --decorate --graph --all"
+
+git config --help
+git help config
+查看文档
+
+git对象，Git仓库，
+工作区，Git工作区
+.git/index文件  暂存区； .git/objects/ Git对象库
+
+git add .  工作区添加到暂存区
+git commit -m ""  暂存区 提交到 历史
+
+查看状态 git status：
+暂存区和 历史的区别，工作区是否有 没被跟踪的文件
+
+git diff
+查看工作区和 暂存区的差异
+git diff --cached
+暂存区和历史的差异
+git diff --color-word
+git diff --word-diff
+
+git show git对象（hash,tag,commit,HEAD，等引用）
+
+分支，每个分支有历史
+git checkout -b 分支名
+
+分支的合并
+merge提交
+
+历史记录
+git log
+撤销历史记录 revert
+
+切换分支时候，会将新分支 指向的 commit 的内容还原 工作区、暂存区
+
+.gitignore文件，忽略文件
+git clean -n  说明将删除哪些文件
+git clean -X -f  删除忽略的文件
+
+
