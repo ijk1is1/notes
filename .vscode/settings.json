@@ -1,0 +1,13 @@
+{
+    // 为VSCODE TERMINAL 添加 Git bash 
+    "terminal.integrated.automationShell.windows": "D:\\Git\\bin\\bash.exe",
+    "terminal.integrated.profiles.windows": {
+        "GitBash": {
+            "path": [
+                "D:\\Git\\bin\\bash.exe"
+            ],
+            "icon": "terminal-bash"
+        }
+    },
+
+}
